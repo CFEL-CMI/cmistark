@@ -1,0 +1,160 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+#
+# This file is part of JK Python extensions
+# Copyright (C) 2009 Jochen Küpper <software@jochen-kuepper.de>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# some SGE commands for batch usage convenience
+#$ -cwd
+#$ -e $JOB_NAME.sge
+#$ -o $JOB_NAME.sge
+#$ -S $HOME/.python/bin/python
+#$ -V
+from __future__ import division
+
+"""Calculate adiabatic energy curves and store them in HDF5 file
+
+Copyright (C) 2008,2009 Jochen Küpper"""
+
+__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+
+import numpy as num
+import getopt, sys
+
+import jkext.molecule as molecule
+import jkext as jk
+import jkext.convert as convert
+import jkext.molecule as molecule
+import jkext.starkeffect as starkeffect
+from jkext.state import State
+
+
+def usage():
+    # ToDo implement a useful usage description
+    print "See script for details"
+
+
+def main(args):
+    try:
+        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
+                                                   "dc-fields=",
+                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene",
+                                                   "water", "H2O", "D2O", "HDO"])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    # default values
+    param = starkeffect.CalculationParameter
+    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 3))
+    param.isomer = 0
+    param.Jmin = 0
+    param.Jmax_calc = 5
+    param.Jmax_save = 2
+    param.M = None
+    # scan commandline
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o == "--Mmax":
+            param.M = range(0, int(a)+1)
+        elif o == "--Jmin":
+            param.Jmin = int(a)
+        elif o == "--Jmax_calc":
+            param.Jmax_calc = int(a)
+        elif o == "--Jmax_save":
+            param.Jmax_save = int(a)
+        elif o == "--dc-fields":
+            min, max, steps = a.split(":")
+            param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
+        elif o == "--2,6-difluoro-iodobenzene":
+            # parmaters from simple ab initio calculations
+            name = "2,6-difluoro-iodobenzene"
+            param.watson = 'A'
+            param.symmetry = 'C2a'
+            param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
+            param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
+            param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
+        elif o == "--p-aminobenzonitrile":
+            # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
+            name = "p-aminobenzonitrile"
+            param.watson = 'A'
+            param.symmetry = 'C2a'
+            param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
+            param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
+            param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
+        elif o == "--benzonitrile":
+            # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
+            name = "benzonitrile"
+            param.watson = 'A'
+            param.symmetry = 'C2a'
+            param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
+            param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
+            param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
+        elif o == "--iodobenzene":
+            # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
+            name = "iodobenzene"
+            param.watson = 'A'
+            param.symmetry = 'C2a'
+            param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
+            param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
+            # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
+            param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+        elif o in ("--D2O", "--H2O", "--HDO", "--water"):
+            # get better data from
+            # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+            # - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
+            # - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
+            # - Steenbeckeliers, and Bellet, J. Mol. Spectrosc. 45, 10 (1973)
+            name = "water"
+            param.watson = 'A'
+            if o in ("--H2O", "--water"):
+                # rotational constans from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952)
+                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.isomer = 0
+                param.symmetry = 'C2b'
+                param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
+                param.dipole = convert.D2Cm(num.array([0., -1.8546, 0.]))
+            elif o == "--D2O":
+                # rotational constans from Herzberg
+                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.isomer = 1
+                param.symmetry = 'C2b'
+                param.rotcon = convert.invcm2J(num.array([15.39, 7.26, 4.85]))
+                param.dipole = convert.D2Cm(num.array([0., -1.8558, 0.]))
+            elif o == "--HDO":
+                # rotational constans from Herzberg
+                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.isomer = 2
+                param.symmetry = 'N'
+                param.rotcon = convert.invcm2J(num.array([23.48, 9.13, 6.40]))
+                param.dipole = convert.D2Cm(num.array([-0.6567, -1.7318, 0.]))
+        else:
+            assert False, "unhandled commandline option"
+
+    if None == param.M:
+        param.M = range(0, param.Jmax_save+1)
+
+    # perform calculation
+    mol = molecule.Molecule(storage=name+".hdf")
+    mol.starkeffect_calculation(param)
+    # close file
+    del mol
+
+
+if __name__ == "__main__":
+    main(sys.argv)

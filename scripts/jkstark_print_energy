@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+#
+# This file is part of JK Python extensions
+# Copyright (C) 2009 Jochen Küpper <software@jochen-kuepper.de>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# some SGE commands for batch usage convenience
+#$ -cwd
+#$ -e $JOB_NAME.sge
+#$ -o $JOB_NAME.sge
+#$ -S $HOME/.python/bin/python
+#$ -V
+from __future__ import division
+
+"""Print adiabatic energy curves from HDF5 file to commandline
+
+Copyright (C) 2009 Jochen Küpper"""
+
+__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+
+import numpy as num
+import getopt, sys
+
+import jkext.molecule as molecule
+from jkext.convert import *
+from jkext.state import State
+
+
+def usage():
+    # ToDo implement a useful usage description
+    print "See script for details"
+
+
+def main(args):
+    try:
+        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=",
+                                                   "isomer="])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    # default values
+    Jmin = 0
+    Jmax = 2
+    isomer = 0
+    # scan commandline
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o == "--Jmin":
+            Jmin = int(a)
+        elif o == "--Jmax":
+            Jmax = int(a)
+        elif o == "--isomer":
+            isomer = int(a)
+        else:
+            assert False, "unhandled commandline option"
+
+    # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
+    for name in args:
+        # create Molecule object and specify storage file
+        mol = molecule.Molecule(storage=name)
+        # loop over state
+        for M in range(0, Jmax+1):
+            for J in range(max(Jmin, M), Jmax+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, isomer)
+                    fields, energies = mol.starkeffect(state)
+                    fields, mueff = mol.mueff(state)
+                    assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                    print "# state:", state.name()
+                    for i in range(len(fields)):
+                        print V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, isomer)
+                        fields, energies = mol.starkeffect(state)
+                        fields, mueff = mol.mueff(state)
+                        assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                        print "# state:", state.name()
+                        for i in range(len(fields)):
+                            print V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6
+
+
+if __name__ == "__main__":
+    main(sys.argv)
