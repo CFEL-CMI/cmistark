@@ -19,7 +19,7 @@ Current maintainer: Jochen Küpper <software@jochen-kuepper.de>
 """
 
 
-setup(name="jkext",
+setup(name="jkstark",
       author              = "Jochen Küpper",
       author_email        = "software@jochen-kuepper.de",
       description         = "JK Python Stark effect extensions",
