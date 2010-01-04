@@ -30,8 +30,8 @@ import unittest
 
 import jkext as jk
 import jkext.convert as convert
-import jkext.molecule as molecule
-import jkext.starkeffect as starkeffect
+import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
 from jkext.state import State
 
 
@@ -76,7 +76,7 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
                                "Field-free ground state energy is wrong")
         # test energies for different states at 100 kV/cm
         self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4], 7,
-                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
+                                "Ground state energy is wrong: expected %g MHz, got %g MHz" \
                                     % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
 
 
