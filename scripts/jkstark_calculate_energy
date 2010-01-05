@@ -33,11 +33,10 @@ __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 import numpy as num
 import getopt, sys
 
-import jkext.molecule as molecule
 import jkext as jk
 import jkext.convert as convert
-import jkext.molecule as molecule
-import jkext.starkeffect as starkeffect
+import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
 from jkext.state import State
 
 
