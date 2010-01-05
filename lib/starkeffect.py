@@ -297,7 +297,7 @@ class AsymmetricRotor:
                     if 0 < blocks[sym].size:
                         eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
             # sort assignments according to energy
-            if 'V' == self.__symmetry or (None == self.__symmetry and 0 == self.__M):
+            if ('V' == self.__symmetry or ('N' != self.__symmetry and 0 == self.__M)): 
                 symmetries = ['A', 'Ba', 'Bb', 'Bc']
             elif 'C2a' == self.__symmetry:
                 eigenvalues['Aa'] = eigenvalues['A'] + eigenvalues['Ba']
@@ -323,7 +323,7 @@ class AsymmetricRotor:
                 symmetries = ['N']
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.__symmetry, ))
-            if not ('V' == self.__symmetry or (None == self.__symmetry and 0 == self.__M)):
+            if not ('V' == self.__symmetry or ('N' != self.__symmetry and 0 == self.__M)): 
                 # free unused memories
                 del label['A'], label['Ba'], label['Bb'], label['Bc']
             for sym in symmetries:
@@ -456,6 +456,12 @@ class AsymmetricRotor:
         else:
             # something went wrong
             raise SyntaxError("unknown Hamiltonian symmetry")
+        for sym in set(order):
+            for sym2 in set(order):
+                if sym != sym2:
+                    if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
+                        print "There is a problem with your symmetry"
+                        print  sym, "and ", sym2, "are connected for M =", self.__M 
         return blocks
 
 
