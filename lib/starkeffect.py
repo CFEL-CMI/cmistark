@@ -49,7 +49,7 @@ class CalculationParameter:
 
     |symmetry| defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
     the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b', 'C2c',
-    or 'V' for full Fourgroup symmetry. The latter can only be correct for zero-field calculations.
+    or 'V' for full Fourgroup symmetry. The latter can only be correct for zero-field calculations or M=0.
     """
     type = 'A'
     M = range(0, 2)
@@ -89,7 +89,7 @@ class AsymmetricRotor:
         self.__watson = param.watson
         self.__symmetry = param.symmetry # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V')
         # save quantum numbers
-        self.__M = int(M) # use the single spefied M
+        self.__M = int(M) # use the single specified M
         self.__isomer = int(param.isomer)
         self.__Jmin = self.__M # this must be equal to self.__M (in Stark calculation all J couple)
         self.__Jmax = int(param.Jmax_calc)
@@ -297,7 +297,7 @@ class AsymmetricRotor:
                     if 0 < blocks[sym].size:
                         eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
             # sort assignments according to energy
-            if ('V' == self.__symmetry or ('N' != self.__symmetry and 0 == self.__M)): 
+            if 'V' == self.__symmetry or 0 == M:
                 symmetries = ['A', 'Ba', 'Bb', 'Bc']
             elif 'C2a' == self.__symmetry:
                 eigenvalues['Aa'] = eigenvalues['A'] + eigenvalues['Ba']
@@ -323,7 +323,7 @@ class AsymmetricRotor:
                 symmetries = ['N']
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.__symmetry, ))
-            if not ('V' == self.__symmetry or ('N' != self.__symmetry and 0 == self.__M)): 
+            if 'V' != self.__symmetry and 0 != M:
                 # free unused memories
                 del label['A'], label['Ba'], label['Bb'], label['Bc']
             for sym in symmetries:
@@ -356,17 +356,14 @@ class AsymmetricRotor:
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
-        if 'N' == symmetry:
-            # nothing to do, return
-            blocks['N'] = hmat
-        elif  'V' == symmetry or (None != symmetry and 0 == self.__M):
+        order = []
+        if  'V' == symmetry or 0 == self.__M:
             # full Fourgroup symmetry (field free Hamiltonian or M = 0 for dipole along principal axis)
             # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc -- in calculation for a single J this is the same.
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
             i = 0
             for J in range(Jmin, Jmax+1):
-                order = []
                 if 0 == J % 2: # J even
                     for K in range(-J, 0): # K < 0 --> s even
                         if 0 == K % 2: order.append('Ba') # K even
@@ -387,7 +384,10 @@ class AsymmetricRotor:
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif symmetry == 'C2a':
+        elif 'N' == symmetry:
+            # nothing to do, return
+            blocks['N'] = hmat
+        elif 'C2a' == symmetry:
             # C2 rotation about a-axis is symmetry element
             #
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices E = Aa (contains E+ and
@@ -403,15 +403,15 @@ class AsymmetricRotor:
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif symmetry == 'C2b':
+        elif 'C2b' == symmetry:
             # C2 rotation about b-axis is symmetry element
             #
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices 'Ab' (contains 'A' and 'Bb')
             # and 'ac' (contains 'Ba' and 'Bc').
             idx = {'Ab': [], 'ac': []}
             i = 0
+            order = []
             for J in range(Jmin, Jmax+1):
-                order = []
                 if 0 == J % 2: # J even
                     for K in range(-J, 0): # K < 0
                         order.append('ac')
@@ -428,7 +428,7 @@ class AsymmetricRotor:
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif symmetry == 'C2c':
+        elif 'C2c' == symmetry:
             # C2 rotation about c-axis is symmetry element
             #
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices 'Ac' (contains 'A' and
@@ -456,12 +456,13 @@ class AsymmetricRotor:
         else:
             # something went wrong
             raise SyntaxError("unknown Hamiltonian symmetry")
-        for sym in set(order):
-            for sym2 in set(order):
-                if sym != sym2:
-                    if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
-                        print "There is a problem with your symmetry"
-                        print  sym, "and ", sym2, "are connected for M =", self.__M 
+        # for sym in set(order):
+        #     for sym2 in set(order):
+        #         if sym != sym2:
+        #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
+        #                 print "There is a problem with your symmetry"
+        #                 print  sym, "and ", sym2, "are connected for M =", self.__M
+        print hmat
         return blocks
 
 
@@ -491,15 +492,15 @@ class AsymmetricRotor:
 if __name__ == "__main__":
     print
     p = CalculationParameter
-    p.Jmax_calc =  8
+    p.Jmax_calc =  3
     p.Jmax_save =  2
     p.M = [0]
     p.isomer = 0
     p.rotcon = jkext.convert.Hz2J(num.array([5e9, 2e9, 1.4e9]))
     p.quartic = jkext.convert.Hz2J([1e3, 1e3, 1e3, 1e3, 1e3])
-    p.dipole = jkext.convert.D2Cm([.0, .0, 1.0])
+    p.dipole = jkext.convert.D2Cm([1.0, .0, .0])
     p.watson = 'A'
-    p.symmetry = 'N'
+    p.symmetry = 'C2a'
     for M in p.M:
         for field in jkext.convert.kV_cm2V_m((0., 1., 100.)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
@@ -507,10 +508,11 @@ if __name__ == "__main__":
             for state in [State(0, 0, 0, M, p.isomer),
                           State(1, 0, 1, M, p.isomer), State(1, 1, 1, M, p.isomer), State(1, 1, 0, M, p.isomer),
                           State(2, 0, 2, M, p.isomer), State(2, 1, 2, M, p.isomer), State(2, 1, 1, M, p.isomer),
-                          State(2, 2, 1, M, p.isomer), State(2, 2, 0, M, p.isomer),
-                          State(3, 0, 3, M, p.isomer), State(3, 1, 3, M, p.isomer), State(3, 1, 2, M, p.isomer),
-                          State(3, 2, 2, M, p.isomer), State(3, 2, 1, M, p.isomer), State(3, 3, 1, M, p.isomer),
-                          State(3, 3, 0, M, p.isomer)]:
+                          State(2, 2, 1, M, p.isomer), State(2, 2, 0, M, p.isomer)]:
+# ,
+#                           State(3, 0, 3, M, p.isomer), State(3, 1, 3, M, p.isomer), State(3, 1, 2, M, p.isomer),
+#                           State(3, 2, 2, M, p.isomer), State(3, 2, 1, M, p.isomer), State(3, 3, 1, M, p.isomer),
+#                           State(3, 3, 0, M, p.isomer)]:
                 if state.M() <= state.J() and state.J() <= p.Jmax_save:
                     print state.name(), "%12.3f MHz %8.3f cm-1 %10.3g J" \
                         % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)), top.energy(state))
