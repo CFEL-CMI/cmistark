@@ -297,7 +297,7 @@ class AsymmetricRotor:
                     if 0 < blocks[sym].size:
                         eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
             # sort assignments according to energy
-            if 'V' == self.__symmetry or 0 == M:
+            if 'V' == self.__symmetry:
                 symmetries = ['A', 'Ba', 'Bb', 'Bc']
             elif 'C2a' == self.__symmetry:
                 eigenvalues['Aa'] = eigenvalues['A'] + eigenvalues['Ba']
@@ -323,7 +323,7 @@ class AsymmetricRotor:
                 symmetries = ['N']
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.__symmetry, ))
-            if 'V' != self.__symmetry and 0 != M:
+            if not 'V' == self.__symmetry:
                 # free unused memories
                 del label['A'], label['Ba'], label['Bb'], label['Bc']
             for sym in symmetries:
@@ -356,12 +356,17 @@ class AsymmetricRotor:
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
-        order = []
+        if 'N' == symmetry:
+            # nothing to do, return
+            blocks['N'] = hmat
+        elif  'V' == symmetry:
+            # full Fourgroup symmetry (field free Hamiltonian)
         if  'V' == symmetry or 0 == self.__M:
             # full Fourgroup symmetry (field free Hamiltonian or M = 0 for dipole along principal axis)
             # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc -- in calculation for a single J this is the same.
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
+            order = []
             i = 0
             for J in range(Jmin, Jmax+1):
                 if 0 == J % 2: # J even
