@@ -361,7 +361,6 @@ class AsymmetricRotor:
             blocks['N'] = hmat
         elif  'V' == symmetry:
             # full Fourgroup symmetry (field free Hamiltonian)
-        if  'V' == symmetry or 0 == self.__M:
             # full Fourgroup symmetry (field free Hamiltonian or M = 0 for dipole along principal axis)
             # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc -- in calculation for a single J this is the same.
@@ -389,9 +388,6 @@ class AsymmetricRotor:
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif 'N' == symmetry:
-            # nothing to do, return
-            blocks['N'] = hmat
         elif 'C2a' == symmetry:
             # C2 rotation about a-axis is symmetry element
             #
@@ -467,7 +463,7 @@ class AsymmetricRotor:
         #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
         #                 print "There is a problem with your symmetry"
         #                 print  sym, "and ", sym2, "are connected for M =", self.__M
-        print hmat
+        #print hmat
         return blocks
 
 
