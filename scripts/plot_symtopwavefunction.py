@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+
 from numpy import cos, exp, mgrid, pi, sin, zeros
 from scipy.special import sph_harm
 
