@@ -1,0 +1,5 @@
+The files wigner.h and wigner.c are a GSL extension module from
+Jonathan Underwood. They were imorted here on 30. Sep. 2009.
+
+error.h and eval.h are directly from GSL's specfunc directory, last
+import on 30. Sep. 2009.
