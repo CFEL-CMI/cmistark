@@ -50,6 +50,7 @@ setup(name="jkstark",
       scripts             = ['scripts/jkstark_brute-force-orientation',
                              'scripts/jkstark_calculate_energy',
                              'scripts/jkstark_plot_energy',
-                             'scripts/jkstark_print_energy']
+                             'scripts/jkstark_print_energy',
+                             'scripts/plot_symtopwavefunction.py']
       )
 
