@@ -356,18 +356,14 @@ class AsymmetricRotor:
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
-        if 'N' == symmetry:
-            # nothing to do, return
-            blocks['N'] = hmat
-        elif  'V' == symmetry:
+        if  'V' == symmetry:
             # full Fourgroup symmetry (field free Hamiltonian)
-            # full Fourgroup symmetry (field free Hamiltonian or M = 0 for dipole along principal axis)
-            # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
+            # I^r (not I^l?) representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc -- in calculation for a single J this is the same.
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
-            order = []
             i = 0
             for J in range(Jmin, Jmax+1):
+                order = []
                 if 0 == J % 2: # J even
                     for K in range(-J, 0): # K < 0 --> s even
                         if 0 == K % 2: order.append('Ba') # K even
@@ -382,8 +378,8 @@ class AsymmetricRotor:
                     for K in range(0, J+1): # K >= 0 --> s odd
                         if 0 == K % 2: order.append('Ba') # K even
                         else: order.append('Bc') # K odd
-                for j in range(2*J+1):
-                    idx[order[j]].append(i+j)
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
@@ -454,6 +450,9 @@ class AsymmetricRotor:
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'N' == symmetry:
+            # nothing to do, return
+            blocks['N'] = hmat
         else:
             # something went wrong
             raise SyntaxError("unknown Hamiltonian symmetry")
@@ -463,7 +462,7 @@ class AsymmetricRotor:
         #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
         #                 print "There is a problem with your symmetry"
         #                 print  sym, "and ", sym2, "are connected for M =", self.__M
-        #print hmat
+        # print hmat
         return blocks
 
 
