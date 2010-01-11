@@ -64,7 +64,11 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
         os.remove(self.storagename)
 
     def test_fieldfree(self):
-        self.assertAlmostEqual(0., self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0], 7, "Field-free ground state energy is wrong")
+        # comparing to 0 is dangerous as assertAlmostEqual compares a specified number of digits after 0 i.e. 7
+        # and a typical energy is 1e-23 J therefore  convert to Hz before test
+        self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
+                               "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
+                                    % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
