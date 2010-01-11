@@ -147,7 +147,7 @@ class Molecule(jkext.molecule.Molecule):
             #assert len(dcfields)*len(acfields) == len(energies)
             for i in range(len(acfields)):
                 jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfields[i]) , "dcfield", dcfields)
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfields[i]) , "dcstarkenergy", energies[:,i])
+                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfields[i]) , "dcstarkenergy", energies[i,:])
             jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", acfields)
         else:
             # maybe add a metode that gives the energy for a specified ac and dc field
@@ -188,7 +188,7 @@ class Molecule(jkext.molecule.Molecule):
         newdcfields=param.dcfields
         newacfields=param.acfields
         assert len(newdcfields)*len(newacfields)  == len(newenergies)
-        reshapedenergies = num.reshape(newenergies,(len(newdcfields),len(newacfields)))
+        reshapedenergies = num.reshape(newenergies,(len(newacfields),len(newdcfields)))
         #for f in range(len(newacfields)):
         #    acfield = newacfields[f]
         #    try:
