@@ -52,19 +52,27 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
         self.param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
         self.param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
         self.param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
+        # wrong polarizability
+        self.param.polarizability[0,0] = convert.A32CM2_V(21.5)
+        self.param.polarizability[1,1] = convert.A32CM2_V(15.3)
+        self.param.polarizability[2,2] = convert.A32CM2_V(10.2)
+        
         # calculation details
         self.param.M = [0, 1]
         self.param.Jmin = 0
         self.param.Jmax_calc = 15
         self.param.Jmax_save =  3
         self.param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
+        self.param.acfields = num.linspace(0., 1e6,2)
         self.bn.starkeffect_calculation(self.param)
 
     def tearDown(self):
         os.remove(self.storagename)
-
+        
     def test_fieldfree(self):
-        self.assertAlmostEqual(0., self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0], 7, "Field-free ground state energy is wrong")
+        self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=0.0)[1][0]), 7,
+                               "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
+                                    % (0., convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=0.0)[1][0])))
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
@@ -72,13 +80,28 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
         With our setup, these are he fifth values in the list of fields/energies.
         """
         # test (once) that the fields are correct
-        self.assertAlmostEqual(convert.kV_cm2V_m(100.), self.bn.starkeffect(State(0, 0, 0, 0, 0))[0][4], 7,
-                               "Field-free ground state energy is wrong")
+        self.assertAlmostEqual(convert.kV_cm2V_m(100.), self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=0.0)[0][4], 7,
+                               "DC Field is wrong")
         # test energies for different states at 100 kV/cm
-        self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4], 7,
-                                "Ground state energy is wrong: expected %g MHz, got %g MHz" \
-                                    % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
+        self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=0.0)[1][4], 7,
+                                "Ground state energy is wrong: expected %6.8g MHz, got %6.8g MHz" \
+                                    % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=0.0)[1][4])))
+        
+    def test_acfield(self):
+        """Test some state energies at AC field 1e6 V/m
+        """
+        # test energies for different states at ac 1e6 V/m
+        self.assertAlmostEqual(1., -4.3578932e-28 / self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=1e6)[1][0], 7,
+                                "Ground state energy is wrong: expected %6.8g MHz, got %6.8g MHz" \
+                                    % (-4.3578932e-28, self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=1e6)[1][0]))
 
-
+    def test_mixedfields(self):
+        """Test some state energies at AC field 1e6 V/m
+        """
+        # test energies for different states at ac 1e6 V/m
+        self.assertAlmostEqual(1., -1.34490422e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=1e6)[1][4], 7,
+                                "Ground state energy is wrong: expected %6.8g MHz, got %6.8g MHz" \
+                                    % (-1.34489847e-22, self.bn.starkeffect(State(0, 0, 0, 0, 0),acfields=1e6)[1][4]))
+        
 if __name__ == '__main__':
     unittest.main()
