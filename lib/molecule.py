@@ -27,19 +27,22 @@ import jkext.hdf5, jkext.molecule, jkext.util
 from jkext.state import State
 from string import replace
 import jkstark.starkeffect
+import jkstark.convert as convert
 
 
 
 class Molecule(jkext.molecule.Molecule):
     """Representation of a Molecule"""
 
-    def __init__(self, atoms=None, storage=None, name="Generic molecule"):
+    def __init__(self, atoms=None, storage=None, name="Generic molecule", param=None):
         """Create Molecule from a list of atoms."""
         jkext.molecule.Molecule.__init__(self, atoms, name)
         if storage != None:
             self.__storage = tables.openFile(storage, mode='a', title=name)
         else:
             self.__storage = None
+        if param != None:
+            self.__saveparam(param)
             
     def __saveparam(self, param):
         """Store all relevant calculation parameters.
@@ -67,30 +70,40 @@ class Molecule(jkext.molecule.Molecule):
         """
         self.__loadparam(param)
 
-    def mueff(self, state):
+    def mueff(self, state,acfields=0.0):
         """Get the effective dipole moment \mu_eff as a function of the electric field strength.
 
         Return the effective dipole moment curve for the specified quantum |state|.
         """
-        fields, energies = self.starkeffect(state,acfield=0.0)
+        fields, energies = self.starkeffect(state,acfields=acfields)
         assert len(fields) == len(energies)
         mueff = num.zeros((len(fields),), num.float64)
         mueff[1:-1] = -1 * (energies[0:-2] - energies[2:]) / (fields[0:-2] - fields[2:])
         mueff[0] = 0.
         mueff[-1] = mueff[-2]
         return fields, mueff
+
+    def alphaeff(self, state,dcfields=0.0):
+        """Get the effective dipole moment \mu_eff as a function of the electric field strength.
+
+        Return the effective dipole moment curve for the specified quantum |state|.
+        """
+        acfields, energies = self.starkeffect(state,dcfields=dcfields)
+        assert len(acfields) == len(energies)
+        alphaeff = num.zeros((len(acfields),), num.float64)
+        alphaeff[1:-1] = (energies[0:-2] - energies[2:]) / (acfields[0:-2]**2 - acfields[2:]**2)
+        alphaeff[0] = 0.
+        alphaeff[-1] = alphaeff[-2]
+        return acfields, alphaeff
     
-    def coshellmann(self, state,param):
+    def coshellmann(self, state, param):
         """Get the the expectation value of cos theta using the Hellmann Feynman teorem.
         as a function of the electric field strength.
         this is right now only right for linar molecules
         this needs to be extended to different ac fields
         """
-        dcfields, energies = self.starkeffect(state,acfield=0.0)
-        omega=convert.dcfields2omega(dcfields,param.rotcon[1],param.dipole[0])
-        acfields = [0.0]
-        if len(acfields) > 1:
-            energies = energies[:,0] # chose one ac field
+        dcfields, energies = self.starkeffect(state, acfield = 0.0)
+        omega = convert.dcfields2omega(dcfields, param.rotcon[1], param.dipole[0])
         assert len(omega) == len(energies)
         cos = num.zeros((len(dcfields),), num.float64)
         cos[1:-1] = -1 * (energies[0:-2]/param.rotcon[1] - energies[2:]/param.rotcon[1]) / (omega[0:-2] - omega[2:])
@@ -100,14 +113,13 @@ class Molecule(jkext.molecule.Molecule):
 
 
 
-    def cos2hellmann(self, state,param):
+    def cos2hellmann(self, state, param):
         """Get the the expectation value of cos^2 theta using the Hellmann Feynman teorem.
         as a function of the electric field strength.
         this is right now only right for linar molecules
         this needs to be more robust and extented to different dc fields.
         """
-        dcfields, energies, acfields = self.starkeffect(state)
-        energies = energies[0,:] #only get the first energies
+        acfields, energies = self.starkeffect(state, dcfields = 0)
         assert len(acfields) == len(energies)
         cos2 = num.zeros((len(acfields),), num.float64)
         cos2[1:-1] = -(energies[0:-2]- energies[2:]+1/8*(param.polarizability[1,1]+param.polarizability[2,2])* \
@@ -127,20 +139,32 @@ class Molecule(jkext.molecule.Molecule):
         We use the nameing convension _XdY where d replaces . in fx. 1.5 as . is not valid in a group identifier 
         """
         if energies == None and dcfields == None and acfields == None:
-            #read all energies for a state not tested
+            #read all energies for one state and return in one array
+            # note that it assumes that all ac fields dirs contain the same number of dc energies
             acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
-            for i in range(acfields):
-                acfield = acfields[i]
-                energies = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "dcstarkenergy")
-                dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "dcfields")
+            for acfield in acfields:
+                temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
+                if acfield == acfields[0]:
+                    energies = temp
+                else:
+                    energies = num.vstack((energies, temp))
+                dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
             return dcfields, acfields, energies
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
             return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield"), \
                    jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcstarkenergy")
         elif energies == None and acfields == None and dcfields != None:
-            # read energies for a specific acfield
-            raise NotImplementedError("Energies for a specific dc field is not implemented yet")
+            # read energies for a specific dcfield
+            acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
+            i = 0
+            energies  = num.zeros(len(acfields))
+            for acfield in acfields:
+                temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
+                dcfieldarray = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
+                energies[i] = temp[num.nonzero(dcfieldarray == dcfields)[0][0]] # fix me
+                i = i + 1
+            return acfields, energies
         elif energies != None and dcfields != None and acfields != None:
             #we know all we need to know -> write it down
             # ToDo need to change this 2d energi matrix
@@ -154,7 +178,9 @@ class Molecule(jkext.molecule.Molecule):
             raise SyntaxError
 
     def value2dir(self, value):
-        return "_"+replace(str(value),'.','d')
+        value = replace(str(value),'+','p')
+        value = replace(value,'.','d')
+        return "_"+value
     
     def starkeffect_calculation(self, param):
         """Get all available energies from the given Starkeffect object and store them in our storage file."""
