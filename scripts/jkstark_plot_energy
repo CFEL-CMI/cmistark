@@ -35,6 +35,7 @@ import getopt, sys
 import matplotlib.pyplot as plt
 
 import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
 from jkext.convert import *
 from jkext.state import State
 
@@ -76,18 +77,20 @@ def main(args):
         color = colors[colorindex]
         plt.figure(1)
         # create Molecule object and specify storage file
+        param = starkeffect.CalculationParameter
         mol = molecule.Molecule(storage=name)
+        mol.getparam(param)
         # plot energies
         for J in range(Jmin, Jmax+1):
             Ka = 0
             for Kc in range(J, -1, -1):
                 state = State(J, Ka, Kc, 0, 0)
-                fields, energies = mol.starkeffect(state)
+                fields, energies = mol.starkeffect(state,acfields=0.0)
                 plt.plot(V_m2kV_cm(fields), J2Hz(energies) / 1e6, color)
                 if Kc > 0:
                     Ka += 1
                     state = State(J, Ka, Kc, 0, 0)
-                    fields, energies = mol.starkeffect(state)
+                    fields, energies = mol.starkeffect(state,acfields = 0.0)
                     plt.plot(V_m2kV_cm(fields), J2Hz(energies) / 1e6, color)
         plt.figure(2)
         # plot effective dipole moment
@@ -95,13 +98,50 @@ def main(args):
             Ka = 0
             for Kc in range(J, -1, -1):
                 state = State(J, Ka, Kc, 0, 0)
-                fields, mueff = mol.mueff(state)
+                fields, mueff = mol.mueff(state,acfields=0.0)
                 plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
                 if Kc > 0:
                     Ka += 1
                     state = State(J, Ka, Kc, 0, 0)
-                    fields, mueff = mol.mueff(state)
+                    fields, mueff = mol.mueff(state,acfields=0.0)
                     plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+        plt.figure(3)
+        # plot ac stark curve
+        plt.xlabel(r'$AC-field$')
+        plt.ylabel(r'$E$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, energies = mol.starkeffect(state,dcfields = 0)
+                    #if test(Ka,plotK):
+                    plt.plot(acfields, energies, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, energies = mol.starkeffect(state, dcfields = 0)
+                        #if test(Ka,plotK):
+                        plt.plot(acfields, energies, color)
+        plt.figure(4)
+        # effective polarizability
+        plt.xlabel(r'$AC-field$')
+        plt.ylabel(r'$\alpha_{eff}$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, alphaeff = mol.alphaeff(state)
+                    #if test(Ka,plotK):
+                    plt.plot(acfields, alphaeff, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, alphaeff = mol.alphaeff(state)
+                        #if test(Ka,plotK):
+                        plt.plot(acfields, alphaeff, color)
+
     plt.show()
 
 

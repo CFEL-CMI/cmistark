@@ -48,7 +48,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
-                                                   "dc-fields=",
+                                                   "dc-fields=","ac-fields=",
                                                    "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
@@ -59,6 +59,7 @@ def main(args):
     # default values
     param = starkeffect.CalculationParameter
     param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 3))
+    param.acfields = num.linspace(0., 1e8, 2)
     param.isomer = 0
     param.Jmin = 0
     param.Jmax_calc = 5
@@ -80,6 +81,9 @@ def main(args):
         elif o == "--dc-fields":
             min, max, steps = a.split(":")
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
+        elif o == "--ac-fields":
+            min, max, steps = a.split(":")
+            param.acfields = num.linspace(float(min), float(max), int(steps))
         elif o == "--2,6-difluoro-iodobenzene":
             # parmaters from simple ab initio calculations
             name = "2,6-difluoro-iodobenzene"
@@ -113,6 +117,10 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
             # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+            # Mikael D. Poulsen et al. J. Chem. Phys. 121, 783 (2004)
+            param.polarizability[0,0] = convert.A32CM2_V(21.5)
+            param.polarizability[1,1] = convert.A32CM2_V(15.3)
+            param.polarizability[2,2] = convert.A32CM2_V(10.2)
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
             # get better data from
             # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
@@ -149,7 +157,7 @@ def main(args):
         param.M = range(0, param.Jmax_save+1)
 
     # perform calculation
-    mol = molecule.Molecule(storage=name+".hdf")
+    mol = molecule.Molecule(storage=name+".hdf", param=param)
     mol.starkeffect_calculation(param)
     # close file
     del mol
