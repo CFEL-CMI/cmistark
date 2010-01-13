@@ -1,0 +1,246 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+#
+# This file is part of JK Python extensions
+# Copyright (C) 2009 Jochen Küpper <software@jochen-kuepper.de>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# some SGE commands for batch usage convenience
+#$ -cwd
+#$ -e $JOB_NAME.sge
+#$ -o $JOB_NAME.sge
+#$ -S $HOME/.python/bin/python
+#$ -V
+from __future__ import division
+
+"""Plot adiabatic energy curves from HDF5 files to matplotlib graph
+
+Copyright (C) 2009 Jochen Küpper"""
+
+__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+
+import numpy as num
+import getopt, sys
+import matplotlib.pyplot as plt
+
+import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
+from jkext.convert import *
+from jkext.state import State
+import jkstark.convert
+
+def usage():
+    # ToDo implement a useful usage description
+    print "See script for details"
+
+
+def main(args):
+    try:
+        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax="])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    # default values
+    Jmin = 0
+    Jmax = 2
+    # scan commandline
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o == "--Jmin":
+            Jmin = int(a)
+        elif o == "--Jmax":
+            Jmax = int(a)
+        else:
+            assert False, "unhandled commandline option"
+
+    # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
+    colors = ['black', 'blue', 'red', 'green']
+    colorindex = 0
+    for name in args:
+        colorindex += 1
+        if colorindex > len(colors): colorindex = 0
+        color = colors[colorindex]
+        plt.figure(1)
+        # create Molecule object and specify storage file
+        param = starkeffect.CalculationParameter
+        mol = molecule.Molecule(storage=name)
+        mol.getparam(param)
+        # plot energies
+        plt.xlabel(r'$\omega$')
+        plt.ylabel(r'$\frac{E}{B}$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0, J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    fields, energies = mol.starkeffect(state,acfields=0.0)
+                    omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                    if Ka == 0:
+                        plt.plot(omega, energies/param.rotcon[1], color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        fields, energies = mol.starkeffect(state,acfields = 0.0)
+                        omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                        if Ka == 0:
+                            plt.plot(omega, energies/param.rotcon[1], color)
+        plt.figure(2)
+        # plot effective dipole moment
+        plt.xlabel(r'$\omega$')
+        plt.ylabel(r'$\langle\cos \theta \rangle$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0, J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    fields, cos = mol.coshellmann(state,param,acfield=0.0)
+                    omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                    if Ka == 0:
+                        plt.plot(omega, cos, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        fields, cos = mol.coshellmann(state,param,acfield=0.0)
+                        omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                        if Ka == 0:
+                            plt.plot(omega, cos, color)
+        plt.figure(3)
+        acfield = jkstark.convert.deltaomega2acfields(10.0, param.rotcon[1], param.polarizability[0][0])
+        # plot energies
+        plt.xlabel(r'$\omega$')
+        plt.ylabel(r'$\frac{E}{B}$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0, J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    fields, energies = mol.starkeffect(state,acfields=acfield)
+                    omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                    if Ka == 0:
+                        plt.plot(omega, energies/param.rotcon[1], color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        fields, energies = mol.starkeffect(state,acfields = acfield)
+                        omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                        if Ka == 0:
+                            plt.plot(omega, energies/param.rotcon[1], color)
+        plt.figure(4)
+        # plot effective dipole moment
+        plt.xlabel(r'$\omega$')
+        plt.ylabel(r'$\langle\cos \theta \rangle$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0, J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    fields, cos = mol.coshellmann(state,param,acfield=acfield)
+                    omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                    if Ka == 0:
+                        plt.plot(omega, cos, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        fields, cos = mol.coshellmann(state,param,acfield=acfield)
+                        omega = jkstark.convert.dcfields2omega(fields,param.rotcon[1],param.dipole[0])
+                        if Ka == 0:
+                            plt.plot(omega, cos, color)
+        plt.figure(5)
+        # plot ac stark curve
+        plt.xlabel(r'$\Delta \omega$')
+        plt.ylabel(r'$\frac{E}{B}$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, energies = mol.starkeffect(state,dcfields = 0)
+                    deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                    if Ka == 0:
+                        plt.plot(deltaomega, energies/param.rotcon[1], color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, energies = mol.starkeffect(state, dcfields = 0)
+                        if Ka == 0:
+                            plt.plot(acfields, energies/param.rotcon[1], color)
+        plt.figure(6)
+        # effective polarizability
+        plt.xlabel(r'$\Delta \omega$')
+        plt.ylabel(r'$\langle\cos^2 \theta \rangle$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, cos2 = mol.cos2hellmann(state,param,dcfield= 0)
+                    deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                    if Ka == 0:
+                        plt.plot(deltaomega, cos2, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, cos2 = mol.cos2hellmann(state,param,dcfield= 0)
+                        deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                        if Ka == 0:
+                            plt.plot(deltaomega, cos2, color)
+        plt.figure(7)
+        dcfield = jkstark.convert.omega2dcfields(10.0,param.rotcon[1],param.dipole[0])
+        # plot ac stark curve
+        plt.xlabel(r'$\Delta \omega$')
+        plt.ylabel(r'$\frac{E}{B}$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, energies = mol.starkeffect(state,dcfields = dcfield)
+                    deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                    if Ka == 0:
+                        plt.plot(deltaomega, energies/param.rotcon[1], color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, energies = mol.starkeffect(state, dcfields = dcfield)
+                        if Ka == 0:
+                            plt.plot(acfields, energies/param.rotcon[1], color)
+        plt.figure(8)
+        # effective polarizability
+        plt.xlabel(r'$\Delta \omega$')
+        plt.ylabel(r'$\langle\cos^2 \theta \rangle$')
+        for J in range(Jmin, Jmax+1):
+            for M in range(0,J+1):
+                Ka = 0
+                for Kc in range(J, -1, -1):
+                    state = State(J, Ka, Kc, M, 0)
+                    acfields, cos2 = mol.cos2hellmann(state,param,dcfield=dcfield)
+                    deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                    if Ka == 0:
+                        plt.plot(deltaomega, cos2, color)
+                    if Kc > 0:
+                        Ka += 1
+                        state = State(J, Ka, Kc, M, 0)
+                        acfields, cos2 = mol.cos2hellmann(state,param,dcfield=dcfield)
+                        deltaomega = jkstark.convert.acfields2deltaomega(acfields, param.rotcon[1], param.polarizability[0][0])
+                        if Ka == 0:
+                            plt.plot(deltaomega, cos2, color)
+    plt.show()
+
+
+if __name__ == "__main__":
+    main(sys.argv)
