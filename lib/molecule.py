@@ -91,18 +91,18 @@ class Molecule(jkext.molecule.Molecule):
         acfields, energies = self.starkeffect(state,dcfields=dcfields)
         assert len(acfields) == len(energies)
         alphaeff = num.zeros((len(acfields),), num.float64)
-        alphaeff[1:-1] = (energies[0:-2] - energies[2:]) / (acfields[0:-2]**2 - acfields[2:]**2)
-        alphaeff[0] = 0.
+        alphaeff[1:-1] = -(energies[0:-2] - energies[2:]) / (acfields[0:-2]**2 - acfields[2:]**2)
+        alphaeff[0] = alphaeff[1]
         alphaeff[-1] = alphaeff[-2]
         return acfields, alphaeff
     
-    def coshellmann(self, state, param):
+    def coshellmann(self, state, param, acfield):
         """Get the the expectation value of cos theta using the Hellmann Feynman teorem.
         as a function of the electric field strength.
         this is right now only right for linar molecules
         this needs to be extended to different ac fields
         """
-        dcfields, energies = self.starkeffect(state, acfield = 0.0)
+        dcfields, energies = self.starkeffect(state, acfields = acfield)
         omega = convert.dcfields2omega(dcfields, param.rotcon[1], param.dipole[0])
         assert len(omega) == len(energies)
         cos = num.zeros((len(dcfields),), num.float64)
@@ -111,13 +111,13 @@ class Molecule(jkext.molecule.Molecule):
         cos[-1] = cos[-2]
         return dcfields, cos
 
-    def cos2hellmann(self, state, param):
+    def cos2hellmann(self, state, param, dcfield):
         """Get the the expectation value of cos^2 theta using the Hellmann Feynman teorem.
         as a function of the electric field strength.
         this is right now only right for linar molecules
         this needs to be more robust and extented to different dc fields.
         """
-        acfields, energies = self.starkeffect(state, dcfields = 0)
+        acfields, energies = self.starkeffect(state, dcfields = dcfield)
         assert len(acfields) == len(energies)
         cos2 = num.zeros((len(acfields),), num.float64)
         cos2[1:-1] = -(energies[0:-2]- energies[2:]+1/8*(param.polarizability[1,1]+param.polarizability[2,2])* \
