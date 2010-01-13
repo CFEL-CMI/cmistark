@@ -12,7 +12,6 @@
 #
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 #
@@ -38,7 +37,7 @@ import jkext.convert as convert
 import jkstark.molecule as molecule
 import jkstark.starkeffect as starkeffect
 from jkext.state import State
-
+import jkstark.convert
 
 def usage():
     # ToDo implement a useful usage description
@@ -48,8 +47,8 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
-                                                   "dc-fields=","ac-fields=",
-                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene",
+                                                   "dc-fields=","ac-fields=","omega=","delta-omega=",
+                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene", "ocs",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -84,6 +83,18 @@ def main(args):
         elif o == "--ac-fields":
             min, max, steps = a.split(":")
             param.acfields = num.linspace(float(min), float(max), int(steps))
+        elif o == "--omega":
+            import warnings
+            warnings.warn("Simple, potentially wrong approximation -- only use if you know what you are doing")
+            min, max, steps = a.split(":")
+            param.omega = num.linspace(float(min), float(max), int(steps))
+            param.dcfields = None
+        elif o == "--delta-omega":
+            import warnings
+            warnings.warn("Simple, potentially wrong approximation -- only use if you know what you are doing")
+            min, max, steps = a.split(":")
+            param.deltaomega = num.linspace(float(min), float(max), int(steps))
+            param.acfields = None
         elif o == "--2,6-difluoro-iodobenzene":
             # parmaters from simple ab initio calculations
             name = "2,6-difluoro-iodobenzene"
@@ -121,6 +132,17 @@ def main(args):
             param.polarizability[0,0] = convert.A32CM2_V(21.5)
             param.polarizability[1,1] = convert.A32CM2_V(15.3)
             param.polarizability[2,2] = convert.A32CM2_V(10.2)
+        elif o == "--ocs":
+            name = "ocs"
+            param.type = "A"
+            param.watson = None
+            param.symmetry = 'C2a'
+            param.rotcon = convert.invcm2J(num.array([1000000*0.20286, 0.20286, 0.20286]))
+            param.quartic = convert.Hz2J(num.array([0, 0, 0, 0, 0]))
+            param.dipole = convert.D2Cm(num.array([0.712, 0., 0.]))
+            param.polarizability[0,0] = convert.A32CM2_V(4.07)
+            param.polarizability[1,1] = convert.A32CM2_V(0)
+            param.polarizability[2,2] = convert.A32CM2_V(0)
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
             # get better data from
             # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
@@ -152,7 +174,14 @@ def main(args):
                 param.dipole = convert.D2Cm(num.array([-0.6567, -1.7318, 0.]))
         else:
             assert False, "unhandled commandline option"
-
+    # convert omega / deltaomega to actual fields for the specified molecule
+    assert (None != param.omega) is not (None != param.dcfields)
+    assert (None != param.deltaomega) is not (None != param.acfields)
+    # This conversion has to be done after the loop over molecules in order to have the parameters set.
+    if None == param.dcfields:
+        param.dcfields = jkstark.convert.omega2dcfields(param.omega, param.rotcon[1], param.dipole[0])
+    if None == param.acfields:
+        param.acfields = jkstark.convert.deltaomega2acfields(param.deltaomega, param.rotcon[1], param.polarizability[0,0])
     if None == param.M:
         param.M = range(0, param.Jmax_save+1)
 
