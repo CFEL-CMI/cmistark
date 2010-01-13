@@ -111,8 +111,6 @@ class Molecule(jkext.molecule.Molecule):
         cos[-1] = cos[-2]
         return dcfields, cos
 
-
-
     def cos2hellmann(self, state, param):
         """Get the the expectation value of cos^2 theta using the Hellmann Feynman teorem.
         as a function of the electric field strength.
@@ -167,12 +165,19 @@ class Molecule(jkext.molecule.Molecule):
             return acfields, energies
         elif energies != None and dcfields != None and acfields != None:
             #we know all we need to know -> write it down
-            # ToDo need to change this 2d energi matrix
             #assert len(dcfields)*len(acfields) == len(energies)
-            for i in range(len(acfields)):
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfields[i]) , "dcfield", dcfields)
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfields[i]) , "dcstarkenergy", energies[i,:])
-            jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", acfields)
+            try:
+                oldacfields = self.acfields(state)
+                allacfields = jkext.util.column_merge([oldacfields], [acfields])[0] # will return an array use [0] to take out of the array
+            except tables.exceptions.NodeError:
+                allacfields = acfields
+            i=0
+            for acfield in acfields:
+                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcfield", dcfields)
+                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcstarkenergy", \
+                                        energies[self.value2dir(acfield)])
+                i = i + 1
+            jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", allacfields)
         else:
             # maybe add a metode that gives the energy for a specified ac and dc field
             raise SyntaxError
@@ -207,25 +212,26 @@ class Molecule(jkext.molecule.Molecule):
         """Merge the specified pairs of field strength and Stark energies into the existing data
 
         not really tested
-        TODO reimplement this will require a 2D matrix merge function need to handle 
-        non uniform natrix sizes. apend in one or the other direction.
-        TODO we need to improve the test for the exsistense of calculations at this ac field already !
+        TODO should work need better testing
         """
         newdcfields=param.dcfields
         newacfields=param.acfields
         assert len(newdcfields)*len(newacfields)  == len(newenergies)
         reshapedenergies = num.reshape(newenergies,(len(newacfields),len(newdcfields)))
-        #for f in range(len(newacfields)):
-        #    acfield = newacfields[f]
-        #    try:
-        #        olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
-        #        dcfields, energies = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
-        #    except tables.exceptions.NodeError:
-        dcfields = newdcfields
-        acfields = newacfields
-        #energies = reshapedenergies[:,f]
-        #assert len(energies) == len(dcfields)
-        self.starkeffect(state, dcfields, acfields, reshapedenergies)
+        i=0
+        energies={} # we use a dict with acfields as entrys to allow different amount of dc energies for different ac fields
+        # i.e whem merging a few dc energies with many. 
+        for acfield in newacfields:
+            try: #try one acfield
+                olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
+                newenergies = reshapedenergies[i,:]
+                dcfields, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
+            except tables.exceptions.NodeError: # no energies for this ac field    
+                dcfields = newdcfields
+                energy = reshapedenergies[i,:]
+            energies[self.value2dir(acfield)] = energy
+            i = i + 1
+        self.starkeffect(state, dcfields, newacfields, energies)
 
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect.
