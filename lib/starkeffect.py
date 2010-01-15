@@ -59,6 +59,8 @@ class CalculationParameter:
     # fields
     acfields = num.zeros((1,), num.float64)
     dcfields = jkext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
+    omega = None
+    deltaomega = None
     # molecular parameters
     rotcon = num.zeros((3,), num.float64)    # Joule
     quartic = num.zeros((5,), num.float64)   # Joule
