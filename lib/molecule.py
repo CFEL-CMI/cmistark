@@ -160,7 +160,7 @@ class Molecule(jkext.molecule.Molecule):
             for acfield in acfields:
                 temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
                 dcfieldarray = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
-                energies[i] = temp[num.nonzero(dcfieldarray == dcfields)[0][0]] # fix me
+                energies[i] = temp[num.nonzero(abs(dcfieldarray -dcfields)< 1e-10)[0][0]] # fix me change to find the closest 
                 i = i + 1
             return acfields, energies
         elif energies != None and dcfields != None and acfields != None:
