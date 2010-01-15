@@ -100,7 +100,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
-                                                           "field=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
+                                                           "field=","ac-field=", "Jmax=", "mu=", "nssw=", "nssw-type=",
                                                            "population=", "temperature="])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -123,7 +123,7 @@ def main(args):
             sys.exit()
         elif o in ("-f", "--field"):
             field = convert.kV_cm2V_m(float(a))
-        elif o in ("--acfield"):
+        elif o in ("--ac-field"):
             acfield = float(a)
         elif o in ("-J", "--Jmax"):
             Jmax = int(a)
@@ -152,9 +152,7 @@ def main(args):
 
     for name in args:
         # create Molecule object and specify storage file
-        param = starkeffect.CalculationParameter
         mol = molecule.Molecule(storage=name)
-        mol.getparam(param)
         # create population
         # handle the two possible cases for the population (nonthermal != thermal is assured above)
         if thermal == True:
@@ -168,7 +166,7 @@ def main(args):
             state = p[0]
             w = p[1]
             mueff = 0
-            fields, mueffs = mol.mueff(state,param,acfield=acfield)
+            fields, mueffs = mol.mueff(state, acfields = acfield)
             for i in range(len(fields)):
                 if fields[i] >= field:
                     if 0 == i or fields[i] == field:
