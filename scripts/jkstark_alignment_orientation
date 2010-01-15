@@ -1,0 +1,171 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+#
+# This file is part of JK Python extensions
+# Copyright (C) 2009 Frank Filsinger
+# Copyright (C) 2009 Jochen Küpper <software@jochen-kuepper.de>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# some SGE commands for batch usage convenience
+#$ -cwd
+#$ -e $JOB_NAME.sge
+#$ -o $JOB_NAME.sge
+#$ -S $HOME/.python/bin/python
+#$ -V
+from __future__ import division
+
+"""Calculate brute force orientation for ensemble of asymmetric top molecules"""
+
+__author__ = "Frank Filsinger and Jochen Küpper"
+
+import getopt, sys
+import math
+import numpy
+
+import jkext.const as const
+import jkext.convert as convert
+import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
+from jkstark.population  import create_population, read_population
+from jkext.state import State
+import matplotlib.pyplot as plt
+import jkstark.convert
+
+def usage():
+    # ToDo implement a useful usage description
+    print "See script for details"
+
+
+def main(args):
+    try:
+        opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
+                                                           "field=","ac-fields=", "Jmax=", "mu=", "nssw=", "nssw-type=",
+                                                           "population=", "temperature="])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    # default values
+    thermal = False
+    nonthermal = False
+    field = 0. # kV/cm
+    acfield = 0.
+    temperature = 1. # K
+    Jmax = 10
+    nsswtype = None
+    nssw = None
+    # scan commandline
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-f", "--field"):
+            field = convert.kV_cm2V_m(float(a))
+        elif o == "--ac-fields":
+            min, max, steps = a.split(":")
+            acfields = numpy.linspace(float(min), float(max), int(steps))
+        #elif o in ("--acfield"):
+        #    acfield = float(a)
+        elif o in ("-J", "--Jmax"):
+            Jmax = int(a)
+        elif o in ("-m", "--mu",):
+            mu = convert.D2Cm(float(a))
+        elif o in ("--nssw",):
+            nssw = map(int, a.split(":"))
+        elif o in ("--nssw-type",):
+            if a == "None":
+                nsswtype = None
+            elif a in ("Ka", "K-1"):
+                nsswtype = "Ka"
+            else:
+                assert False, "unknown NSSW-type %s" % (a, )
+        elif o in ("-p", "--population"):
+            nonthermal = True
+            pop = a
+        elif o in ("-T", "--temperature"):
+            thermal = True
+            temperature = float(a)
+        else:
+            assert False, "unhandled commandline option"
+
+    if thermal == nonthermal:
+        assert False, "commandline parsing resulted in thermal == nonthermal; stopping"
+
+    for name in args:
+        # create Molecule object and specify storage file
+        param = starkeffect.CalculationParameter
+        mol = molecule.Molecule(storage=name)
+        mol.getparam(param)
+        # create population
+        # handle the two possible cases for the population (nonthermal != thermal is assured above)
+        if thermal == True:
+            population = create_population(mol, temperature, Jmax, nsswtype, nssw)
+        else:
+            population = read_population(pop)
+        # calculate orientation cosine -- loop over states
+        coss = []
+        for acfield in acfields:
+            cos_theta = 0.
+            weight = 0.
+            for p in population:
+                state = p[0]
+                w = p[1]
+                mueff = 0
+                fields, mueffs = mol.coshellmann(state,param,acfield=acfield)
+                for i in range(len(fields)):
+                    if fields[i] >= field:
+                        if 0 == i or fields[i] == field:
+                            mueff = mueffs[i]
+                        else:
+                            fieldstep = fields[i] - fields[i-1]
+                            mueff = (field-fields[i-1])/fieldstep * mueffs[i] + (fields[i]-field)/fieldstep * mueffs[i-1]
+                        break
+                cos_theta += w * mueff #/ mu
+                weight += w
+            cos_theta /= weight
+            coss.append(cos_theta)
+        plt.figure(1)
+        plt.plot(acfields**2/(1e4*2*const.speed_of_light*const.vacuum_permeability), coss)
+        plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
+        plt.ylabel(r'$\langle cos \theta \rangle$')
+        if thermal == True:
+            plt.title(r'T = %f K'  %(temperature))
+        else:
+            plt.title(r'Non thermal')
+        i = 0
+        weight = 0
+        for p in population:
+                state = p[0]
+                w = p[1]
+                acfields2 , cos2 = mol.cos2hellmann(state,param,dcfield=45000)
+                if i == 0:
+                    cos2s = w * cos2
+                else:
+                    cos2s += w * cos2
+                weight += w
+                i = i + 1
+        cos2s /= weight 
+        plt.figure(2)
+        plt.plot(acfields2**2/(1e4*2*const.speed_of_light*const.vacuum_permeability), cos2s)
+        #print jkstark.convert.acfields2deltaomega(acfields,param.rotcon[1],param.polarizability[0][0])
+        plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
+        plt.ylabel(r'$\langle cos^2 \theta \rangle$')
+        if thermal == True:
+            plt.title(r'T = %f K'  %(temperature))
+        else:
+            plt.title(r'Non thermal')
+        plt.show()
+if __name__ == "__main__":
+    main(sys.argv)
