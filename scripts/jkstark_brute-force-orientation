@@ -69,7 +69,7 @@ def create_population(mol, temperature, Jmax, nsswtype, nssweights):
                     degeneracy = 1
                 else:
                     degeneracy = 2
-                    pop.append((state, boltzmann * degeneracy * nssw(state, nsswtype, nssweights)))
+                pop.append((state, boltzmann * degeneracy * nssw(state, nsswtype, nssweights)))
                 if Kc > 0:
                     Ka += 1
                     state = State(J, Ka, Kc, M, 0)
