@@ -35,7 +35,8 @@ import numpy
 
 import jkext.const as const
 import jkext.convert as convert
-import jkext.molecule as molecule
+import jkstark.molecule as molecule
+import jkstark.starkeffect as starkeffect
 from jkext.state import State
 
 
@@ -62,8 +63,8 @@ def create_population(mol, temperature, Jmax, nsswtype, nssweights):
             Ka = 0
             for Kc in range(J, -1, -1):
                 state = State(J, Ka, Kc, M, 0)
-                energy = mol.starkeffect(state)[1][0]
-                boltzmann = math.exp(-energy/(const.boltzmann * temperature))
+                energy = mol.starkeffect(state,acfields=0.)[1][0]
+                boltzmann = math.exp(-energy/(const.Boltzmann_constant * temperature))
                 if 0 == state.M():
                     degeneracy = 1
                 else:
@@ -72,8 +73,8 @@ def create_population(mol, temperature, Jmax, nsswtype, nssweights):
                 if Kc > 0:
                     Ka += 1
                     state = State(J, Ka, Kc, M, 0)
-                    energy = mol.starkeffect(state)[1][0]
-                    boltzmann = math.exp(-energy/(const.boltzmann * temperature))
+                    energy = mol.starkeffect(state,acfields=0.)[1][0]
+                    boltzmann = math.exp(-energy/(const.Boltzmann_constant * temperature))
                     if 0 == state.M():
                         degeneracy = 1
                     else:
@@ -99,7 +100,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
-                                                           "field=", "Jmax=", "mu=", "nssw=", "nssw-type=",
+                                                           "field=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
                                                            "population=", "temperature="])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -110,6 +111,7 @@ def main(args):
     thermal = False
     nonthermal = False
     field = 0. # kV/cm
+    acfield = 0.
     temperature = 1. # K
     Jmax = 10
     nsswtype = None
@@ -121,6 +123,8 @@ def main(args):
             sys.exit()
         elif o in ("-f", "--field"):
             field = convert.kV_cm2V_m(float(a))
+        elif o in ("--acfield"):
+            acfield = float(a)
         elif o in ("-J", "--Jmax"):
             Jmax = int(a)
         elif o in ("-m", "--mu",):
@@ -148,7 +152,9 @@ def main(args):
 
     for name in args:
         # create Molecule object and specify storage file
+        param = starkeffect.CalculationParameter
         mol = molecule.Molecule(storage=name)
+        mol.getparam(param)
         # create population
         # handle the two possible cases for the population (nonthermal != thermal is assured above)
         if thermal == True:
@@ -162,7 +168,7 @@ def main(args):
             state = p[0]
             w = p[1]
             mueff = 0
-            fields, mueffs = mol.mueff(state)
+            fields, mueffs = mol.mueff(state,param,acfield=acfield)
             for i in range(len(fields)):
                 if fields[i] >= field:
                     if 0 == i or fields[i] == field:
