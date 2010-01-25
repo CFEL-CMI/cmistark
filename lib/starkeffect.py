@@ -56,6 +56,7 @@ class CalculationParameter:
     Jmax_calc = 5
     Jmax_save = 2
     isomer = 0
+    saveevec = False
     # fields
     acfields = num.zeros((1,), num.float64)
     dcfields = jkext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
@@ -93,6 +94,7 @@ class AsymmetricRotor:
         self.__polarizability = num.array(param.polarizability, num.float64)
         self.__watson = param.watson
         self.__symmetry = param.symmetry # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V')
+        self.__saveevec = param.saveevec
         # save quantum numbers
         self.__M = int(M) # use the single specified M
         self.__isomer = int(param.isomer)
@@ -122,6 +124,17 @@ class AsymmetricRotor:
             self.__recalculate()
         return self.__levels[state.id()]
 
+    def eigvectors(self, state):
+        """Return Eigenvectors for |state|
+
+        todo maybe we should just set the param and recalculate if it is set to false """
+        if self.__saveevec == True:
+            if self.__valid == False:
+                self.__recalculate()
+            return self.__vectors[state.id()]
+        else:
+            raise  SyntaxError("You must turn on eigvector calculation using param.saveevec")
+            return None
 
     def field_DC(self):
         """Return DC field for which the Stark energies were calculated."""
@@ -156,15 +169,29 @@ class AsymmetricRotor:
     def __recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         self.__levels = {}
+        self.__vectors = {}
         blocks = self.__full_hamiltonian(self.__Jmin, self.__Jmax, self.__dcfield, self.__acfield, self.__symmetry)
         for symmetry in blocks.keys():
-            eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
-            eval = num.sort(eval)
-            i = 0
-            for state in self.__stateorder(symmetry):
-                if state.J() <= self.__Jmax_save:
-                    self.__levels[state.id()] = eval[i]
-                i += 1
+            if self.__saveevec == False:
+                eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
+                eval = num.sort(eval)
+                i = 0
+                for state in self.__stateorder(symmetry):
+                    if state.J() <= self.__Jmax_save:
+                        self.__levels[state.id()] = eval[i]
+                    i += 1
+            elif self.__saveevec == True:
+                eval,evec = num.linalg.eigh(blocks[symmetry]) #evec is an array of the eigenvectors 
+                evec[:,] = evec[:,num.argsort(eval)] # sort acording to the eigen values
+                eval = num.sort(eval)#evec[:,i] is the eigenvector corosponding to eval[i]
+                i = 0
+                for state in self.__stateorder(symmetry):
+                    if state.J() <= self.__Jmax_save:
+                        self.__levels[state.id()] = eval[i]
+                        self.__vectors[state.id()] = evec[:,i]
+                    i += 1
+            else:
+                raise SyntaxError("choose eigenvectors or no eigenvectors")
         # done - data is now valid
         self.__valid = True
 

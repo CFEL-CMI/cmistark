@@ -127,7 +127,7 @@ class Molecule(jkext.molecule.Molecule):
         cos2[-1] = cos2[-2]
         return acfields, cos2
 
-    def starkeffect(self, state, dcfields=None, acfields=None, energies=None):
+    def starkeffect(self, state, dcfields = None, acfields = None, energies = None, eigvectors = None):
         """Get or set the potential energies as a function of the electric field strength.
         
         When |energies| and |dcfields| are None, return the Stark curve for the specified quantum state.
@@ -160,7 +160,7 @@ class Molecule(jkext.molecule.Molecule):
             for acfield in acfields:
                 temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
                 dcfieldarray = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
-                energies[i] = temp[num.nonzero(abs(dcfieldarray -dcfields)< 1e-10)[0][0]] # fix me change to find the closest 
+                energies[i] = temp[num.nonzero(abs(dcfieldarray -dcfields)< 1e-10)[0][0]] # fix me change to find the closest ?  
                 i = i + 1
             return acfields, energies
         elif energies != None and dcfields != None and acfields != None:
@@ -168,7 +168,8 @@ class Molecule(jkext.molecule.Molecule):
             #assert len(dcfields)*len(acfields) == len(energies)
             try:
                 oldacfields = self.acfields(state)
-                allacfields = jkext.util.column_merge([oldacfields], [acfields])[0] # will return an array use [0] to take out of the array
+                allacfields = jkext.util.column_merge([oldacfields], [acfields])
+                allacfields = allacfields[0]# will return an array use [0] to take out of the array
             except tables.exceptions.NodeError:
                 allacfields = acfields
             i=0
@@ -176,6 +177,12 @@ class Molecule(jkext.molecule.Molecule):
                 jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcfield", dcfields)
                 jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcstarkenergy", \
                                         energies[self.value2dir(acfield)])
+                if eigvectors != None:
+                    print eigvectors[self.value2dir(acfield)]
+                    print "\n"
+                    print len(eigvectors[self.value2dir(acfield)][0])
+                    jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "eigvectors", \
+                                        eigvectors[self.value2dir(acfield)],atom=tables.Float64Atom(shape=len(eigvectors[self.value2dir(acfield)][0])))
                 i = i + 1
             jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", allacfields)
         else:
@@ -192,6 +199,7 @@ class Molecule(jkext.molecule.Molecule):
         if 'A' == param.type:
             for M in param.M:
                 energies = {}
+                eigvectors = {}
                 for acfield in param.acfields:
                     for dcfield in param.dcfields:
                         calc = jkstark.starkeffect.AsymmetricRotor(param, M, dcfield,acfield)
@@ -199,16 +207,24 @@ class Molecule(jkext.molecule.Molecule):
                             id = state.id()
                             if energies.has_key(id):
                                 energies[id].append(calc.energy(state))
+                                if param.saveevec == True:
+                                    eigvectors[id].append(calc.eigvectors(state))
                             else:
                                 energies[id] = [calc.energy(state),]
+                                if param.saveevec == True:
+                                    eigvectors[id] = [calc.eigvectors(state),]
                 # store calculated values for this M
                 for id in energies.keys():
-                    self.starkeffect_merge(State().fromid(id), param, energies[id])
+                    if param.saveevec == True:
+                        self.starkeffect_merge(State().fromid(id) , param, energies[id], eigvectors[id])
+                    else:
+                        self.starkeffect_merge(State().fromid(id), param, energies[id])
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
         self.__storage.flush()
 
-    def starkeffect_merge(self, state, param, newenergies=None):
+
+    def starkeffect_merge(self, state, param, newenergies=None, neweigvectors=None):
         """Merge the specified pairs of field strength and Stark energies into the existing data
 
         not really tested
@@ -219,10 +235,14 @@ class Molecule(jkext.molecule.Molecule):
         assert len(newdcfields)*len(newacfields)  == len(newenergies)
         reshapedenergies = num.reshape(newenergies,(len(newacfields),len(newdcfields)))
         i=0
-        energies={} # we use a dict with acfields as entrys to allow different amount of dc energies for different ac fields
+        energies = {} # we use a dict with acfields as entrys to allow different amount of dc energies for different ac fields
         # i.e whem merging a few dc energies with many. 
+        eigvectors = {}
+        if (neweigvectors != None):
+            assert len(newdcfields)*len(newacfields)  == len(neweigvectors)
+            reshapedeigvectors = num.reshape(num.array(neweigvectors),(len(newacfields),len(newdcfields),len(neweigvectors[0])))
         for acfield in newacfields:
-            try: #try one acfield
+            try: #try one acfield  ToDo add merge for eigenvectors
                 olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
                 newenergies = reshapedenergies[i,:]
                 dcfields, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
@@ -230,8 +250,14 @@ class Molecule(jkext.molecule.Molecule):
                 dcfields = newdcfields
                 energy = reshapedenergies[i,:]
             energies[self.value2dir(acfield)] = energy
+            if param.saveevec == True:
+                eigvectors[self.value2dir(acfield)] = reshapedeigvectors[i,:,:]
             i = i + 1
-        self.starkeffect(state, dcfields, newacfields, energies)
+        if param.saveevec == True:
+            self.starkeffect(state, dcfields, newacfields, energies, eigvectors)
+        else:
+            self.starkeffect(state, dcfields, newacfields, energies)
+
 
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect.
@@ -255,7 +281,7 @@ if __name__ == "__main__":
     param = jkstark.starkeffect.CalculationParameter
     param.isomer = 0
     param.watson = 'A'
-    param.symmetry = 'C2a'
+    param.symmtry = 'C2a'
     param.rotcon = Hz2J(num.array([5000e6, 1500e6, 1200e6]))
     param.quartic = Hz2J(num.array([50., 1000., 500, 10., 600]))
     param.dipole = D2Cm(num.array([5, 0., 0.]))

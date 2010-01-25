@@ -47,7 +47,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
-                                                   "dc-fields=","ac-fields=","omega=","delta-omega=",
+                                                   "dc-fields=","ac-fields=","omega=","delta-omega=","save_evec",
                                                    "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene", "ocs",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
@@ -64,6 +64,7 @@ def main(args):
     param.Jmax_calc = 5
     param.Jmax_save = 2
     param.M = None
+    param.saveevec = False
     # scan commandline
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -83,6 +84,8 @@ def main(args):
         elif o == "--ac-fields":
             min, max, steps = a.split(":")
             param.acfields = num.linspace(float(min), float(max), int(steps))
+        elif o == "--save_evec":
+            param.saveevec = True
         elif o == "--omega":
             import warnings
             warnings.warn("Simple, potentially wrong approximation -- only use if you know what you are doing")
