@@ -24,6 +24,7 @@ import numpy.linalg
 import tables
 
 import jkext.hdf5, jkext.molecule, jkext.util
+import jkstark.hdf5
 from jkext.state import State
 from string import replace
 import jkstark.starkeffect
@@ -48,10 +49,7 @@ class Molecule(jkext.molecule.Molecule):
         """Store all relevant calculation parameters.
 
         """
-        jkext.hdf5.writeVLArray(self.__storage, "/param" + "/_" + str(param.isomer) , "dipole", param.dipole)
-        jkext.hdf5.writeVLArray(self.__storage, "/param" + "/_" + str(param.isomer) , "polarizability", \
-                                param.polarizability,atom=tables.Float64Atom(shape=(3)))
-        jkext.hdf5.writeVLArray(self.__storage, "/param" + "/_" + str(param.isomer) , "rotcon", param.rotcon)
+        jkstark.hdf5.writeTable(self.__storage,jkstark.starkeffect.TableCalculationParameter,param)
 
         
     def __loadparam(self, param):
@@ -59,10 +57,7 @@ class Molecule(jkext.molecule.Molecule):
 
         TODO: We might need to be more cleaver about the isomer stuff here. 
         """
-        param.dipole=jkext.hdf5.readVLArray(self.__storage, "/param" + "/_" + str(param.isomer) + "/dipole")
-        param.polarizability=jkext.hdf5.readVLArray(self.__storage, \
-                                                    "/param/" + "/_" + str(param.isomer) + "/polarizability")
-        param.rotcon=jkext.hdf5.readVLArray(self.__storage, "/param/" + "/_" + str(param.isomer) + "/rotcon")
+        jkstark.hdf5.readTable(self.__storage,jkstark.starkeffect.TableCalculationParameter,param)
 
     def getparam(self, param):
         """Retrieve stored calculation parameters.
@@ -142,27 +137,39 @@ class Molecule(jkext.molecule.Molecule):
             acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
             for acfield in acfields:
                 temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
+                dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
+                assert len(temp) == len(dcfields)
                 if acfield == acfields[0]:
                     energies = temp
                 else:
                     energies = num.vstack((energies, temp))
-                dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
             return dcfields, acfields, energies
+        
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
-            return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield"), \
-                   jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcstarkenergy")
+            # ToDo check for calculation status
+            dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
+            energies = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcstarkenergy")
+            assert len(dcfields) == len(energies)
+            return dcfields, energies
+        
         elif energies == None and acfields == None and dcfields != None:
             # read energies for a specific dcfield
             acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
             i = 0
             energies  = num.zeros(len(acfields))
             for acfield in acfields:
-                temp = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
+                tempenergies = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
                 dcfieldarray = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
-                energies[i] = temp[num.nonzero(abs(dcfieldarray -dcfields)< 1e-10)[0][0]] # fix me change to find the closest ?  
+                assert len(dcfieldarray) == len(tempenergies)
+                deltadcfields = abs(dcfieldarray - dcfields)
+                mindiff = min(deltadcfields)
+                energies[i] = tempenergies[deltadcfields == mindiff][0]
+                if mindiff > 1:
+                    print "The closest calculated field is %e V\m from the requested" % mindiff 
                 i = i + 1
             return acfields, energies
+        
         elif energies != None and dcfields != None and acfields != None:
             #we know all we need to know -> write it down
             #assert len(dcfields)*len(acfields) == len(energies)
@@ -174,17 +181,16 @@ class Molecule(jkext.molecule.Molecule):
                 allacfields = acfields
             i=0
             for acfield in acfields:
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcfield", dcfields)
+                assert len(dcfields[self.value2dir(acfield)]) == len(energies[self.value2dir(acfield)])
+                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcfield", dcfields[self.value2dir(acfield)])
                 jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcstarkenergy", \
                                         energies[self.value2dir(acfield)])
                 if eigvectors != None:
-                    print eigvectors[self.value2dir(acfield)]
-                    print "\n"
-                    print len(eigvectors[self.value2dir(acfield)][0])
                     jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "eigvectors", \
-                                        eigvectors[self.value2dir(acfield)],atom=tables.Float64Atom(shape=len(eigvectors[self.value2dir(acfield)][0])))
+                                            eigvectors[self.value2dir(acfield)],atom=tables.Float64Atom(shape=len(eigvectors[self.value2dir(acfield)][0])))
                 i = i + 1
             jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", allacfields)
+            
         else:
             # maybe add a metode that gives the energy for a specified ac and dc field
             raise SyntaxError
@@ -236,7 +242,8 @@ class Molecule(jkext.molecule.Molecule):
         reshapedenergies = num.reshape(newenergies,(len(newacfields),len(newdcfields)))
         i=0
         energies = {} # we use a dict with acfields as entrys to allow different amount of dc energies for different ac fields
-        # i.e whem merging a few dc energies with many. 
+        # i.e whem merging a few dc energies with many.
+        dcfields = {}
         eigvectors = {}
         if (neweigvectors != None):
             assert len(newdcfields)*len(newacfields)  == len(neweigvectors)
@@ -245,11 +252,13 @@ class Molecule(jkext.molecule.Molecule):
             try: #try one acfield  ToDo add merge for eigenvectors
                 olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
                 newenergies = reshapedenergies[i,:]
-                dcfields, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
-            except tables.exceptions.NodeError: # no energies for this ac field    
-                dcfields = newdcfields
+                dcfield, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
+            except tables.exceptions.NodeError: # no energies for this ac field
+                dcfield = newdcfields
                 energy = reshapedenergies[i,:]
+            assert len(dcfield) == len(energy)
             energies[self.value2dir(acfield)] = energy
+            dcfields[self.value2dir(acfield)] = dcfield
             if param.saveevec == True:
                 eigvectors[self.value2dir(acfield)] = reshapedeigvectors[i,:,:]
             i = i + 1

@@ -25,7 +25,22 @@ import scipy.linalg.fblas
 
 import jkext.convert
 from jkext.state import State
+from tables import *
 
+class TableCalculationParameter(IsDescription):
+    type = StringCol(1)
+    Jmax_calc = IntCol()
+    Jmax_save = IntCol()
+    isomer = IntCol()
+    saveevec = BoolCol()
+    #fields
+    #molecular parameters
+    rotcon  = Float64Col(shape=3)    # Joule
+    quartic = Float64Col(shape=5)   # Joule
+    dipole  = Float64Col(shape=3)    # Coulomb meter
+    polarizability = Float64Col(shape=(3,3))
+    watson = StringCol(1)
+    symmetry= StringCol(1)
 
 class CalculationParameter:
     """Container of parameters for calculation of Stark energies.
@@ -181,7 +196,7 @@ class AsymmetricRotor:
                         self.__levels[state.id()] = eval[i]
                     i += 1
             elif self.__saveevec == True:
-                eval,evec = num.linalg.eigh(blocks[symmetry]) #evec is an array of the eigenvectors 
+                eval,evec = num.linalg.eigh(blocks[symmetry]) #evec is an array of the eigenvectors
                 evec[:,] = evec[:,num.argsort(eval)] # sort acording to the eigen values
                 eval = num.sort(eval)#evec[:,i] is the eigenvector corosponding to eval[i]
                 i = 0
