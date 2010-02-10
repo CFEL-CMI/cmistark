@@ -65,6 +65,23 @@ class Molecule(jkext.molecule.Molecule):
         """
         self.__loadparam(param)
 
+    def geteigvectors(self, state, acfield, dcfield):
+        """Retrieve components of eigenvector in asym top basis
+        for a specific state and specific fields
+        ToDo make it work right for all ac fields
+        """
+        eigvectors = jkext.hdf5.readVLArray(self.__storage, \
+                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/eigvectors")
+        dcfields = jkext.hdf5.readVLArray(self.__storage,\
+                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
+        assert len(eigvectors) == len(dcfields)
+        deltadcfields = abs(dcfields - dcfield)
+        mindiff = min(deltadcfields)
+        eigvector = eigvectors[deltadcfields == mindiff][0]
+        if mindiff > 1:
+            print "The closest calculated dc field is %(diff)e V\m from the requested %(pc)e percent" % {'diff': mindiff, 'pc': mindiff/dcfield*100} 
+        return eigvector 
+        
     def mueff(self, state,acfields=0.0):
         """Get the effective dipole moment \mu_eff as a function of the electric field strength.
 
@@ -148,8 +165,10 @@ class Molecule(jkext.molecule.Molecule):
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
             # ToDo check for calculation status
-            dcfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
-            energies = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcstarkenergy")
+            dcfields = jkext.hdf5.readVLArray(self.__storage,\
+                    "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
+            energies = jkext.hdf5.readVLArray(self.__storage, \
+                    "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcstarkenergy")
             assert len(dcfields) == len(energies)
             return dcfields, energies
         
@@ -159,14 +178,16 @@ class Molecule(jkext.molecule.Molecule):
             i = 0
             energies  = num.zeros(len(acfields))
             for acfield in acfields:
-                tempenergies = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
-                dcfieldarray = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
+                tempenergies = jkext.hdf5.readVLArray(self.__storage, \
+                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
+                dcfieldarray = jkext.hdf5.readVLArray(self.__storage,\
+                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
                 assert len(dcfieldarray) == len(tempenergies)
                 deltadcfields = abs(dcfieldarray - dcfields)
                 mindiff = min(deltadcfields)
                 energies[i] = tempenergies[deltadcfields == mindiff][0]
                 if mindiff > 1:
-                    print "The closest calculated field is %e V\m from the requested" % mindiff 
+                    print "The closest calculated dc field is %e V\m from the requested" % mindiff 
                 i = i + 1
             return acfields, energies
         
@@ -176,18 +197,24 @@ class Molecule(jkext.molecule.Molecule):
             try:
                 oldacfields = self.acfields(state)
                 allacfields = jkext.util.column_merge([oldacfields], [acfields])
-                allacfields = allacfields[0]# will return an array use [0] to take out of the array
+                allacfields = allacfields[0]
+                # will return an array use [0] to take out of the array
             except tables.exceptions.NodeError:
                 allacfields = acfields
             i=0
             for acfield in acfields:
                 assert len(dcfields[self.value2dir(acfield)]) == len(energies[self.value2dir(acfield)])
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcfield", dcfields[self.value2dir(acfield)])
-                jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "dcstarkenergy", \
-                                        energies[self.value2dir(acfield)])
+                jkext.hdf5.writeVLArray(self.__storage, \
+                        "/" + state.hdfname()+ "/"  + self.value2dir(acfield) ,\
+                        "dcfield", dcfields[self.value2dir(acfield)])
+                jkext.hdf5.writeVLArray(self.__storage, \
+                        "/" + state.hdfname()+ "/"  + self.value2dir(acfield) ,\
+                        "dcstarkenergy", energies[self.value2dir(acfield)])
                 if eigvectors != None:
-                    jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname()+ "/"  + self.value2dir(acfield) , "eigvectors", \
-                                            eigvectors[self.value2dir(acfield)],atom=tables.Float64Atom(shape=len(eigvectors[self.value2dir(acfield)][0])))
+                    jkext.hdf5.writeVLArray(self.__storage, \
+                        "/" + state.hdfname()+ "/"  + self.value2dir(acfield) ,\
+                        "eigvectors", eigvectors[self.value2dir(acfield)],\
+                        atom=tables.Float64Atom(shape=len(eigvectors[self.value2dir(acfield)][0])))
                 i = i + 1
             jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "acfields", allacfields)
             
@@ -241,7 +268,8 @@ class Molecule(jkext.molecule.Molecule):
         assert len(newdcfields)*len(newacfields)  == len(newenergies)
         reshapedenergies = num.reshape(newenergies,(len(newacfields),len(newdcfields)))
         i=0
-        energies = {} # we use a dict with acfields as entrys to allow different amount of dc energies for different ac fields
+        energies = {} # we use a dict with acfields as entrys to allow different
+        #amount of dc energies for different ac fields
         # i.e whem merging a few dc energies with many.
         dcfields = {}
         eigvectors = {}
@@ -282,6 +310,10 @@ class Molecule(jkext.molecule.Molecule):
         """Get a list of ac fields for which we have calculated the stark effect"""
         return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
 
+    def dcfields(self,state,acfield):
+        """Get a list of dc fields for which we have calculated the stark effect for a specific ac field
+        ToDo make robust if ac field is not found"""
+        return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) +  "/dcfield")
 
 # some simple tests
 if __name__ == "__main__":

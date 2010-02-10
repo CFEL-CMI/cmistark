@@ -40,7 +40,7 @@ class TableCalculationParameter(IsDescription):
     dipole  = Float64Col(shape=3)    # Coulomb meter
     polarizability = Float64Col(shape=(3,3))
     watson = StringCol(1)
-    symmetry= StringCol(1)
+    symmetry= StringCol(4)
 
 class CalculationParameter:
     """Container of parameters for calculation of Stark energies.
@@ -197,8 +197,8 @@ class AsymmetricRotor:
                     i += 1
             elif self.__saveevec == True:
                 eval,evec = num.linalg.eigh(blocks[symmetry]) #evec is an array of the eigenvectors
-                evec[:,] = evec[:,num.argsort(eval)] # sort acording to the eigen values
-                eval = num.sort(eval)#evec[:,i] is the eigenvector corosponding to eval[i]
+                evec[:,] = evec[:,num.argsort(eval)] #sort acording to the eigen values
+                eval = num.sort(eval) #evec[:,i] is the eigenvector corosponding to eval[i]
                 i = 0
                 for state in self.__stateorder(symmetry):
                     if state.J() <= self.__Jmax_save:
