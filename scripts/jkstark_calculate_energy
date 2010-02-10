@@ -47,7 +47,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
-                                                   "dc-fields=","ac-fields=","omega=","delta-omega=","save_evec",
+                                                   "dc-fields=","ac-fields=","intensity=","omega=","delta-omega=","save_evec",
                                                    "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene", "ocs",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
@@ -84,6 +84,9 @@ def main(args):
         elif o == "--ac-fields":
             min, max, steps = a.split(":")
             param.acfields = num.linspace(float(min), float(max), int(steps))
+        elif o == "--intensity":
+            min, max, steps = a.split(":")
+            param.acfields = jkstark.convert.w_cm22V_m(num.linspace(float(min), float(max), int(steps)))
         elif o == "--save_evec":
             param.saveevec = True
         elif o == "--omega":

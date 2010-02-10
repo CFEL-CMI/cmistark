@@ -25,9 +25,9 @@
 #$ -V
 from __future__ import division
 
-"""Calculate brute force orientation for ensemble of asymmetric top molecules"""
+"""Calculate alignment and orientation for ensemble of molecules (only linear pseudo asymmetric right now)"""
 
-__author__ = "Frank Filsinger and Jochen Küpper"
+__author__ = "Jens H Nielsen, Frank Filsinger and Jochen Küpper"
 
 import getopt, sys
 import math
@@ -41,6 +41,7 @@ from jkstark.population  import create_population, read_population
 from jkext.state import State
 import matplotlib.pyplot as plt
 import jkstark.convert
+from jkstark.wavefunction import calcwaveparam
 
 def usage():
     # ToDo implement a useful usage description
@@ -50,7 +51,7 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
-                                                           "field=","ac-fields=", "Jmax=", "mu=", "nssw=", "nssw-type=",
+                                                           "dcfield=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
                                                            "population=", "temperature="])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -60,10 +61,10 @@ def main(args):
     # default values
     thermal = False
     nonthermal = False
-    field = 0. # kV/cm
-    acfield = 0.
+    dcfieldplot = 0. # kV/cm
+    acfieldplot = 0.
     temperature = 1. # K
-    Jmax = 10
+    Jmax = 6
     nsswtype = None
     nssw = None
     # scan commandline
@@ -71,13 +72,10 @@ def main(args):
         if o in ("-h", "--help"):
             usage()
             sys.exit()
-        elif o in ("-f", "--field"):
-            field = convert.kV_cm2V_m(float(a))
-        elif o == "--ac-fields":
-            min, max, steps = a.split(":")
-            acfields = numpy.linspace(float(min), float(max), int(steps))
-        #elif o in ("--acfield"):
-        #    acfield = float(a)
+        elif o in ("--dcfield"):
+            dcfieldplot = convert.kV_cm2V_m(float(a))
+        elif o in ("--acfield"):
+            acfieldplot = float(a)
         elif o in ("-J", "--Jmax"):
             Jmax = int(a)
         elif o in ("-m", "--mu",):
@@ -115,31 +113,46 @@ def main(args):
         else:
             population = read_population(pop)
         # calculate orientation cosine -- loop over states
-        coss = []
-        for acfield in acfields:
-            cos_theta = 0.
-            weight = 0.
-            for p in population:
+        weight = 0
+        i = 0
+        for p in population:
                 state = p[0]
                 w = p[1]
-                mueff = 0
-                fields, mueffs = mol.coshellmann(state,param,acfield=acfield)
-                for i in range(len(fields)):
-                    if fields[i] >= field:
-                        if 0 == i or fields[i] == field:
-                            mueff = mueffs[i]
-                        else:
-                            fieldstep = fields[i] - fields[i-1]
-                            mueff = (field-fields[i-1])/fieldstep * mueffs[i] + (fields[i]-field)/fieldstep * mueffs[i-1]
-                        break
-                cos_theta += w * mueff #/ mu
-                weight += w
-            cos_theta /= weight
-            coss.append(cos_theta)
+                if w>1e-5:
+                    dcfields = mol.dcfields(state,acfieldplot)
+                    cos2 = numpy.zeros_like(dcfields)
+                    cos = numpy.zeros_like(dcfields)
+                    up_total = numpy.zeros_like(dcfields)
+                    h = 0
+                    for dcfield in dcfields:
+                        cos[h],cos2[h],up_total[h],psi,thetas = calcwaveparam(state,dcfield,acfieldplot,mol)
+                        h = h+1
+                    h = 0    
+                    if i == 0:
+                        cos2s = w * cos2
+                        coss = w * cos
+                        up_totals = w * up_total
+                    else:
+                        cos2s += w * cos2
+                        coss += w * cos
+                        up_totals += w * up_total
+                    weight += w
+                    i = i + 1
+        cos2s /= weight
+        coss /= weight
+        up_totals /= weight
         plt.figure(1)
-        plt.plot(acfields**2/(1e4*2*const.speed_of_light*const.vacuum_permeability), coss)
-        plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
+        plt.plot(convert.V_m2kV_cm(dcfields), cos2s)
+        plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
+        plt.ylabel(r'$\langle cos^2 \theta \rangle$')
+        plt.figure(2)
+        plt.plot(convert.V_m2kV_cm(dcfields), coss)
+        plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
         plt.ylabel(r'$\langle cos \theta \rangle$')
+        plt.figure(3)
+        plt.plot(convert.V_m2kV_cm(dcfields), up_totals)
+        plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
+        plt.ylabel(r'$\frac{UP}{Total}$')
         if thermal == True:
             plt.title(r'T = %f K'  %(temperature))
         else:
@@ -149,19 +162,41 @@ def main(args):
         for p in population:
                 state = p[0]
                 w = p[1]
-                acfields2 , cos2 = mol.cos2hellmann(state,param,dcfield=45000)
-                if i == 0:
-                    cos2s = w * cos2
-                else:
-                    cos2s += w * cos2
-                weight += w
-                i = i + 1
-        cos2s /= weight 
-        plt.figure(2)
-        plt.plot(acfields2**2/(1e4*2*const.speed_of_light*const.vacuum_permeability), cos2s)
-        #print jkstark.convert.acfields2deltaomega(acfields,param.rotcon[1],param.polarizability[0][0])
+                if w>1e-5:
+                    acfields = mol.acfields(state)
+                    cos2 = numpy.zeros_like(acfields)
+                    cos = numpy.zeros_like(acfields)
+                    up_total = numpy.zeros_like(acfields)
+                    h = 0
+                    for acfield in acfields:
+                        cos[h],cos2[h],up_total[h],psi,thetas = calcwaveparam(state,dcfieldplot,acfield,mol)
+                        h = h+1
+                    h = 0    
+                    if i == 0:
+                        cos2s = w * cos2
+                        coss = w * cos
+                        up_totals = w * up_total
+                    else:
+                        cos2s += w * cos2
+                        coss += w * cos
+                        up_totals += w * up_total
+                    weight += w
+                    i = i + 1
+        cos2s /= weight
+        coss /= weight
+        up_totals /= weight
+        plt.figure(4)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), cos2s)
         plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
         plt.ylabel(r'$\langle cos^2 \theta \rangle$')
+        plt.figure(5)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), coss)
+        plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
+        plt.ylabel(r'$\langle cos \theta \rangle$')
+        plt.figure(6)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), up_totals)
+        plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
+        plt.ylabel(r'$\frac{UP}{Total}$')
         if thermal == True:
             plt.title(r'T = %f K'  %(temperature))
         else:
@@ -169,3 +204,4 @@ def main(args):
         plt.show()
 if __name__ == "__main__":
     main(sys.argv)
+
