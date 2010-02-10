@@ -53,6 +53,7 @@ setup(name="jkstark",
                              'scripts/jkstark_plot_energy',
                              'scripts/jkstark_plot_energy_linear',
                              'scripts/jkstark_print_energy',
-                             'scripts/plot_symtopwavefunction.py']
+                             'scripts/plot_symtopwavefunction.py',
+                             'scripts/plot_asymtopwavefunction.py']
       )
 
