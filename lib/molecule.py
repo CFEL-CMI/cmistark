@@ -70,16 +70,11 @@ class Molecule(jkext.molecule.Molecule):
         for a specific state and specific fields
         ToDo make it work right for all ac fields
         """
+        acfield = self.testacfield(state,acfield)
         eigvectors = jkext.hdf5.readVLArray(self.__storage, \
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/eigvectors")
-        dcfields = jkext.hdf5.readVLArray(self.__storage,\
-                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
-        assert len(eigvectors) == len(dcfields)
-        deltadcfields = abs(dcfields - dcfield)
-        mindiff = min(deltadcfields)
-        eigvector = eigvectors[deltadcfields == mindiff][0]
-        if mindiff > 1:
-            print "The closest calculated dc field is %(diff)e V\m from the requested %(pc)e percent" % {'diff': mindiff, 'pc': mindiff/dcfield*100} 
+        index = self.dcfieldindex(state,acfield,dcfield)
+        eigvector = eigvectors[index]
         return eigvector 
         
     def mueff(self, state,acfields=0.0):
@@ -164,7 +159,7 @@ class Molecule(jkext.molecule.Molecule):
         
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
-            # ToDo check for calculation status
+            acfields = self.testacfield(state,acfields)
             dcfields = jkext.hdf5.readVLArray(self.__storage,\
                     "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
             energies = jkext.hdf5.readVLArray(self.__storage, \
@@ -180,14 +175,8 @@ class Molecule(jkext.molecule.Molecule):
             for acfield in acfields:
                 tempenergies = jkext.hdf5.readVLArray(self.__storage, \
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
-                dcfieldarray = jkext.hdf5.readVLArray(self.__storage,\
-                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
-                assert len(dcfieldarray) == len(tempenergies)
-                deltadcfields = abs(dcfieldarray - dcfields)
-                mindiff = min(deltadcfields)
-                energies[i] = tempenergies[deltadcfields == mindiff][0]
-                if mindiff > 1:
-                    print "The closest calculated dc field is %e V\m from the requested" % mindiff 
+                index = self.dcfieldindex(state,acfield,dcfield)
+                energies[i] = tempenergies[index]
                 i = i + 1
             return acfields, energies
         
@@ -313,8 +302,32 @@ class Molecule(jkext.molecule.Molecule):
     def dcfields(self,state,acfield):
         """Get a list of dc fields for which we have calculated the stark effect for a specific ac field
         ToDo make robust if ac field is not found"""
+        acfield = self.testacfield(state,acfield)
         return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) +  "/dcfield")
-
+    
+    def testacfield(self,state,acfield):
+        acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + "/acfields")
+        deltaacfields = abs(acfields - acfield)
+        mindiff = min(deltaacfields)
+        newacfield = acfields[deltaacfields == mindiff][0]
+        pc = mindiff/acfield*100
+        if pc > 1:
+            print "The closest calculated ac field(%(newacfield)e) is %(pc)e percent from the requested (%(acfield)e)" % {'newacfield': newacfield, 'acfield': acfield, 'pc': pc}
+        return newacfield
+    
+    def dcfieldindex(self,state,acfield,dcfield):
+        acfield = self.testacfield(state,acfield)
+        dcfields = jkext.hdf5.readVLArray(self.__storage,\
+                        "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
+        deltadcfields = abs(dcfields - dcfield)
+        index = deltadcfields.argmin()
+        newdcfield = dcfields[index]
+        mindiff = min(deltadcfields)
+        pc = mindiff/dcfield*100
+        if pc > 1:
+            print "The closest calculated dc field(%(newdcfield)e) is %(pc)e percent from the requested (%(dcfield)e)" % {'newdcfield': newdcfield, 'dcfield': dcfield, 'pc': pc}
+        return index
+    
 # some simple tests
 if __name__ == "__main__":
     # test Stark calculation and storage/retrieval
