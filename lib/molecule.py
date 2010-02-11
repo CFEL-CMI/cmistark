@@ -68,7 +68,6 @@ class Molecule(jkext.molecule.Molecule):
     def geteigvectors(self, state, acfield, dcfield):
         """Retrieve components of eigenvector in asym top basis
         for a specific state and specific fields
-        ToDo make it work right for all ac fields
         """
         acfield = self.testacfield(state,acfield)
         eigvectors = jkext.hdf5.readVLArray(self.__storage, \
@@ -306,6 +305,9 @@ class Molecule(jkext.molecule.Molecule):
         return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + self.value2dir(acfield) +  "/dcfield")
     
     def testacfield(self,state,acfield):
+        """return the closest ac field with calculated values
+        print a warning if it is more than 1 % from the requested
+        """
         acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/" + "/acfields")
         deltaacfields = abs(acfields - acfield)
         mindiff = min(deltaacfields)
@@ -316,6 +318,9 @@ class Molecule(jkext.molecule.Molecule):
         return newacfield
     
     def dcfieldindex(self,state,acfield,dcfield):
+        """return the index of the closest dc field with calculated values
+        print a warning if it is more than 1 % from the requested
+        """
         acfield = self.testacfield(state,acfield)
         dcfields = jkext.hdf5.readVLArray(self.__storage,\
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcfield")
