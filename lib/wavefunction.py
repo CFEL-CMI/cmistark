@@ -18,6 +18,7 @@ def calcwaveparam(state,dcfield,acfield,mol):
     
     param = starkeffect.CalculationParameter
     mol.getparam(param)
+    acfield = self.testacfield(state,acfield)
     eigvectors = mol.geteigvectors(state,acfield,dcfield)
     Jmax = param.Jmax_save
     J = state.J()

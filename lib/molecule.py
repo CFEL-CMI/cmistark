@@ -69,7 +69,6 @@ class Molecule(jkext.molecule.Molecule):
         """Retrieve components of eigenvector in asym top basis
         for a specific state and specific fields
         """
-        #acfield = self.testacfield(state,acfield)
         eigvectors = jkext.hdf5.readVLArray(self.__storage, \
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/eigvectors")
         if dcfield != None:
@@ -159,7 +158,6 @@ class Molecule(jkext.molecule.Molecule):
         
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
-            #acfields = self.testacfield(state,acfields)
             dcfields = jkext.hdf5.readVLArray(self.__storage,\
                     "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
             energies = jkext.hdf5.readVLArray(self.__storage, \
