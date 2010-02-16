@@ -65,16 +65,17 @@ class Molecule(jkext.molecule.Molecule):
         """
         self.__loadparam(param)
 
-    def geteigvectors(self, state, acfield, dcfield):
+    def geteigvectors(self, state, acfield, dcfield=None):
         """Retrieve components of eigenvector in asym top basis
         for a specific state and specific fields
         """
-        acfield = self.testacfield(state,acfield)
+        #acfield = self.testacfield(state,acfield)
         eigvectors = jkext.hdf5.readVLArray(self.__storage, \
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/eigvectors")
-        index = self.dcfieldindex(state,acfield,dcfield)
-        eigvector = eigvectors[index]
-        return eigvector 
+        if dcfield != None:
+            index = self.dcfieldindex(state,acfield,dcfield)
+            eigvectors = eigvectors[index]
+        return eigvectors 
         
     def mueff(self, state,acfields=0.0):
         """Get the effective dipole moment \mu_eff as a function of the electric field strength.
@@ -158,7 +159,7 @@ class Molecule(jkext.molecule.Molecule):
         
         elif energies == None and dcfields == None and acfields != None:
             # read energies for a specific acfield
-            acfields = self.testacfield(state,acfields)
+            #acfields = self.testacfield(state,acfields)
             dcfields = jkext.hdf5.readVLArray(self.__storage,\
                     "/" + state.hdfname() + "/" + self.value2dir(acfields) + "/dcfield")
             energies = jkext.hdf5.readVLArray(self.__storage, \
@@ -267,16 +268,20 @@ class Molecule(jkext.molecule.Molecule):
         for acfield in newacfields:
             try: #try one acfield  ToDo add merge for eigenvectors
                 olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
+                oldeigenvectors = self.geteigvectors(state, acfield)
                 newenergies = reshapedenergies[i,:]
+                neweigenvectors = reshapedeigvectors[i,:,:]
                 dcfield, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
+                dcfield, eigenvector = jkext.util.columnarray_merge([olddcfields, oldeigenvectors], [newdcfields, neweigenvectors])
             except tables.exceptions.NodeError: # no energies for this ac field
                 dcfield = newdcfields
                 energy = reshapedenergies[i,:]
+                eigenvector = reshapedeigvectors[i,:,:]
             assert len(dcfield) == len(energy)
             energies[self.value2dir(acfield)] = energy
             dcfields[self.value2dir(acfield)] = dcfield
             if param.saveevec == True:
-                eigvectors[self.value2dir(acfield)] = reshapedeigvectors[i,:,:]
+                eigvectors[self.value2dir(acfield)] = eigenvector
             i = i + 1
         if param.saveevec == True:
             self.starkeffect(state, dcfields, newacfields, energies, eigvectors)
