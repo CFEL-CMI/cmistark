@@ -18,7 +18,7 @@ def calcwaveparam(state,dcfield,acfield,mol):
     
     param = starkeffect.CalculationParameter
     mol.getparam(param)
-    acfield = self.testacfield(state,acfield)
+    acfield = mol.testacfield(state,acfield)
     eigvectors = mol.geteigvectors(state,acfield,dcfield)
     Jmax = param.Jmax_save
     J = state.J()
@@ -45,9 +45,22 @@ def calcwaveparam(state,dcfield,acfield,mol):
                         i = i +1
                 j = j+1
                 i = 0
-        else:
-            psi = psi + 1
-            #raise NotImplementedError("We only handle even Ka now")
+        elif Ka%2 == 1:
+            for theta in thetas:
+                for J in range(Jmin,Jmax+1): # looping over the odd states i.e O- and O+
+                    Jodd = J-(1-J%2)
+                    for K in range(Jodd,0,-2):
+                        S = 1
+                        psi[j] += asymwavefunction(J, K, M, S, theta)*eigvectors[i]
+                        i = i +1
+                    for K in range(0,Jodd+2,2):
+                        S = 0
+                        psi[j] += asymwavefunction(J, K, M, S, theta)*eigvectors[i]
+                        i = i +1
+                j = j+1
+                i = 0
+    else:
+        raise NotImplementedError("Only C2A workes right now")
     step = (1*(thetas < num.pi/2)+0.5*(thetas == num.pi/2))*psi
     integ = num.trapz(psi**2*num.sin(thetas),thetas)
     expcos = num.trapz(psi**2*num.cos(thetas)*num.sin(thetas),thetas)/integ
