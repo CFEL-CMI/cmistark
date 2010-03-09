@@ -35,6 +35,7 @@ import numpy
 
 import jkext.const as const
 import jkext.convert as convert
+import jkext.hdf5 as hdf5
 import jkstark.molecule as molecule
 import jkstark.starkeffect as starkeffect
 from jkstark.population  import create_population, read_population
@@ -42,6 +43,7 @@ from jkext.state import State
 import matplotlib.pyplot as plt
 import jkstark.convert
 from jkstark.wavefunction import calcwaveparam
+import tables
 
 def usage():
     # ToDo implement a useful usage description
@@ -52,7 +54,7 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
                                                            "dcfield=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
-                                                           "population=", "temperature="])
+                                                           "population=", "temperature=", "save="])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -67,6 +69,7 @@ def main(args):
     Jmax = 6
     nsswtype = None
     nssw = None
+    saving = False
     # scan commandline
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -95,6 +98,9 @@ def main(args):
         elif o in ("-T", "--temperature"):
             thermal = True
             temperature = float(a)
+        elif o in ("--save"):
+            saving = True
+            storage = a
         else:
             assert False, "unhandled commandline option"
 
@@ -129,28 +135,28 @@ def main(args):
                         h = h+1
                     h = 0    
                     if i == 0:
-                        cos2s = w * cos2
-                        coss = w * cos
-                        up_totals = w * up_total
+                        cos2s_dc = w * cos2
+                        coss_dc = w * cos
+                        up_totals_dc = w * up_total
                     else:
-                        cos2s += w * cos2
-                        coss += w * cos
-                        up_totals += w * up_total
+                        cos2s_dc += w * cos2
+                        coss_dc += w * cos
+                        up_totals_dc += w * up_total
                     weight += w
                     i = i + 1
-        cos2s /= weight
-        coss /= weight
-        up_totals /= weight
+        cos2s_dc /= weight
+        coss_dc /= weight
+        up_totals_dc /= weight
         plt.figure(1)
-        plt.plot(convert.V_m2kV_cm(dcfields), cos2s)
+        plt.plot(convert.V_m2kV_cm(dcfields), cos2s_dc)
         plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
         plt.ylabel(r'$\langle cos^2 \theta \rangle$')
         plt.figure(2)
-        plt.plot(convert.V_m2kV_cm(dcfields), coss)
+        plt.plot(convert.V_m2kV_cm(dcfields), coss_dc)
         plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
         plt.ylabel(r'$\langle cos \theta \rangle$')
         plt.figure(3)
-        plt.plot(convert.V_m2kV_cm(dcfields), up_totals)
+        plt.plot(convert.V_m2kV_cm(dcfields), up_totals_dc)
         plt.xlabel(r'$DC field \quad \frac{kV}{cm}$')
         plt.ylabel(r'$\frac{UP}{Total}$')
         if thermal == True:
@@ -173,34 +179,46 @@ def main(args):
                         h = h+1
                     h = 0    
                     if i == 0:
-                        cos2s = w * cos2
-                        coss = w * cos
-                        up_totals = w * up_total
+                        cos2s_ac = w * cos2
+                        coss_ac = w * cos
+                        up_totals_ac = w * up_total
                     else:
-                        cos2s += w * cos2
-                        coss += w * cos
-                        up_totals += w * up_total
+                        cos2s_ac += w * cos2
+                        coss_ac += w * cos
+                        up_totals_ac += w * up_total
                     weight += w
                     i = i + 1
-        cos2s /= weight
-        coss /= weight
-        up_totals /= weight
+        cos2s_ac /= weight
+        coss_ac /= weight
+        up_totals_ac /= weight
         plt.figure(4)
-        plt.plot(jkstark.convert.V_m2w_cm2(acfields), cos2s)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), cos2s_ac)
         plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
         plt.ylabel(r'$\langle cos^2 \theta \rangle$')
         plt.figure(5)
-        plt.plot(jkstark.convert.V_m2w_cm2(acfields), coss)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), coss_ac)
         plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
         plt.ylabel(r'$\langle cos \theta \rangle$')
         plt.figure(6)
-        plt.plot(jkstark.convert.V_m2w_cm2(acfields), up_totals)
+        plt.plot(jkstark.convert.V_m2w_cm2(acfields), up_totals_ac)
         plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
         plt.ylabel(r'$\frac{UP}{Total}$')
         if thermal == True:
             plt.title(r'T = %f K'  %(temperature))
         else:
             plt.title(r'Non thermal')
+        if saving == True:
+            name = 'align_ori_data'
+            file = tables.openFile(storage, mode='a', title=name)
+            hdf5.writeVLArray(file,'/','acfields',acfields)
+            hdf5.writeVLArray(file,'/','intensities',jkstark.convert.V_m2w_cm2(acfields))
+            hdf5.writeVLArray(file,'/','dcfields',dcfields)
+            hdf5.writeVLArray(file,'/','up_total_ac',up_totals_ac)
+            hdf5.writeVLArray(file,'/','up_total_dc',up_totals_dc)
+            hdf5.writeVLArray(file,'/','cos_ac',coss_ac)
+            hdf5.writeVLArray(file,'/','cos_dc',coss_dc)
+            hdf5.writeVLArray(file,'/','cos2_ac',cos2s_ac)
+            hdf5.writeVLArray(file,'/','cos2_dc',cos2s_dc)
         plt.show()
 if __name__ == "__main__":
     main(sys.argv)
