@@ -173,7 +173,7 @@ class Molecule(jkext.molecule.Molecule):
             for acfield in acfields:
                 tempenergies = jkext.hdf5.readVLArray(self.__storage, \
                         "/" + state.hdfname() + "/" + self.value2dir(acfield) + "/dcstarkenergy")
-                index = self.dcfieldindex(state,acfield,dcfield)
+                index = self.dcfieldindex(state,acfield,dcfields)
                 energies[i] = tempenergies[index]
                 i = i + 1
             return acfields, energies
