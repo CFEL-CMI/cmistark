@@ -54,7 +54,7 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
                                                            "dcfield=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
-                                                           "population=", "temperature=", "save="])
+                                                           "population=", "temperature=", "save"])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -100,7 +100,6 @@ def main(args):
             temperature = float(a)
         elif o in ("--save"):
             saving = True
-            storage = a
         else:
             assert False, "unhandled commandline option"
 
@@ -204,12 +203,14 @@ def main(args):
         plt.xlabel(r'$Laser Intensity \quad \frac{W}{cm^2}$')
         plt.ylabel(r'$\frac{UP}{Total}$')
         if thermal == True:
+            name = 'align_ori_data'+ str(temperature) + 'K' + '_dc' + str(dcfieldplot) + '_ac' + str(acfieldplot)
             plt.title(r'T = %f K'  %(temperature))
         else:
+            name = 'align_ori_data_JM'+ str(state.J()) + str(state.M()) + '_dc' + str(dcfieldplot) + '_ac' + str(acfieldplot)
             plt.title(r'Non thermal')
         if saving == True:
-            name = 'align_ori_data'
-            file = tables.openFile(storage, mode='a', title=name)
+            filename = name + '.hd5'
+            file = tables.openFile(filename, mode='a', title=name)
             hdf5.writeVLArray(file,'/','acfields',acfields)
             hdf5.writeVLArray(file,'/','intensities',jkstark.convert.V_m2w_cm2(acfields))
             hdf5.writeVLArray(file,'/','dcfields',dcfields)
