@@ -143,7 +143,7 @@ class Molecule(jkext.molecule.Molecule):
         We use the nameing convension _XdY where d replaces . in fx. 1.5 as . is not valid in a group identifier 
         """
         if energies == None and dcfields == None and acfields == None:
-            #read all energies for one state and return in one array
+            # read all energies for one state and return in one array
             # note that it assumes that all ac fields dirs contain the same number of dc energies
             acfields = jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/acfields")
             for acfield in acfields:
@@ -260,7 +260,7 @@ class Molecule(jkext.molecule.Molecule):
         # i.e whem merging a few dc energies with many.
         dcfields = {}
         eigvectors = {}
-        if (neweigvectors != None):
+        if param.saveevec == True:
             assert len(newdcfields)*len(newacfields)  == len(neweigvectors)
             reshapedeigvectors = num.reshape(num.array(neweigvectors),(len(newacfields),len(newdcfields),len(neweigvectors[0])))
         for acfield in newacfields:
@@ -268,13 +268,15 @@ class Molecule(jkext.molecule.Molecule):
                 olddcfields, oldenergies = self.starkeffect(state, acfields=acfield)
                 oldeigenvectors = self.geteigvectors(state, acfield)
                 newenergies = reshapedenergies[i,:]
-                neweigenvectors = reshapedeigvectors[i,:,:]
                 dcfield, energy = jkext.util.column_merge([olddcfields, oldenergies], [newdcfields, newenergies])
-                dcfield, eigenvector = jkext.util.columnarray_merge([olddcfields, oldeigenvectors], [newdcfields, neweigenvectors])
+                if param.saveevec == True:
+                    neweigenvectors = reshapedeigvectors[i,:,:]
+                    dcfield, eigenvector = jkext.util.columnarray_merge([olddcfields, oldeigenvectors], [newdcfields, neweigenvectors])
             except tables.exceptions.NodeError: # no energies for this ac field
                 dcfield = newdcfields
                 energy = reshapedenergies[i,:]
-                eigenvector = reshapedeigvectors[i,:,:]
+                if param.saveevec == True:
+                    eigenvector = reshapedeigvectors[i,:,:]
             assert len(dcfield) == len(energy)
             energies[self.value2dir(acfield)] = energy
             dcfields[self.value2dir(acfield)] = dcfield
