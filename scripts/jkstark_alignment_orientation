@@ -54,7 +54,7 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
                                                            "dcfield=","acfield=", "Jmax=", "mu=", "nssw=", "nssw-type=",
-                                                           "population=", "temperature=", "save"])
+                                                           "population=", "temperature=", "state=", "save"])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -63,6 +63,7 @@ def main(args):
     # default values
     thermal = False
     nonthermal = False
+    singlestate = False
     dcfieldplot = 0. # kV/cm
     acfieldplot = 0.
     temperature = 1. # K
@@ -95,6 +96,9 @@ def main(args):
         elif o in ("-p", "--population"):
             nonthermal = True
             pop = a
+        elif o in ("-s", "--state"):
+            singlestate = True
+            J, Ka, Kc, M  = a.split(":")
         elif o in ("-T", "--temperature"):
             thermal = True
             temperature = float(a)
@@ -103,8 +107,8 @@ def main(args):
         else:
             assert False, "unhandled commandline option"
 
-    if thermal == nonthermal:
-        assert False, "commandline parsing resulted in thermal == nonthermal; stopping"
+    if (thermal == nonthermal == singlestate) or (thermal + nonthermal + singlestate) > 1:
+        assert False, "commandline parsing resulted in thermal == nonthermal == state; stopping"
 
     for name in args:
         # create Molecule object and specify storage file
@@ -115,8 +119,13 @@ def main(args):
         # handle the two possible cases for the population (nonthermal != thermal is assured above)
         if thermal == True:
             population = create_population(mol, temperature, Jmax, nsswtype, nssw)
-        else:
+        elif nonthermal == True:
             population = read_population(pop)
+        elif singlestate == True:
+            population = []
+            sta = State(int(J), int(Ka), int(Kc), int(M))
+            p = 1 # only one state all population in this 
+            population = [(sta,float(p))]
         # calculate orientation cosine -- loop over states
         weight = 0
         i = 0
