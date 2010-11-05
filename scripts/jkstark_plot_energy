@@ -77,7 +77,7 @@ def main(args):
             Mmax = int(a)
         elif o == "--states": # quantum states to plot, format "000,1010"
             userstates = a    # uses m if given, uses all possible m otherwise
-        elif o == "--eunit": 
+        elif o == "--eunit":
             energyunit = a
             if (energyunit!="MHz" and energyunit!="invcm" and energyunit!="J"):
                 assert False, "unknown energy unit"
@@ -91,12 +91,10 @@ def main(args):
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
     colors = ['blue', 'red', 'green','yellow','cyan','magenta','black']
     colorindex = 0
-        
+
     for name in args:
-        
         if colorindex > len(colors): colorindex = 0
         color = colors[colorindex]
-        
         plt.xlabel('E(kV/cm)')
         if (energyunit=="MHz"):
             plt.ylabel('Energy(MHz)')
@@ -104,21 +102,19 @@ def main(args):
             plt.ylabel('Energy(cm-1)')
         elif (energyunit=="J"):
             plt.ylabel('Energy(J)')
-        
         # create Molecule object and specify storage file
         mol = molecule.Molecule(storage=name)
-        
         # plot energie
         # use user given states, if available
-        if (userstates!=""): 
+        if (userstates!=""):
             for userstate in userstates.split(","):
                 # if no m-value is specified, take all M=J values
                 mValues = range(0,int(userstate[0])+1,1)
-                
+
                 # if a certain m is desired only take this one
                 if (len(userstate)>3):
                     mValues = [int(userstate[3])]
-                    
+
                 for m in mValues:
                     if colorindex > len(colors)-1: colorindex = 0
                     color = colors[colorindex]
@@ -127,27 +123,27 @@ def main(args):
                     if (verbose):
                         print "state to plot: " + state.name()
                     fields, energies = mol.starkeffect(state)
-                    
+
                     # convert energy
                     if (energyunit=="MHz"):
                         energies = J2MHz(energies)
                     elif (energyunit=="invcm"):
                         energies = J2invcm(energies)
-                            
+
                     plt.plot(V_m2kV_cm(fields), energies, color)
                     print "state, color: " + state.name() + " " + color
-                    
+
         # plot all states in given J-range
         else:
             # prepare list of states we want to plot
-            
+
             statestoplot = []
-            
+
             for J in range(Jmin, Jmax+1):
                 mmax=J
                 if (Mmax>-1):
                     mmax=min(J,Mmax)
-                    
+
                 Ka = 0
                 for Kc in range(J, -1, -1):
                     for m in range(mmax,-1,-1):
@@ -155,22 +151,22 @@ def main(args):
                         if (verbose):
                             print "state to plot: " + state.name()
                         fields, energies = mol.starkeffect(state)
-                        
+
                         # convert energy
                         if (energyunit=="MHz"):
                             energies = J2MHz(energies)
                         elif (energyunit=="invcm"):
                             energies = J2invcm(energies)
-                        
+
                         plt.plot(V_m2kV_cm(fields), energies, color)
-                        
+
                         fields = V_m2kV_cm(fields)
                         for i in range(len(fields)):
                             #print "field energy: " + str(fields[i]) + " " + str(energies[i])
                             if (19.<=fields[i] and fields[i]<=23. and 0.9<=energies[i] and energies[i]<=1.1):
                                 print "good state: " + state.name()
                                 break
-                        
+
                     if Kc > 0:
                         Ka += 1
                         for m in range(mmax,-1,-1):
@@ -178,13 +174,13 @@ def main(args):
                             if (verbose):
                                 print "state to plot: " + state.name()
                             fields, energies = mol.starkeffect(state)
-                            
+
                             # convert energy
                             if (energyunit=="MHz"):
                                 energies = J2MHz(energies)
                             elif (energyunit=="invcm"):
                                 energies = J2invcm(energies)
-                            
+
                             plt.plot(V_m2kV_cm(fields), energies, color)
                             fields = V_m2kV_cm(fields)
                             for i in range(len(fields)):
@@ -192,25 +188,25 @@ def main(args):
                                 if (19.<=fields[i] and fields[i]<=23. and 0.9<=energies[i] and energies[i]<=1.1):
                                     print "good state: " + state.name()
                                     break
-            
+
             for state in statestoplot:
                 if (verbose):
                         print "state to plot: " + state.name()
-                
+
                 fields, energies = mol.starkeffect(state)
-                
+
                 # convert energy
                 if (energyunit=="MHz"):
                     energies = J2MHz(energies)
                 elif (energyunit=="invcm"):
                     energies = J2invcm(energies)
-                
+
                 plt.plot(V_m2kV_cm(fields), energies, color)
-        
+
         # plot effective dipole moment
         if (plotdips):
             plt.figure(2)
-        
+
             for J in range(Jmin, Jmax+1):
                 Ka = 0
                 for Kc in range(J, -1, -1):
