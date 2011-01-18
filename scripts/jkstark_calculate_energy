@@ -48,8 +48,9 @@ def usage():
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
-                                                   "dc-fields=",
-                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile", "iodobenzene",
+                                                   "dc-fields=", "isomer=",
+                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile",
+                                                   "iodobenzene", "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -80,6 +81,8 @@ def main(args):
         elif o == "--dc-fields":
             min, max, steps = a.split(":")
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
+        elif o == "--isomer":
+            param.isomer = int(a)
         elif o == "--2,6-difluoro-iodobenzene":
             # parmaters from simple ab initio calculations
             name = "2,6-difluoro-iodobenzene"
@@ -113,6 +116,22 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
             # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+        elif o == "--phenylpyrrole":
+            # A. J. Fleisher
+            if param.isomer == 0:
+                name = "phenylpyrrole"
+                param.watson = 'A'
+                param.symmetry = 'C2a'
+                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
+                param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
+            elif param.isomer == 1:
+                # A. J. Fleisher
+                name = "phenylpyrrole"
+                param.isomer = 1
+                param.watson = 'A'
+                param.symmetry = 'C2a'
+                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
+                param.dipole = convert.D2Cm(num.array([1.56, 0., 0.]))
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
             # get better data from
             # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
