@@ -121,14 +121,14 @@ def main(args):
             name = "indole"
             param.watson = 'A'
             param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([3877.9, 636.1, 150.9]))
+            param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
             param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
         elif o == "--indole-water":
             #  add reference and more accurate constants!
             name = "iindole-water"
             param.watson = 'A'
             param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([2062.5, 45.1, 649.3]))
+            param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
             param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
