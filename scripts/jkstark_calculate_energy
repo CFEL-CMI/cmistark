@@ -50,7 +50,7 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile",
-                                                   "iodobenzene", "phenylpyrrole",
+                                                   "iodobenzene", "phenylpyrrole", "indole", "indole-water",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -116,6 +116,20 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
             # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+        elif o == "--indole":
+            # add reference and more accurate constants!
+            name = "indole"
+            param.watson = 'A'
+            param.symmetry = 'N'
+            param.rotcon = convert.Hz2J(num.array([3877.9, 636.1, 150.9]))
+            param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+        elif o == "--indole-water":
+            #  add reference and more accurate constants!
+            name = "iindole-water"
+            param.watson = 'A'
+            param.symmetry = 'N'
+            param.rotcon = convert.Hz2J(num.array([2062.5, 45.1, 649.3]))
+            param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:
