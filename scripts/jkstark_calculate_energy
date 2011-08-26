@@ -38,6 +38,7 @@ import jkext.convert as convert
 import jkstark.molecule as molecule
 import jkstark.starkeffect as starkeffect
 from jkext.state import State
+from jkext.molecule import Masses
 
 
 def usage():
@@ -85,7 +86,7 @@ def main(args):
             param.isomer = int(a)
         elif o == "--2,6-difluoro-iodobenzene":
             # parmaters from simple ab initio calculations
-            name = "2,6-difluoro-iodobenzene"
+            param.name = "2,6-difluoro-iodobenzene"
             param.watson = 'A'
             param.symmetry = 'C2a'
             param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
@@ -93,7 +94,7 @@ def main(args):
             param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
         elif o == "--p-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
-            name = "p-aminobenzonitrile"
+            param.name = "p-aminobenzonitrile"
             param.watson = 'A'
             param.symmetry = 'C2a'
             param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
@@ -101,7 +102,8 @@ def main(args):
             param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
         elif o == "--benzonitrile":
             # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
-            name = "benzonitrile"
+            param.name = "benzonitrile"
+            param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
             param.watson = 'A'
             param.symmetry = 'C2a'
             param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
@@ -109,7 +111,7 @@ def main(args):
             param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
         elif o == "--iodobenzene":
             # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
-            name = "iodobenzene"
+            param.name = "iodobenzene"
             param.watson = 'A'
             param.symmetry = 'C2a'
             param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
@@ -118,14 +120,16 @@ def main(args):
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
         elif o == "--indole":
             # add reference and more accurate constants!
-            name = "indole"
+            param.name = "indole"
+            param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
             param.watson = 'A'
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
             param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
         elif o == "--indole-water":
             #  add reference and more accurate constants!
-            name = "iindole-water"
+            param.name = "indole-water"
+            param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
             param.watson = 'A'
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
@@ -133,14 +137,14 @@ def main(args):
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:
-                name = "phenylpyrrole"
+                param.name = "phenylpyrrole"
                 param.watson = 'A'
                 param.symmetry = 'C2a'
                 param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
                 param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
             elif param.isomer == 1:
                 # A. J. Fleisher
-                name = "phenylpyrrole"
+                param.name = "phenylpyrrole"
                 param.isomer = 1
                 param.watson = 'A'
                 param.symmetry = 'C2a'
@@ -152,11 +156,12 @@ def main(args):
             # - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
             # - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
             # - Steenbeckeliers, and Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-            name = "water"
+            param.name = "water"
             param.watson = 'A'
             if o in ("--H2O", "--water"):
                 # rotational constans from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952)
                 # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.mass = Masses['O'] + 2 * Masses['H']
                 param.isomer = 0
                 param.symmetry = 'C2b'
                 param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
@@ -164,6 +169,7 @@ def main(args):
             elif o == "--D2O":
                 # rotational constans from Herzberg
                 # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.mass = Masses['O'] + 2 * Masses['D']
                 param.isomer = 1
                 param.symmetry = 'C2b'
                 param.rotcon = convert.invcm2J(num.array([15.39, 7.26, 4.85]))
@@ -171,6 +177,7 @@ def main(args):
             elif o == "--HDO":
                 # rotational constans from Herzberg
                 # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                param.mass = Masses['O'] + Masses['H'] + Masses['D']
                 param.isomer = 2
                 param.symmetry = 'N'
                 param.rotcon = convert.invcm2J(num.array([23.48, 9.13, 6.40]))
@@ -182,7 +189,7 @@ def main(args):
         param.M = range(0, param.Jmax_save+1)
 
     # perform calculation
-    mol = molecule.Molecule(storage=name+".hdf")
+    mol = molecule.Molecule(storage=param.name+".molecule")
     mol.starkeffect_calculation(param)
     # close file
     del mol

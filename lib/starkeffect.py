@@ -28,12 +28,13 @@ from jkext.state import State
 
 
 class CalculationParameter:
-    """Container of parameters for calculation of Stark energies.
+    """Container of parameters for calculation of Stark energies plus some more generic parameters of the molecule
 
     Calculate energy for the specified |dcfields| (V/m) and rotor type; all calculations are performed in representation
     Ir (x, y, z -> b, c, a).
 
     General parameters:
+    - mass: mass of molecule/isomer
     - type: specify the type of rotor, currently only 'A' is implemented.
       - 'A': asymmetric top
 
@@ -59,6 +60,7 @@ class CalculationParameter:
     # fields
     dcfields = jkext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
     # molecular parameters
+    mass = num.zeros((1,), num.float64)      # kg
     rotcon = num.zeros((3,), num.float64)    # Joule
     quartic = num.zeros((5,), num.float64)   # Joule
     dipole = num.zeros((3,), num.float64)    # Coulomb meter
