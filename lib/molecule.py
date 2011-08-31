@@ -29,6 +29,14 @@ from jkext.state import State
 import jkstark.starkeffect
 
 
+class _isomer_mass(tables.IsDescription):
+    """Isomer mass represenation for pytables."""
+    name  = tables.StringCol(64)
+    num   = tables.UInt16Col()
+    mass  = tables.Float64Col()
+
+
+
 
 class Molecule(jkext.molecule.Molecule):
     """Representation of a Molecule"""
@@ -36,9 +44,10 @@ class Molecule(jkext.molecule.Molecule):
     def __init__(self, atoms=None, storage=None, name="Generic molecule"):
         """Create Molecule from a list of atoms."""
         jkext.molecule.Molecule.__init__(self, atoms, name)
-        if storage != None:
+        try:
             self.__storage = tables.openFile(storage, mode='a', title=name)
-        else:
+            self.__storage.getNode("/")._v_title = name
+        except:
             self.__storage = None
 
 
@@ -76,8 +85,25 @@ class Molecule(jkext.molecule.Molecule):
 
 
     def starkeffect_calculation(self, param):
-        """Get all available energies from the given Starkeffect object and store them in our storage file."""
+        """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
+        them in our storage file."""
         if 'A' == param.type:
+            try:
+                self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
+            except:
+                pass
+            masses = self.__storage.root.masses
+            new_isomer = True
+            for isomer in masses.iterrows():
+                if isomer['num'] == param.isomer:
+                    isomer['mass'] = param.mass
+                    new_isomer = False
+            if new_isomer:
+                isomer = self.__storage.root.masses.row
+                isomer['name'] = param.name
+                isomer['mass'] = param.mass
+                isomer['num']  = param.isomer
+                isomer.append()
             for M in param.M:
                 energies = {}
                 for field in param.dcfields:
