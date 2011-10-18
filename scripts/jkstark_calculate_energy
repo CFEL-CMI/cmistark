@@ -49,7 +49,7 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile",
-                                                   "iodobenzene", "phenylpyrrole", "indole", "indole-water",
+                                                   "iodobenzene", "phenylpyrrole", "indole", "indole-water", "indole-water2",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -117,7 +117,7 @@ def main(args):
             # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
         elif o == "--indole":
-            # add reference and more accurate constants!
+            # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
             param.name = "indole"
             param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
             param.watson = 'A'
@@ -125,13 +125,21 @@ def main(args):
             param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
             param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
         elif o == "--indole-water":
-            #  add reference and more accurate constants!
+            #  Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998).
             param.name = "indole-water"
             param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
             param.watson = 'A'
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
             param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+        elif o == "--indole-water2":
+            #  from YPChang's ab initio calculations (MP2/6-31+G*). More "expensive" calculations are required.
+            param.name = "indole-water2"
+            param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
+            param.watson = 'A'
+            param.symmetry = 'N'
+            param.rotcon = convert.Hz2J(num.array([1922.2e6, 1098.6e6, 756.8e6]))
+            param.dipole = convert.D2Cm(num.array([0.938618, -0.245091, 0.589453]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:
