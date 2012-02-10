@@ -48,7 +48,8 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
-                                                   "2,6-difluoro-iodobenzene","p-aminobenzonitrile","benzonitrile",
+                                                   "2,6-difluoro-iodobenzene","3-AP-CIS","3-AP-TRANS","p-aminobenzonitrile",
+                                                   "benzonitrile",
                                                    "iodobenzene", "phenylpyrrole", "indole", "indole-water", "indole-water2",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
@@ -90,6 +91,18 @@ def main(args):
             param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
             param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
             param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
+        elif o in ("--3-AP-CIS","--3-AP-TRANS"):
+            param.name = "aminophenol"
+            param.watson = 'A'
+            param.symmetry = 'N'
+            if o == "--3-AP-CIS":
+                param.isomer = 0
+                param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6])) #exp
+                param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.])) #exp
+            elif o == "--3-AP-TRANS": #TRANS
+                param.isomer = 1
+                param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6])) #exp
+                param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.])) #exp
         elif o == "--p-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
             param.name = "p-aminobenzonitrile"
