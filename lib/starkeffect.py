@@ -354,31 +354,35 @@ class AsymmetricRotor:
             dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
         else:
             dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
+        # self.print_mat(hmat)
         hmat = dot(dot(Wmat, hmat), Wmat)
+        # self.print_mat(hmat)
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
         if  'V' == symmetry:
-            # full Fourgroup symmetry (field free Hamiltonian)
+            # full Fourgroup symmetry (field free Hamiltonian or M=0!!!)
             # I^r (not I^l?) representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
-            # or, as used here, A, Ba, Bb, Bc -- in calculation for a single J this is the same.
+            # or, as used here, A, Ba, Bb, Bc
+            # - in calculations for a single J this is the same
+            # - in claculations for multiple J the correspondence flips with J (see Gordy+Cook Table 7.5)
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
                     for K in range(-J, 0): # K < 0 --> s even
-                        if 0 == K % 2: order.append('Ba') # K even
+                        if 0 == K % 2: order.append('A') # K even
                         else: order.append('Bc') # K odd
                     for K in range(0, J+1): # K >= 0 --> s odd
-                        if 0 == K % 2: order.append('A') # K even
+                        if 0 == K % 2: order.append('Ba') # K even
                         else: order.append('Bb') # K odd
                 else: # J odd
                     for K in range(-J, 0): # K < 0 --> s even
-                        if 0 == K % 2: order.append('A') # K even
+                        if 0 == K % 2: order.append('Ba') # K even
                         else: order.append('Bb') # K odd
                     for K in range(0, J+1): # K >= 0 --> s odd
-                        if 0 == K % 2: order.append('Ba') # K even
+                        if 0 == K % 2: order.append('A') # K even
                         else: order.append('Bc') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
@@ -465,6 +469,9 @@ class AsymmetricRotor:
         #                 print "There is a problem with your symmetry"
         #                 print  sym, "and ", sym2, "are connected for M =", self.__M
         # print hmat
+        # for symmetry in blocks.keys():
+        #     print "symmetry: ", symmetry
+        #     self.print_mat(blocks[symmetry]) # calculate only energies
         return blocks
 
 
@@ -489,6 +496,15 @@ class AsymmetricRotor:
         raise NotImplementedError("Watson's S-reduction is not implemented (yet)")
 
 
+    def print_mat(self, mat):
+        """Print Hamiltonian matrix."""
+        print
+        for i in range(mat.shape[0]):
+            for j in range(mat.shape[1]):
+                print "%10.3g" % (mat[i,j],),
+            print
+
+
 
 # some simple tests
 if __name__ == "__main__":
@@ -496,25 +512,26 @@ if __name__ == "__main__":
     p = CalculationParameter
     p.Jmax_calc =  3
     p.Jmax_save =  2
-    p.M = [0]
+    p.M = [0,1]
     p.isomer = 0
     p.rotcon = jkext.convert.Hz2J(num.array([5e9, 2e9, 1.4e9]))
     p.quartic = jkext.convert.Hz2J([1e3, 1e3, 1e3, 1e3, 1e3])
     p.dipole = jkext.convert.D2Cm([1.0, .0, .0])
     p.watson = 'A'
-    p.symmetry = 'C2a'
+    p.symmetry = 'V'
     for M in p.M:
-        for field in jkext.convert.kV_cm2V_m((0., 1., 100.)):
+        for field in jkext.convert.kV_cm2V_m((100.,)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = AsymmetricRotor(p, M, field)
-            for state in [State(0, 0, 0, M, p.isomer),
-                          State(1, 0, 1, M, p.isomer), State(1, 1, 1, M, p.isomer), State(1, 1, 0, M, p.isomer),
-                          State(2, 0, 2, M, p.isomer), State(2, 1, 2, M, p.isomer), State(2, 1, 1, M, p.isomer),
-                          State(2, 2, 1, M, p.isomer), State(2, 2, 0, M, p.isomer)]:
+            top.energy(State(1, 0, 1, M, p.isomer))
+            # for state in [State(0, 0, 0, M, p.isomer),
+            #               State(1, 0, 1, M, p.isomer), State(1, 1, 1, M, p.isomer), State(1, 1, 0, M, p.isomer),
+            #               State(2, 0, 2, M, p.isomer), State(2, 1, 2, M, p.isomer), State(2, 1, 1, M, p.isomer),
+            #               State(2, 2, 1, M, p.isomer), State(2, 2, 0, M, p.isomer)]:
 # ,
 #                           State(3, 0, 3, M, p.isomer), State(3, 1, 3, M, p.isomer), State(3, 1, 2, M, p.isomer),
 #                           State(3, 2, 2, M, p.isomer), State(3, 2, 1, M, p.isomer), State(3, 3, 1, M, p.isomer),
 #                           State(3, 3, 0, M, p.isomer)]:
-                if state.M() <= state.J() and state.J() <= p.Jmax_save:
-                    print state.name(), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-                        % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)), top.energy(state))
+                # if state.M() <= state.J() and state.J() <= p.Jmax_save:
+                #     print state.name(), "%12.3f MHz %8.3f cm-1 %10.3g J" \
+                #         % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)), top.energy(state))
