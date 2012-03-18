@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2011 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
-
 __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
@@ -268,7 +267,9 @@ class AsymmetricRotor:
         representation used in the calculation.
         """
         def Four_symmetry(J, Ka, Kc):
-            """see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
+            """Determine Fourgroup symmetry of asymmetric top state in representation(s) I
+
+            see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
             if Ka%2 == 0 and Kc%2 == 0:   sym = 'A'   # ee
             elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ba'  # eo
             elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Bc'  # oe
@@ -515,9 +516,9 @@ if __name__ == "__main__":
     p.isomer = 0
     p.rotcon = jkext.convert.Hz2J(num.array([5e9, 2e9, 1.4e9]))
     p.quartic = jkext.convert.Hz2J([1e3, 1e3, 1e3, 1e3, 1e3])
-    p.dipole = jkext.convert.D2Cm([1.0, .0, .0])
+    p.dipole = jkext.convert.D2Cm([.0, 1.0, .0])
     p.watson = 'A'
-    p.symmetry = 'V'
+    p.symmetry = 'C2b'
     for M in p.M:
         for field in jkext.convert.kV_cm2V_m((1.,)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
@@ -532,4 +533,5 @@ if __name__ == "__main__":
                           State(3, 3, 0, M, p.isomer)]:
                 if state.M() <= state.J() and state.J() <= p.Jmax_save:
                     print state.name(), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-                        % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)), top.energy(state))
+                        % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
+                           top.energy(state))

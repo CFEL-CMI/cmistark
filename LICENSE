@@ -1,4 +1,4 @@
-JK Python field effect calculation extensions are provided as is. They
+JK Python Stark effect calculation extensions are provided as is. They
 are licensed under the GPL v3 with the additional requirements, that
 
 a) its use for scientific work must be acknowledged by the appropriate
@@ -8,5 +8,5 @@ a) its use for scientific work must be acknowledged by the appropriate
        URL: http://python.jochen-kuepper.de (2009)
    See AUTHORS and THANKS for a full list of contributors.
 
-b) any corrections and enhancements must be contributed back to the
-   development of the package.
+b) any corrections and enhancements must be contributed back to the development
+   of the package no later than the publication of its first use.
