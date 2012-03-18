@@ -109,7 +109,9 @@ class AsymmetricRotor:
         else: # µ_c == 0 --  the Hamiltonian matrix is real (and symmetric)
             self.__complex = False
             self.__hmat_type = num.float64
-
+        if 0 == self.__M and not self.__dipole_components[1] and not self.__dipole_components[2]:
+            # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole moment is along a
+            self.__symmetry = 'V'
 
 
     def energy(self, state):
@@ -300,7 +302,7 @@ class AsymmetricRotor:
                     if 0 < blocks[sym].size:
                         eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
             # sort assignments according to energy
-            if 0 == self.__M or 'V' == self.__symmetry:
+            if 'V' == self.__symmetry:
                 symmetries = ['A', 'Ba', 'Bb', 'Bc']
             elif 'C2a' == self.__symmetry:
                 eigenvalues['Aa'] = eigenvalues['A'] + eigenvalues['Ba']
@@ -308,27 +310,32 @@ class AsymmetricRotor:
                 label['Aa'] = label['A'] + label['Ba']
                 label['bc'] = label['Bb'] + label['Bc']
                 symmetries = ['Aa', 'bc']
+                del label['A'], label['Ba'], label['Bb'], label['Bc']
+                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
             elif 'C2b' == self.__symmetry:
                 eigenvalues['Ab'] = eigenvalues['A'] + eigenvalues['Bb']
                 eigenvalues['ac'] = eigenvalues['Bb'] + eigenvalues['Bc']
                 label['Ab'] = label['A'] + label['Bb']
                 label['ac'] = label['Ba'] + label['Bc']
                 symmetries = ['Ab', 'ac']
+                del label['A'], label['Ba'], label['Bb'], label['Bc']
+                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
             elif 'C2c' == self.__symmetry:
                 eigenvalues['Ac'] = eigenvalues['A'] + eigenvalues['Bc']
                 eigenvalues['ab'] = eigenvalues['Ba'] + eigenvalues['Bb']
                 label['Ac'] = label['A'] + label['Bc']
                 label['ab'] = label['Ba'] + label['Bb']
                 symmetries = ['Ac', 'ab']
+                del label['A'], label['Ba'], label['Bb'], label['Bc']
+                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
             elif 'N' == self.__symmetry:
                 eigenvalues['N'] = eigenvalues['A'] + eigenvalues['Ba'] + eigenvalues['Bb'] + eigenvalues['Bc']
                 label['N'] = label['A'] + label['Ba'] + label['Bb'] + label['Bc']
                 symmetries = ['N']
+                del label['A'], label['Ba'], label['Bb'], label['Bc']
+                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.__symmetry, ))
-            if not (0 == self.__M or 'V' == self.__symmetry):
-                # free unused memories
-                del label['A'], label['Ba'], label['Bb'], label['Bc']
             for sym in symmetries:
                 idx = num.argsort(eigenvalues[sym])
                 self.__stateorder_dict[sym] = num.array(label[sym])[idx]
@@ -361,7 +368,7 @@ class AsymmetricRotor:
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
-        if  0 == self.__M or 'V' == symmetry:
+        if 'V' == symmetry:
             # full Fourgroup symmetry (field free Hamiltonian or M=0!!!)
             # I^r (not I^l?) representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc
@@ -395,7 +402,7 @@ class AsymmetricRotor:
             # C2 rotation about a-axis is symmetry element
             #
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices E = Aa (contains E+ and
-            # E- / A and Ba) and O (contains O+ and O- / Bb And Bc).
+            # E- / A and Ba) and O (contains O+ and O- / Bb and Bc).
             # In this case E and O corresponds to columns with K even and odd, respectively.
             idx = {'Aa': [], 'bc': []}
             if 0 == Jmin % 2: # Jmin even
@@ -414,20 +421,20 @@ class AsymmetricRotor:
             # and 'ac' (contains 'Ba' and 'Bc').
             idx = {'Ab': [], 'ac': []}
             i = 0
-            order = []
             for J in range(Jmin, Jmax+1):
+                order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0
+                    for K in range(-J, 0): # K > 0 --> s odd
                         order.append('ac')
-                    for K in range(0, J+1): # K >= 0
+                    for K in range(0, J+1): # K <= 0 --> s even
                         order.append('Ab')
                 else: # J odd
-                    for K in range(-J, 0): # K < 0
+                    for K in range(-J, 0): # K <= 0 --> s even
                         order.append('Ab')
-                    for K in range(0, J+1): # K >= 0
+                    for K in range(0, J+1): # K >= 0 --> s odd
                         order.append('ac')
-                for j in range(2*J+1):
-                    idx[order[j]].append(i+j)
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
@@ -442,17 +449,21 @@ class AsymmetricRotor:
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0
-                        order.append('ab')
-                    for K in range(0, J+1): # K >= 0
-                        order.append('Ac')
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('ab') # K even
+                        else: order.append('Ac') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Ac') # K even
+                        else: order.append('ab') # K odd
                 else: # J odd
-                    for K in range(-J, 1): # K < 0
-                        order.append('ab')
-                    for K in range(1, J+1): # K >= 0
-                        order.append('Ac')
-                for j in range(2*J+1):
-                    idx[order[j]].append(i+j)
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Ac') # K even
+                        else: order.append('ab') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('ab') # K even
+                        else: order.append('Ac') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
@@ -469,7 +480,6 @@ class AsymmetricRotor:
         #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
         #                 print "There is a problem with your symmetry"
         #                 print  sym, "and ", sym2, "are connected for M =", self.__M
-        # print hmat
         # for symmetry in blocks.keys():
         #     self.__print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
         return blocks
@@ -501,7 +511,10 @@ class AsymmetricRotor:
         print "\n", text
         for i in range(mat.shape[0]):
             for j in range(mat.shape[1]):
-                print "%10.3g" % (mat[i,j],),
+                if False == self.__complex:
+                    print "%10.3g" % (mat[i,j]),
+                else:
+                    print "%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ),
             print
 
 
@@ -510,15 +523,15 @@ class AsymmetricRotor:
 if __name__ == "__main__":
     print
     p = CalculationParameter
-    p.Jmax_calc =  5
-    p.Jmax_save =  3
+    p.Jmax_calc =  3
+    p.Jmax_save =  2
     p.M = [0]
     p.isomer = 0
     p.rotcon = jkext.convert.Hz2J(num.array([5e9, 2e9, 1.4e9]))
     p.quartic = jkext.convert.Hz2J([1e3, 1e3, 1e3, 1e3, 1e3])
-    p.dipole = jkext.convert.D2Cm([.0, 1.0, .0])
+    p.dipole = jkext.convert.D2Cm([1.0, .0, .0])
     p.watson = 'A'
-    p.symmetry = 'C2b'
+    p.symmetry = 'C2c'
     for M in p.M:
         for field in jkext.convert.kV_cm2V_m((1.,)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
