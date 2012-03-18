@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2008,2009 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
 
 
 import os
@@ -24,8 +24,8 @@ setup(name="jkstark",
       author_email        = "software@jochen-kuepper.de",
       description         = "JK Python Stark effect extensions",
       license             = "GPL",
-      url                 = "http://python.jochen-kuepper.de",
-      version             = "0.0.1",
+      url                 = "http://desy.cfel.de/cid/cmi",
+      version             = "0.1.0",
       long_description    = long_description,
       package_dir         = {'jkstark': 'lib'},
       packages            = ['jkstark'],
@@ -34,4 +34,3 @@ setup(name="jkstark",
                              'scripts/jkstark_plot_energy',
                              'scripts/jkstark_print_energy']
       )
-
