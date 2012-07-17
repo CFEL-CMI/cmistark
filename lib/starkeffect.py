@@ -66,6 +66,7 @@ class CalculationParameter:
     polarizability = num.zeros((3,3), num.float64)
     watson=None
     symmetry='N'
+    name = ' '
 
 
 
