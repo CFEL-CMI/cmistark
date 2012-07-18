@@ -534,7 +534,7 @@ if __name__ == "__main__":
     p.watson = 'A'
     p.symmetry = 'C2c'
     for M in p.M:
-        for field in jkext.convert.kV_cm2V_m((1.,)):
+        for field in jkext.convert.kV_cm2V_m((1.,2.,3.)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = AsymmetricRotor(p, M, field)
             top.energy(State(1, 0, 1, M, p.isomer))

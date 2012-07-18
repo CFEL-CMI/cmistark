@@ -50,7 +50,7 @@ def main(args):
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene","3-AP-CIS","3-AP-TRANS","p-aminobenzonitrile",
                                                    "benzonitrile",
-                                                   "iodobenzene", "phenylpyrrole", "indole", "indole-water", "indole-water2",
+                                                   "iodobenzene", "OCS", "phenylpyrrole", "indole", "indole-water", "indole-water2",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -153,6 +153,14 @@ def main(args):
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([1922.2e6, 1098.6e6, 756.8e6]))
             param.dipole = convert.D2Cm(num.array([0.938618, -0.245091, 0.589453]))
+        elif o == "--OCS":
+            # rotcon from Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978), dipole moment from Chem Phys Lett 24, 346 (1974)
+            param.name = "OCS"
+            param.mass = 1 * Masses['C'] + 1 * Masses['O'] + 1 * Masses['S']
+            param.watson = 'A'
+            param.symmetry = 'N'
+            param.rotcon = convert.Hz2J(num.array([6.081492475e12, 6081.492475e6, 6081.492475e6]))
+            param.dipole = convert.D2Cm(num.array([0.71519,0.0,0.0]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:

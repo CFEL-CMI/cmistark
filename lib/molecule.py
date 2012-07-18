@@ -152,10 +152,11 @@ if __name__ == "__main__":
     # test Stark calculation and storage/retrieval
     from jkext.convert import *
     param = jkstark.starkeffect.CalculationParameter
+    param.name = 'cis'
     param.isomer = 0
     param.watson = 'A'
     param.symmetry = 'C2a'
-    param.rotcon = Hz2J(num.array([5000e6, 1500e6, 1200e6]))
+    param.rotcon = Hz2J(num.array([5000e5, 1500e5, 1200e5]))
     param.quartic = Hz2J(num.array([50., 1000., 500, 10., 600]))
     param.dipole = D2Cm(num.array([5, 0., 0.]))
     # calculation details
