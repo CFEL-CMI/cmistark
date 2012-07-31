@@ -48,8 +48,9 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
-                                                   "2,6-difluoro-iodobenzene","3-AP-CIS","3-AP-TRANS","p-aminobenzonitrile",
-                                                   "benzonitrile",
+                                                   "2,6-difluoro-iodobenzene", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2",
+                                                   "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
+                                                   "p-aminobenzonitrile", "benzonitrile",
                                                    "iodobenzene", "OCS", "phenylpyrrole", "indole", "indole-water", "indole-water2",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
@@ -92,17 +93,44 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
             param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
         elif o in ("--3-AP-CIS","--3-AP-TRANS"):
+            # exp values
             param.name = "aminophenol"
             param.watson = 'A'
             param.symmetry = 'N'
-            if o == "--3-AP-CIS":
+            if o == "--3-AP-CIS": #CIS
                 param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6])) #exp
-                param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.])) #exp
+                param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
+                param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
             elif o == "--3-AP-TRANS": #TRANS
                 param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6])) #exp
-                param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.])) #exp
+                param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
+                param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
+        elif o in ("--3-AP-CIS_MP2","--3-AP-TRANS_MP2"):
+            # calculated values from Daniel Roesch in Basel, 2011
+            param.name = "3-aminophenol_MP2"
+            param.watson = 'A'
+            param.symmetry = 'N'
+            if o == "--3-AP-CIS_MP2": #CIS
+                param.isomer = 0
+                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6])) 
+                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.])) 
+            elif o == "--3-AP-TRANS_MP2": #TRANS
+                param.isomer = 1
+                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6])) 
+                param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
+        elif o in ("--3-AP-CIS_B3LYP","--3-AP-TRANS_B3LYP"):
+            # calculated values from Daniel Roesch in Basel, 2011
+            param.name = "3-aminophenol_B3LYP"
+            param.watson = 'A'
+            param.symmetry = 'N'
+            if o == "--3-AP-CIS_B3LYP": #CIS
+                param.isomer = 0
+                param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
+                param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
+            elif o == "--3-AP-TRANS_B3LYP": #TRANS
+                param.isomer = 1
+                param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
+                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.])) 
         elif o == "--p-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
             param.name = "p-aminobenzonitrile"
@@ -146,15 +174,15 @@ def main(args):
             param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
             param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
         elif o == "--indole-water2":
-            #  from YPChang's ab initio calculations (MP2/6-31+G*). More "expensive" calculations are required.
+            #  from YPChang's ab initio calculations (B3LYP/6-31+G*).
             param.name = "indole-water2"
             param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
             param.watson = 'A'
             param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([1922.2e6, 1098.6e6, 756.8e6]))
-            param.dipole = convert.D2Cm(num.array([0.938618, -0.245091, 0.589453]))
+            param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
+            param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
         elif o == "--OCS":
-            # rotcon from Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978), dipole moment from Chem Phys Lett 24, 346 (1974)
+            # rotcon from Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978), dipole moment from Chem. Phys. Lett. 24, 346 (1974)
             param.name = "OCS"
             param.mass = 1 * Masses['C'] + 1 * Masses['O'] + 1 * Masses['S']
             param.watson = 'A'
