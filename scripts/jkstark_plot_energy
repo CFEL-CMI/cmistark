@@ -134,6 +134,7 @@ def main(args):
 
         # plot all states in given J-range
         else:
+            print Jmin, Jmax, range(Jmin, Jmax+1)
             # prepare list of states we want to plot
             statestoplot = []
             for J in range(Jmin, Jmax+1):
