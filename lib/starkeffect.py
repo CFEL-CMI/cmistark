@@ -33,49 +33,44 @@ class CalculationParameter:
     Ir (x, y, z -> b, c, a).
 
     General parameters:
+    - isomer
+    - rotcon (Joule), quartic (Joule), dipole (Coulomb meter)
     - mass: mass of molecule/isomer
-    - type: specify the type of rotor, currently only 'A' is implemented.
+    - type: specify the type of rotor
       - 'L': linear top
       - 'S': symmetric top
       - 'A': asymmetric top
 
     The following parameter are used for an asymmetric top:
     - M, Jmin, Jmax_calc, Jmax_save
-    - isomer
-    - rotcon (Joule), quartic (Joule), dipole (Coulomb meter)
-    - watson, symmetry
-
-    |watson| specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used.
-    - 'A' for Watson's A reduction
-    - 'S' for Watson's S reduction
-
-    |symmetry| defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
-    the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b', 'C2c',
-    or 'V' for full Fourgroup symmetry. The latter can only be correct for zero-field calculations or M=0.
+    - watson, specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used.
+      - 'A' for Watson's A reduction
+      - 'S' for Watson's S reduction
+    - symmetry defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
+      the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b',
+      'C2c', or 'V' for full Fourgroup symmetry. The latter can only be correct for zero-field calculations or M=0.
     """
-    type = 'A','L','S'
+    name = ' '
+    isomer = 0
+    type = 'A'
+    watson = None
+    symmetry = 'N'
+    # quantum numbers
     M = range(0, 2)
     Jmax_calc = 5
     Jmax_save = 2
-    isomer = 0
     # fields
     dcfields = jkext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
     # molecular parameters
     mass = num.zeros((1,), num.float64)      # kg
-    rotcon = num.zeros((3,), num.float64)    # Joule - can of length 1, 2, or 3 depending on type
-    quartic = num.zeros((5,), num.float64)   # Joule - can of length 1, 3, or 5 depending on type
-    dipole = num.zeros((3,), num.float64)    # Coulomb meter
-    polarizability = num.zeros((3,3), num.float64)
-    watson=None
-    symmetry='N'
-    name = ' '
+    rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
+    quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
+    dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
+
 
 
 class Rotor(object):
-    """Representation of an  linear top for energy level calculation purposes.
-
-    This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
-    """
+    """Abstract representation of an rotating top for energy level calculation purposes."""
 
     def __init__(self, param, M, dcfield=0.):
         """Save the relevant type-independent parameters"""
@@ -104,11 +99,9 @@ class Rotor(object):
         self.stateorder_valid = False
 
 
-
     def field_DC(self):
         """Return DC field for which the Stark energies were calculated."""
         return self.dcfield
-
 
 
     def energy(self, state):
@@ -118,13 +111,12 @@ class Rotor(object):
         return self.levels[state.id()]
 
 
-
     def print_mat(self, mat, text=""):
         """Print matrix for debuging purposes."""
         print "\n", text
-        rows, columns = mat.shape[0]
+        rows, columns = mat.shape
         for i in range(rows):
-            for j in range(mat.columns):
+            for j in range(columns):
                 if False == self.complex:
                     print "%10.3g" % (mat[i,j]),
                 else:
@@ -133,48 +125,46 @@ class Rotor(object):
 
 
 
-
-
-
 class LinearRotor(Rotor):
-    """Representation of an  linear top for energy level calculation purposes.
+    """Representation of a linear top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
     """
 
     def __init__(self, param, M, dcfield=0.):
-        Rotor.__init__(self, param, M, dcfield=0.)
         """Save the relevant parameters"""
-        assert 'L' == param.type
+        # general initialization
+        Rotor.__init__(self, param, M, dcfield)
         # consistency checks
+        assert 'L' == param.type
         assert self.rotcon.shape == (1,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
 
 
     def index(self, J):
-        # this requires a correct "global" value of self.Jmin_matrixsize, which is set in full_hamiltonian.
-        # Therefore, we must be called only through full_hamiltonian
-        blockstart = J - self.Jmin_matrixsize
+        blockstart = J - self.Jmin
         return blockstart
 
 
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
+        self.print_mat(hmat, "hamiltonian")
         eval = num.linalg.eigvalsh(hmat) # calculate only energies
         eval = num.sort(eval)
+        print "evals:", eval
         for J in range(self.Jmin, self.Jmax_save+1):
+            i = J - self.Jmin
             state = State(J, 0, 0, self.M, self.isomer)
-            self.levels[state.id()] = eval[J]
+            self.levels[state.id()] = eval[i]
         # done - data is now valid
         self.valid = True
 
 
     def hamiltonian(self, Jmin, Jmax, dcfield):
         """Return Hamiltonian matrix"""
-        self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
-        matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize
+        matrixsize = Jmax - Jmin + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
@@ -195,18 +185,15 @@ class LinearRotor(Rotor):
             hmat[self.index(J), self.index(J)] += B * J*(J+1) - D * (J*(J+1))**2
 
 
-
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = num.sqrt
         M = self.M
-        muA = self.dipole
-        for J in range(Jmin, Jmax+1):
-            value = (-muA * dcfield * sqrt((J+1)**2) * sqrt((J+1)**2 - M**2)
-                      / ((J+1) * sqrt((2*J+1) * (2*J+3))))
+        mu = float(self.dipole)
+        for J in range(Jmin, Jmax):
+            value = -mu * dcfield * sqrt((J+1)**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
             hmat[self.index(J+1), self.index(J)] += value
             hmat[self.index(J), self.index(J+1)] += value
-
 
 
     def states(self):
@@ -216,9 +203,25 @@ class LinearRotor(Rotor):
         iso = self.isomer
         for J in range(self.Jmin, self.Jmax_save+1):
             list.append(State(J, 0, 0, M, iso))
-        return self.levels.keys()
+        return list
 
 
+
+class SymmetricRotor(Rotor):
+    """Representation of a symmetric top for energy level calculation purposes.
+
+    This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
+    """
+    pass
+
+
+
+class AsymmetricRotor(Rotor):
+    """Representation of an asymmetric top for energy level calculation purposes.
+
+    This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
+    """
+    pass
 
 
 
