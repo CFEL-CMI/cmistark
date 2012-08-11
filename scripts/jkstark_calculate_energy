@@ -113,11 +113,11 @@ def main(args):
             param.symmetry = 'N'
             if o == "--3-AP-CIS_MP2": #CIS
                 param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6])) 
-                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.])) 
+                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
+                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
             elif o == "--3-AP-TRANS_MP2": #TRANS
                 param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6])) 
+                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
                 param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
         elif o in ("--3-AP-CIS_B3LYP","--3-AP-TRANS_B3LYP"):
             # calculated values from Daniel Roesch in Basel, 2011
@@ -131,7 +131,7 @@ def main(args):
             elif o == "--3-AP-TRANS_B3LYP": #TRANS
                 param.isomer = 1
                 param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
-                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.])) 
+                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
         elif o == "--p-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
             param.name = "p-aminobenzonitrile"
@@ -161,14 +161,17 @@ def main(args):
         elif o == "--OCS":
             param.name = "OCS"
             param.mass = Masses['O'] + Masses['C'] + Masses['S']
-            param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
-            param.dipole = convert.D2Cm(num.array([0.7151, 0., 0.]))
             if 0 == param.isomer:
-                param.type = 'L' 
+                param.type = 'L'
                 param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.7151]))
+                param.quartic  = convert.Hz2J(num.array([0.]))
             elif 1 == param.isomer:
                 param.type = 'A'
                 param.symmetry = 'C2a'
+                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.7151, 0., 0.]))
         elif o == "--indole":
             # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
             param.name = "indole"
