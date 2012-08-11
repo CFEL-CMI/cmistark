@@ -86,68 +86,42 @@ class Molecule(jkext.molecule.Molecule):
     def starkeffect_calculation(self, param):
         """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
         them in our storage file."""
+        try:
+            self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
+        except:
+            pass
         if 'A' == param.type:
-            try:
-                self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
-            except:
-                pass
-            masses = self.__storage.root.masses
-            new_isomer = True
-            for isomer in masses.iterrows():
-                if isomer['num'] == param.isomer:
-                    isomer['mass'] = param.mass
-                    new_isomer = False
-            if new_isomer:
-                isomer = self.__storage.root.masses.row
-                isomer['name'] = param.name
-                isomer['mass'] = param.mass
-                isomer['num']  = param.isomer
-                isomer.append()
-            for M in param.M:
-                energies = {}
-                for field in param.dcfields:
-                    calc = jkstark.starkeffect.AsymmetricRotor(param, M, field)
-                    for state in calc.states():
-                        id = state.id()
-                        if energies.has_key(id):
-                            energies[id].append(calc.energy(state))
-                        else:
-                            energies[id] = [calc.energy(state),]
-                # store calculated values for this M
-                for id in energies.keys():
-                    self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
+            Rotor = jkstark.starkeffect.AsymmetricRotor
         elif 'L' == param.type:
-            try:
-                self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
-            except:
-                pass
-            masses = self.__storage.root.masses
-            new_isomer = True
-            for isomer in masses.iterrows():
-                if isomer['num'] == param.isomer:
-                    isomer['mass'] = param.mass
-                    new_isomer = False
-            if new_isomer:
-                isomer = self.__storage.root.masses.row
-                isomer['name'] = param.name
-                isomer['mass'] = param.mass
-                isomer['num']  = param.isomer
-                isomer.append()
-            for M in param.M:
-                energies = {}
-                for field in param.dcfields:
-                    calc = jkstark.starkeffect.LinearRotor(param, M, field)
-                    for state in calc.states():
-                        id = state.id()
-                        if energies.has_key(id):
-                            energies[id].append(calc.energy(state))
-                        else:
-                            energies[id] = [calc.energy(state),]
-                # store calculated values for this M
-                for id in energies.keys():
-                    self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
+            Rotor = jkstark.starkeffect.LinearRotor
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
+        # calculate and store energies
+        masses = self.__storage.root.masses
+        new_isomer = True
+        for isomer in masses.iterrows():
+            if isomer['num'] == param.isomer:
+                isomer['mass'] = param.mass
+                new_isomer = False
+        if new_isomer:
+            isomer = self.__storage.root.masses.row
+            isomer['name'] = param.name
+            isomer['mass'] = param.mass
+            isomer['num']  = param.isomer
+            isomer.append()
+        for M in param.M:
+            energies = {}
+            for field in param.dcfields:
+                calc = Rotor(param, M, field)
+                for state in calc.states():
+                    id = state.id()
+                    if energies.has_key(id):
+                        energies[id].append(calc.energy(state))
+                    else:
+                        energies[id] = [calc.energy(state),]
+            # store calculated values for this M
+            for id in energies.keys():
+                self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
         self.__storage.flush()
 
 
