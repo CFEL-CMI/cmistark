@@ -181,7 +181,7 @@ def main(args):
                                     break
             for state in statestoplot:
                 if (verbose):
-                        print "state to plot: " + state.name()
+                    print "state to plot: " + state.name()
                 fields, energies = mol.starkeffect(state)
                 # convert energy
                 if (energyunit=="MHz"):

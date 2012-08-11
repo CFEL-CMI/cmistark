@@ -106,7 +106,37 @@ class Molecule(jkext.molecule.Molecule):
             for M in param.M:
                 energies = {}
                 for field in param.dcfields:
-                    calc = jkstark.starkeffect.AsymmetricRotor(param, M, field)
+                    calc = jkstark.starkeffect.Rotor(param, M, field)
+                    for state in calc.states():
+                        id = state.id()
+                        if energies.has_key(id):
+                            energies[id].append(calc.energy(state))
+                        else:
+                            energies[id] = [calc.energy(state),]
+                # store calculated values for this M
+                for id in energies.keys():
+                    self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
+        elif 'L' == param.type:
+            try:
+                self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
+            except:
+                pass
+            masses = self.__storage.root.masses
+            new_isomer = True
+            for isomer in masses.iterrows():
+                if isomer['num'] == param.isomer:
+                    isomer['mass'] = param.mass
+                    new_isomer = False
+            if new_isomer:
+                isomer = self.__storage.root.masses.row
+                isomer['name'] = param.name
+                isomer['mass'] = param.mass
+                isomer['num']  = param.isomer
+                isomer.append()
+            for M in param.M:
+                energies = {}
+                for field in param.dcfields:
+                    calc = jkstark.starkeffect.Rotor(param, M, field)
                     for state in calc.states():
                         id = state.id()
                         if energies.has_key(id):

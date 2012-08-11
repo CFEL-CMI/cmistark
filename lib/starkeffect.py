@@ -65,7 +65,6 @@ class CalculationParameter:
     rotcon = num.zeros((3,), num.float64)    # Joule
     quartic = num.zeros((5,), num.float64)   # Joule
     dipole = num.zeros((3,), num.float64)    # Coulomb meter
-    Dcon = num.zeros((1,), num.float64)      # Hz
     polarizability = num.zeros((3,3), num.float64)
     watson=None
     symmetry='N'
@@ -244,11 +243,11 @@ class Rotor:
         """
         sqrt = num.sqrt
         A, B, C = self.__rotcon.tolist()
-        if self.type == 'L'
-            for J in range(Jmin, Jmax+1)
-                hmat[self.__index(J), self.__index(J)] += A(J*(J+1) 
+        if 'L' == self.type:
+            for J in range(Jmin, Jmax+1):
+                hmat[self.__index(J), self.__index(J)] += A(J*(J+1))
 
-        elif self.type == 'A'
+        elif self.type == 'A':
             for J in range(Jmin, Jmax+1):
                 for K in range(-J, J+1):
                    hmat[self.__index(J, K), self.__index(J, K)] += (B+C)/2 * (J*(J+1) - K**2) + A * K**2
@@ -264,7 +263,7 @@ class Rotor:
         M = self.__M      
         muA, muB, muC = self.__dipole
 
-        if self.type == 'L'
+        if 'L' == self.type:
             # matrix elements involving µ_a
             for J in range(Jmin, Jmax+1):
                 value = (-muA * dcfield * sqrt((J+1)**2) * sqrt((J+1)**2 - M**2)
@@ -272,7 +271,7 @@ class Rotor:
                 hmat[self.__index(J+1), self.__index(J)] += value
                 hmat[self.__index(J), self.__index(J+1)] += value            
                  
-        elif self.type == 'A'
+        elif 'A' == self.type:
             if self.__dipole_components[0]:
                 # matrix elements involving µ_a
                 for J in range(Jmin, Jmax):
@@ -438,7 +437,7 @@ class Rotor:
             # I^r (not I^l?) representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
             # or, as used here, A, Ba, Bb, Bc
             # - in calculations for a single J this is the same
-            # - in claculations for multiple J the correspondence flips with J (see Gordy+Cook Table 7.5)
+            # - in calculations for multiple J the correspondence flips with J (see Gordy+Cook Table 7.5)
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
             i = 0
             for J in range(Jmin, Jmax+1):
@@ -574,9 +573,9 @@ class Rotor:
         """Add the centrifugal distortion matrix element terms in "Watson's L reduction" to hmat."""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
         sqrt = num.sqrt
-        D = self.__Dcon       
+        DJ, DJK, DK, dJ, dK = self.__quartic.tolist()      
         for J in range(Jmin, Jmax+1):
-            value = -1*D*J**2*(J+1)**2
+            value = -DJ
             hmat[self.__index(J, J), self.__index(J, J)] += value
 
 
@@ -607,7 +606,7 @@ if __name__ == "__main__":
     for M in p.M:
         for field in jkext.convert.kV_cm2V_m((1.,2.,3.)):
             print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
-            top = AsymmetricRotor(p, M, field)
+            top = Rotor(p, M, field)
             top.energy(State(1, 0, 1, M, p.isomer))
             for state in [State(0, 0, 0, M, p.isomer),
                           State(1, 0, 1, M, p.isomer), State(1, 1, 1, M, p.isomer), State(1, 1, 0, M, p.isomer),
