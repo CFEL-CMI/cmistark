@@ -150,6 +150,16 @@ class Molecule(jkext.molecule.Molecule):
         return list
 
 
+    def states_to_print(self, Jmin, Jmax, statelist=None):
+        """Create a list of states to be printed/plotted according to the provided arguments
+
+        Correctly creates list of states for the various rotor types
+        """
+        
+        states = []
+        return states
+
+
 
 # some simple tests
 if __name__ == "__main__":
