@@ -150,10 +150,8 @@ class LinearRotor(Rotor):
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
-        self.print_mat(hmat, "hamiltonian")
         eval = num.linalg.eigvalsh(hmat) # calculate only energies
         eval = num.sort(eval)
-        print "evals:", eval
         for J in range(self.Jmin, self.Jmax_save+1):
             i = J - self.Jmin
             state = State(J, 0, 0, self.M, self.isomer)
