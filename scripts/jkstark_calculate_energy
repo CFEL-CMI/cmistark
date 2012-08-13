@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2009,2011 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,7 +19,7 @@ from __future__ import division
 
 """Calculate adiabatic energy curves and store them in HDF5 file
 
-Copyright (C) 2008,2009,2011 Jochen Küpper
+Copyright (C) 2008,2009,2011,2012 Jochen Küpper
 
 This is a simple driver around the functionality in the import modules of the jkstark Python extension. It allows user
 interaction and defines the actual molecular properties used in the calculations. The constants should not be changed -
@@ -51,7 +51,8 @@ def main(args):
                                                    "2,6-difluoro-iodobenzene", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2",
                                                    "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
                                                    "p-aminobenzonitrile", "benzonitrile",
-                                                   "iodobenzene", "OCS", "phenylpyrrole", "indole", "indole-water", "indole-water2",
+                                                   "iodobenzene", "OCS", "phenylpyrrole",
+                                                   "indole", "indole-water", "indole-water2",
                                                    "water", "OCS", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:

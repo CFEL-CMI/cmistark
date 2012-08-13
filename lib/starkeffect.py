@@ -26,7 +26,7 @@ import jkext.convert
 from jkext.state import State
 
 
-class CalculationParameter:
+class CalculationParameter(object):
     """Container of parameters for calculation of Stark energies plus some more generic parameters of the molecule
 
     Calculate energy for the specified |dcfields| (V/m) and rotor type; all calculations are performed in representation
