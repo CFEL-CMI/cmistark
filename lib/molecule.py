@@ -143,10 +143,15 @@ class Molecule(jkext.molecule.Molecule):
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect."""
         list = []
-        for group in self.__storage.listNodes(self.__storage.root, classname='Group'):
-            state = State().fromhdfname(group._v_name)
-            if 'dcfield' == group.dcfield.name and 'dcstarkenergy' == group.dcstarkenergy.name:
-                list.append(state)
+        for groupJ in self.__storage.listNodes(self.__storage.root, classname='Group'):
+            for groupKa in self.__storage.listNodes(groupJ, classname='Group'):
+                for groupKc in self.__storage.listNodes(groupKa, classname='Group'):
+                    for groupM in self.__storage.listNodes(groupKc, classname='Group'):
+                        for groupIso in self.__storage.listNodes(groupM, classname='Group'):
+                            statename = (groupJ._v_name + '/' + groupKa._v_name + '/' + groupKc._v_name
+                                         + '/' + groupM._v_name + '/' + groupIso._v_name)
+                            if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:
+                                list.append(State().fromhdfname(statename))
         return list
 
 
@@ -155,7 +160,7 @@ class Molecule(jkext.molecule.Molecule):
 
         Correctly creates list of states for the various rotor types
         """
-        
+
         states = []
         return states
 
