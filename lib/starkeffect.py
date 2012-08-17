@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
 import scipy as num
@@ -66,7 +66,7 @@ class CalculationParameter(object):
     rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
-    
+
 
 
 
@@ -122,7 +122,7 @@ class Rotor(object):
                     print "%10.3g" % (mat[i,j]),
                 else:
                     print "%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ),
-            
+
 
 
 class LinearRotor(Rotor):
@@ -204,6 +204,7 @@ class LinearRotor(Rotor):
         return list
 
 
+
 class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
@@ -219,6 +220,7 @@ class SymmetricRotor(Rotor):
         assert self.rotcon.shape == (2,)
 	assert self.dipole.shape == (1,)
 	assert self.quartic.shape == (3,)
+
 
     def index(self, J, K):
 	# this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
@@ -239,6 +241,7 @@ class SymmetricRotor(Rotor):
         # done - data is now valid
         self.valid = True
 
+
     def hamiltonian(self, Jmin, Jmax, dcfield):
         """Return Hamiltonian matrix"""
         self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
@@ -251,7 +254,7 @@ class SymmetricRotor(Rotor):
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
         return hmat
-        
+
 
     def rigid(self, hmat, Jmin, Jmax):
 	"""Add the rigid-rotor matrix element terms to hmat -- representation I^l
@@ -267,8 +270,8 @@ class SymmetricRotor(Rotor):
                 value = B*J*(J+1) +(A-B)* K**2
                 distortion = -DJ* J**2 *(J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value + distortion
-        
-	    
+
+
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = num.sqrt
@@ -281,7 +284,8 @@ class SymmetricRotor(Rotor):
 		    value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
 		    hmat[self.index(J+1, K), self.index(J, K)] += value
 		    hmat[self.index(J, K), self.index(J+1, K)] += value
-        
+
+
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
         list = []
@@ -290,6 +294,7 @@ class SymmetricRotor(Rotor):
         for J in range(self.Jmin, self.Jmax_save+1):
             list.append(State(J, 0, 0, M, iso))
         return list
+
 
 
 class AsymmetricRotor(Rotor):
@@ -317,6 +322,9 @@ class AsymmetricRotor(Rotor):
 	else: # µ_c == 0 --  the Hamiltonian matrix is real (and symmetric)
 	    self.complex = False
 	    self.hmat_type = num.float64
+        # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
+        # Needs to be reimplemented correctly *soon*
+        print "Fourgroup symmetry is currently not applied for M==0 states -- see code for details -- please try to fix this"
 	#if 0 == self.M and not self.dipole_components[1] and not self.dipole_components[2]:
 	#    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole moment is along a
 	#    self.symmetry = 'V'
@@ -336,6 +344,7 @@ class AsymmetricRotor(Rotor):
 		    Ka += 1
 		    list.append(State(J, Ka, Kc, M, iso))
         return list
+
 
     def index(self, J, K):
 	# this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
@@ -695,10 +704,13 @@ class AsymmetricRotor(Rotor):
 			* sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))))
 		hmat[self.index(J, K+2), self.index(J, K)] += value
 		hmat[self.index(J, K), self.index(J, K+2)] += value
-    
+
+
     def __watson_S(self):
         """Add the centrifugal distortion matrix element terms in Watson's S reduction to hmat."""
         raise NotImplementedError("Watson's S-reduction is not implemented (yet)")
+
+
 
 # some simple tests
 if __name__ == "__main__":
