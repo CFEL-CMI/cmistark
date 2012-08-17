@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2009,2011 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,7 +19,7 @@ from __future__ import division
 
 """Calculate adiabatic energy curves and store them in HDF5 file
 
-Copyright (C) 2008,2009,2011 Jochen Küpper
+Copyright (C) 2008,2009,2011,2012 Jochen Küpper
 
 This is a simple driver around the functionality in the import modules of the jkstark Python extension. It allows user
 interaction and defines the actual molecular properties used in the calculations. The constants should not be changed -
@@ -48,10 +48,15 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
-                                                   "2,6-difluoro-iodobenzene", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2",
-                                                   "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
-                                                   "p-aminobenzonitrile", "benzonitrile",
-                                                   "iodobenzene", "OCS", "phenylpyrrole", "indole", "indole-water", "indole-water2",
+                                                   "2,6-difluoro-iodobenzene",
+                                                   "3-aminophenol", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2", "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
+                                                   "4-aminobenzonitrile",
+                                                   "benzonitrile",
+                                                   "indole", "indole-water", "indole-water2",
+                                                   "iodobenzene",
+                                                   "iodomethane",
+                                                   "OCS",
+                                                   "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO"])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -60,12 +65,13 @@ def main(args):
         sys.exit(2)
     # default values
     param = starkeffect.CalculationParameter
-    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 3))
+    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 25))
     param.isomer = 0
     param.Jmin = 0
-    param.Jmax_calc = 5
-    param.Jmax_save = 2
+    param.Jmax_calc = 10
+    param.Jmax_save = 6
     param.M = None
+    param.type = 'A'
     # scan commandline
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -112,11 +118,11 @@ def main(args):
             param.symmetry = 'N'
             if o == "--3-AP-CIS_MP2": #CIS
                 param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6])) 
-                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.])) 
+                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
+                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
             elif o == "--3-AP-TRANS_MP2": #TRANS
                 param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6])) 
+                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
                 param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
         elif o in ("--3-AP-CIS_B3LYP","--3-AP-TRANS_B3LYP"):
             # calculated values from Daniel Roesch in Basel, 2011
@@ -130,10 +136,10 @@ def main(args):
             elif o == "--3-AP-TRANS_B3LYP": #TRANS
                 param.isomer = 1
                 param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
-                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.])) 
-        elif o == "--p-aminobenzonitrile":
+                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
+        elif o == "--4-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
-            param.name = "p-aminobenzonitrile"
+            param.name = "4-aminobenzonitrile"
             param.watson = 'A'
             param.symmetry = 'C2a'
             param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
@@ -157,6 +163,50 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
             # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
             param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+        elif o == "--OCS":
+            # paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
+            # Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346–351 (1974).
+            param.name = "OCS"
+            param.mass = Masses['O'] + Masses['C'] + Masses['S']
+            if 0 == param.isomer:
+                param.type = 'L'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.71519]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3]))
+            elif 1 == param.isomer:
+                param.type = 'S'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.71519]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
+            elif 2 == param.isomer:
+                param.type = 'A'
+                param.symmetry = 'C2a'
+                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
+        elif o == "--iodomethane":
+            # constants from Wlodarczak, G., Boucher, D., Bocquet, R., & Demaison, J. (1987). The rotational constants
+            # of methyl lodide. Journal Of Molecular Spectroscopy, 124(1), 53–65. doi:10.1016/0022-2852(87)90120-2 and
+            # Gadhi, J., Wlodarczak, G., Legrand, J., & Demaison, J. (1989). The dipole moments of methyl bromide and
+            # methyl iodide. Chemical Physics Letters, 156(4), 401–404. doi:10.1016/0009-2614(89)87116-7
+            #
+            # good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
+            param.name = "iodomethane"
+            param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
+            if 0 == param.isomer:
+                param.type = 'S'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6]))
+                param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0.]))
+                param.dipole = convert.D2Cm(num.array([1.6406]))
+            elif 1 == param.isomer:
+                param.type = 'A'
+                param.symmetry = 'C2a'
+                param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6, 7501.2757456e6]))
+                param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
+                param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
         elif o == "--indole":
             # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
             param.name = "indole"
@@ -181,14 +231,6 @@ def main(args):
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
             param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
-        elif o == "--OCS":
-            # rotcon from Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978), dipole moment from Chem. Phys. Lett. 24, 346 (1974)
-            param.name = "OCS"
-            param.mass = 1 * Masses['C'] + 1 * Masses['O'] + 1 * Masses['S']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([6.081492475e12, 6081.492475e6, 6081.492475e6]))
-            param.dipole = convert.D2Cm(num.array([0.71519,0.0,0.0]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:
@@ -245,6 +287,7 @@ def main(args):
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
+    print "name and storage of the molecule object", param.name
     mol.starkeffect_calculation(param)
     # close file
     del mol

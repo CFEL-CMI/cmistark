@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -33,8 +33,6 @@ class _isomer_mass(tables.IsDescription):
     name  = tables.StringCol(64)
     num   = tables.UInt16Col()
     mass  = tables.Float64Col()
-
-
 
 
 class Molecule(jkext.molecule.Molecule):
@@ -86,38 +84,45 @@ class Molecule(jkext.molecule.Molecule):
     def starkeffect_calculation(self, param):
         """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
         them in our storage file."""
-        if 'A' == param.type:
-            try:
-                self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
-            except:
-                pass
-            masses = self.__storage.root.masses
-            new_isomer = True
-            for isomer in masses.iterrows():
-                if isomer['num'] == param.isomer:
-                    isomer['mass'] = param.mass
-                    new_isomer = False
-            if new_isomer:
-                isomer = self.__storage.root.masses.row
-                isomer['name'] = param.name
-                isomer['mass'] = param.mass
-                isomer['num']  = param.isomer
-                isomer.append()
-            for M in param.M:
-                energies = {}
-                for field in param.dcfields:
-                    calc = jkstark.starkeffect.AsymmetricRotor(param, M, field)
-                    for state in calc.states():
-                        id = state.id()
-                        if energies.has_key(id):
-                            energies[id].append(calc.energy(state))
-                        else:
-                            energies[id] = [calc.energy(state),]
-                # store calculated values for this M
-                for id in energies.keys():
-                    self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
+        try:
+            self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
+        except:
+            pass
+        
+        if 'L' == param.type:
+            Rotor = jkstark.starkeffect.LinearRotor
+        elif 'S' == param.type:
+            Rotor = jkstark.starkeffect.SymmetricRotor
+        elif 'A' == param.type:
+            Rotor = jkstark.starkeffect.AsymmetricRotor
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
+        # calculate and store energies
+        masses = self.__storage.root.masses
+        new_isomer = True
+        for isomer in masses.iterrows():
+            if isomer['num'] == param.isomer:
+                isomer['mass'] = param.mass
+                new_isomer = False
+        if new_isomer:
+            isomer = self.__storage.root.masses.row
+            isomer['name'] = param.name
+            isomer['mass'] = param.mass
+            isomer['num']  = param.isomer
+            isomer.append()
+        for M in param.M:
+            energies = {}
+            for field in param.dcfields:
+                calc = Rotor(param, M, field)
+                for state in calc.states():
+                    id = state.id()
+                    if energies.has_key(id):
+                        energies[id].append(calc.energy(state))
+                    else:
+                        energies[id] = [calc.energy(state),]
+            # store calculated values for this M
+            for id in energies.keys():
+                self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
         self.__storage.flush()
 
 
@@ -139,11 +144,26 @@ class Molecule(jkext.molecule.Molecule):
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect."""
         list = []
-        for group in self.__storage.listNodes(self.__storage.root, classname='Group'):
-            state = State().fromhdfname(group._v_name)
-            if 'dcfield' == group.dcfield.name and 'dcstarkenergy' == group.dcstarkenergy.name:
-                list.append(state)
+        for groupJ in self.__storage.listNodes(self.__storage.root, classname='Group'):
+            for groupKa in self.__storage.listNodes(groupJ, classname='Group'):
+                for groupKc in self.__storage.listNodes(groupKa, classname='Group'):
+                    for groupM in self.__storage.listNodes(groupKc, classname='Group'):
+                        for groupIso in self.__storage.listNodes(groupM, classname='Group'):
+                            statename = (groupJ._v_name + '/' + groupKa._v_name + '/' + groupKc._v_name
+                                         + '/' + groupM._v_name + '/' + groupIso._v_name)
+                            if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:
+                                list.append(State().fromhdfname(statename))
         return list
+
+
+    def states_to_print(self, Jmin, Jmax, statelist=None):
+        """Create a list of states to be printed/plotted according to the provided arguments
+
+        Correctly creates list of states for the various rotor types
+        """
+
+        states = []
+        return states
 
 
 
