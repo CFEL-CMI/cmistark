@@ -233,20 +233,11 @@ def main(args):
             param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
-            if param.isomer == 0:
-                param.name = "phenylpyrrole"
-                param.watson = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
-                param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
-            elif param.isomer == 1:
-                # A. J. Fleisher
-                param.name = "phenylpyrrole"
-                param.isomer = 1
-                param.watson = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
-                param.dipole = convert.D2Cm(num.array([1.56, 0., 0.]))
+            param.name = "phenylpyrrole"
+            param.watson = 'A'
+            param.symmetry = 'C2a'
+            param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
+            param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
             # get better data from
             # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
