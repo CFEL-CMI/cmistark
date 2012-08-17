@@ -35,8 +35,6 @@ class _isomer_mass(tables.IsDescription):
     mass  = tables.Float64Col()
 
 
-
-
 class Molecule(jkext.molecule.Molecule):
     """Representation of a Molecule"""
 
@@ -90,10 +88,13 @@ class Molecule(jkext.molecule.Molecule):
             self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
         except:
             pass
-        if 'A' == param.type:
-            Rotor = jkstark.starkeffect.AsymmetricRotor
-        elif 'L' == param.type:
+        
+        if 'L' == param.type:
             Rotor = jkstark.starkeffect.LinearRotor
+        elif 'S' == param.type:
+            Rotor = jkstark.starkeffect.SymmetricRotor
+        elif 'A' == param.type:
+            Rotor = jkstark.starkeffect.AsymmetricRotor
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
         # calculate and store energies

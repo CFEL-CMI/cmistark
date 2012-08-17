@@ -50,7 +50,7 @@ def main(args):
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2",
                                                    "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
-                                                   "p-aminobenzonitrile", "benzonitrile",
+                                                   "p-aminobenzonitrile", "benzonitrile", "methyl-iodide",
                                                    "iodobenzene", "OCS", "phenylpyrrole",
                                                    "indole", "indole-water", "indole-water2",
                                                    "water", "OCS", "H2O", "D2O", "HDO"])
@@ -61,11 +61,11 @@ def main(args):
         sys.exit(2)
     # default values
     param = starkeffect.CalculationParameter
-    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 3))
+    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 25))
     param.isomer = 0
     param.Jmin = 0
-    param.Jmax_calc = 5
-    param.Jmax_save = 2
+    param.Jmax_calc = 10
+    param.Jmax_save = 6
     param.M = None
     param.type = 'A'
     # scan commandline
@@ -165,14 +165,43 @@ def main(args):
             if 0 == param.isomer:
                 param.type = 'L'
                 param.symmetry = 'N'
+                print "Linear"
                 param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
                 param.dipole = convert.D2Cm(num.array([0.7151]))
-                param.quartic  = convert.Hz2J(num.array([0.]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3]))
             elif 1 == param.isomer:
+                param.type = 'S'
+                param.symmetry = 'N'
+                param.watson = 'S'
+                print "Symmetric"
+                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
+                param.dipole = convert.D2Cm(num.array([0.7151]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3,0.,0.])) 
+            elif 2 == param.isomer:
                 param.type = 'A'
                 param.symmetry = 'C2a'
+                print "Asymmetric"
                 param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
                 param.dipole = convert.D2Cm(num.array([0.7151, 0., 0.]))
+                param.quartic  = convert.Hz2J(num.array([1.301777e3,0.,0.,0.,0.]))                
+        elif o == "--methyl-iodide":
+            param.name = "methyl-iodide"
+            param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
+            if 1 == param.isomer:
+                param.type = 'S'
+                param.symmetry = 'N'
+                param.watson = 'S'
+                print "Symmetric"
+                param.rotcon = convert.Hz2J(num.array([1.551e15, 7.501e9]))
+                param.dipole = convert.D2Cm(num.array([-1.9]))
+                param.quartic  = convert.Hz2J(num.array([0.1,0.,0.])) 
+            elif 2 == param.isomer:
+                param.type = 'A'
+                param.symmetry = 'C2a'
+                print "Asymmetric"
+                param.rotcon = convert.Hz2J(num.array([1.551e15, 7.501e9, 7.501e9]))
+                param.dipole = convert.D2Cm(num.array([-1.9, 0., 0.]))
+                param.quartic  = convert.Hz2J(num.array([0.1,0.,0.,0.,0.]))          
         elif o == "--indole":
             # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
             param.name = "indole"
@@ -197,14 +226,6 @@ def main(args):
             param.symmetry = 'N'
             param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
             param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
-        elif o == "--OCS":
-            # rotcon from Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978), dipole moment from Chem. Phys. Lett. 24, 346 (1974)
-            param.name = "OCS"
-            param.mass = 1 * Masses['C'] + 1 * Masses['O'] + 1 * Masses['S']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([6.081492475e12, 6081.492475e6, 6081.492475e6]))
-            param.dipole = convert.D2Cm(num.array([0.71519,0.0,0.0]))
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             if param.isomer == 0:
@@ -261,6 +282,7 @@ def main(args):
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
+    print "name and storage of the molecule object", param.name
     mol.starkeffect_calculation(param)
     # close file
     del mol

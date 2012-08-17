@@ -47,7 +47,7 @@ def usage():
 def main(args):
     # ToDo: add options already used in energie plotting to eff. dipole mom. plotting
     try:
-        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "states=",
+        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "Kamax=", "states=",
                                                    "energy-unit=", "dipole",
                                                    "legend", "verbose="])
     except getopt.GetoptError, err:
@@ -57,9 +57,10 @@ def main(args):
         sys.exit(2)
     # default values
     Jmin = 0
-    Jmax = 2
+    Jmax = 10
     Mmin = 0
     Mmax = None
+    Kamax= None
     userstates = None
     energyunit = "MHz" # energy unit, can also be "J" and "invcm"
     legend = False
@@ -78,6 +79,8 @@ def main(args):
             Mmin = int(a)
         elif o == "--Mmax":
             Mmax = int(a)
+        elif o == "--Kamax":
+            Kamax = int(a)
         elif o == "--states": # quantum states to plot, format "000,1010"
             userstates = a    # uses m if given, uses all possible m otherwise
         elif o == "--energy-unit":
@@ -92,6 +95,8 @@ def main(args):
             assert False, "unhandled commandline option"
     if None == Mmax:
         Mmax = Jmax
+    if None == Kamax:
+        Kamax = Jmax
 
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
     colors = ['blue', 'red', 'green','yellow','cyan','magenta','black']
@@ -139,10 +144,11 @@ def main(args):
         else:
             # loop over state
             for state in mol.starkeffect_states():
-                if state.M() <= Mmax and Jmin <= state.J() <= Jmax:
+                if state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax:
                     fields, energies = mol.starkeffect(state)
                     fields, mueff = mol.mueff(state)
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                    # print fields, energies, mueff
                     # convert energy
                     if energyunit == "MHz":
                         energies = J2MHz(energies)
