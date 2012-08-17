@@ -1,9 +1,10 @@
 JK Python Stark effect calculations
 ===================================
 
-- provide tool for merging files
+- provide (standalone) tool for merging files
 - use sparse matrices (i.e., using pysparse)
 - parallelize by calculating individual Ms/fields separately and merging them afterwards
-
-Izan
-- reimplement AsymmetricRotor in starkeffect.py - derived from Rotor
+- change scripts to use argparse and autmatically make sure that arguments are evaluated in the
+  right order
+  - i.e., for the molecules make sure that you only store the name and evaluate (in a separate
+    function per molecule) it after all arguments are parsed
