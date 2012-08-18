@@ -217,18 +217,19 @@ def main(args):
                 param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
                 param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
             elif param.isomer == 1:
-                # W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990).
+                # rot const: W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990).
+                # dipole moment: Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
                 param.name = "indole"
                 param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
                 param.watson = 'A'
                 param.symmetry = 'N'
                 param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
                 param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
-                param.dipole = convert.D2Cm(num.array([1.59, 1.36, 0.]))
+                param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
         elif o == "--indole-water":
             if   param.isomer == 0:
             # Rotation constants: Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998). Parameters of Strong subband.
-            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005).
                 param.name = "indole-water"
                 param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
                 param.watson = 'A'
@@ -237,8 +238,8 @@ def main(args):
                 param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
                 param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
             elif param.isomer == 1:
-            # Rotation constants: Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
-            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+            # Rotation constants: Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003).
+            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005).
                 param.name = "indole-water"
                 param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
                 param.watson = 'A'
@@ -270,13 +271,20 @@ def main(args):
             param.name = "water"
             param.watson = 'A'
             if o in ("--H2O", "--water"):
-                # rotational constans from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952)
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-                param.mass = Masses['O'] + 2 * Masses['H']
-                param.isomer = 0
-                param.symmetry = 'C2b'
-                param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
-                param.dipole = convert.D2Cm(num.array([0., -1.8546, 0.]))
+                if   param.isomer == 0:
+                    # rotational constants from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952).
+                    # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973).
+                    param.mass = Masses['O'] + 2 * Masses['H']
+                    param.symmetry = 'C2b'
+                    param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
+                    param.dipole = convert.D2Cm(num.array([0., -1.8546, 0.]))
+                elif param.isomer == 3:
+                    # rotational constants from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972).
+                    # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 9, 5875 (1991). 
+                    param.mass = Masses['O'] + 2 * Masses['H']
+                    param.symmetry = 'C2b'
+                    param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
+                    param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
             elif o == "--D2O":
                 # rotational constans from Herzberg
                 # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
