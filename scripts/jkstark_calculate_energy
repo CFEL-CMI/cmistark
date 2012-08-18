@@ -261,36 +261,31 @@ def main(args):
             param.name = "water"
             param.watson = 'A'
             if o in ("--H2O", "--water"):
-                if   param.isomer == 0:
-                    # rotational constants from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952).
-                    # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973).
-                    param.mass = Masses['O'] + 2 * Masses['H']
-                    param.symmetry = 'C2b'
-                    param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
-                    param.dipole = convert.D2Cm(num.array([0., -1.8546, 0.]))
-                elif param.isomer == 3:
-                    # rotational constants from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972).
-                    # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 9, 5875 (1991). 
-                    param.mass = Masses['O'] + 2 * Masses['H']
-                    param.symmetry = 'C2b'
-                    param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
-                    param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
+                # rotational constants from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972).
+                # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991). 
+                param.mass = Masses['O'] + 2 * Masses['H']
+                param.isomer = 0
+                param.symmetry = 'C2b'
+                param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
+                param.quartic = convert.Hz2J(num.array([37.594e6, -172.91e6, 973.29e6, 15.210e6, 41.05e6]))
+                param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
             elif o == "--D2O":
-                # rotational constans from Herzberg
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                # rotational constans from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973).
+                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973).
                 param.mass = Masses['O'] + 2 * Masses['D']
                 param.isomer = 1
                 param.symmetry = 'C2b'
-                param.rotcon = convert.invcm2J(num.array([15.39, 7.26, 4.85]))
+                param.rotcon = convert.Hz2J(num.array([462278.854e6, 218038.233e6, 145258.022e6]))
                 param.dipole = convert.D2Cm(num.array([0., -1.8558, 0.]))
             elif o == "--HDO":
-                # rotational constans from Herzberg
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+                # rot const.: F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971).
+                # dipole moments: Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991).
                 param.mass = Masses['O'] + Masses['H'] + Masses['D']
                 param.isomer = 2
                 param.symmetry = 'N'
-                param.rotcon = convert.invcm2J(num.array([23.48, 9.13, 6.40]))
-                param.dipole = convert.D2Cm(num.array([-0.6567, -1.7318, 0.]))
+                param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
+                param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
+                param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
         else:
             assert False, "unhandled commandline option"
 
