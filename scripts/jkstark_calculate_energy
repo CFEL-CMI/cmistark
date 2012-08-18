@@ -49,7 +49,7 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene",
-                                                   "3-aminophenol", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2", "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
+                                                   "3-aminophenol",
                                                    "4-aminobenzonitrile",
                                                    "benzonitrile",
                                                    "indole", "indole-water", "indole-water2",
@@ -98,43 +98,33 @@ def main(args):
             param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
             param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
             param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
-        elif o in ("--3-AP-CIS","--3-AP-TRANS"):
+        elif o in ("--3-aminophenol"):
             # exp values
-            param.name = "aminophenol"
+            param.name = "3-aminophenol"
             param.watson = 'A'
             param.symmetry = 'N'
-            if o == "--3-AP-CIS": #CIS
-                param.isomer = 0
+            if param.isomer == 0:
+                # CIS, exp values
                 param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
                 param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
-            elif o == "--3-AP-TRANS": #TRANS
-                param.isomer = 1
+            elif param.isomer == 1:
+                # TRANS, exp values
                 param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
                 param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
-        elif o in ("--3-AP-CIS_MP2","--3-AP-TRANS_MP2"):
-            # calculated values from Daniel Roesch in Basel, 2011
-            param.name = "3-aminophenol_MP2"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if o == "--3-AP-CIS_MP2": #CIS
-                param.isomer = 0
+            elif param.isomer == 2:
+                # CIS, calculated values of MP2 method from Daniel Roesch in Basel, 2011
                 param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
                 param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
-            elif o == "--3-AP-TRANS_MP2": #TRANS
-                param.isomer = 1
+            elif param.isomer == 3:
+                # TRANS, calculated values of MP2 method from Daniel Roesch in Basel, 2011
                 param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
                 param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
-        elif o in ("--3-AP-CIS_B3LYP","--3-AP-TRANS_B3LYP"):
-            # calculated values from Daniel Roesch in Basel, 2011
-            param.name = "3-aminophenol_B3LYP"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if o == "--3-AP-CIS_B3LYP": #CIS
-                param.isomer = 0
+            elif param.isomer == 4:
+                # CIS, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
                 param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
                 param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
-            elif o == "--3-AP-TRANS_B3LYP": #TRANS
-                param.isomer = 1
+            elif param.isomer == 5:
+                # TRANS, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
                 param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
                 param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
         elif o == "--4-aminobenzonitrile":
