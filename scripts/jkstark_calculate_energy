@@ -208,21 +208,44 @@ def main(args):
                 param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
                 param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
         elif o == "--indole":
-            # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
-            param.name = "indole"
-            param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
-            param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+            if   param.isomer == 0:
+                # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
+                param.name = "indole"
+                param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
+                param.watson = 'A'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
+                param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+            elif param.isomer == 1:
+                # W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990).
+                param.name = "indole"
+                param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
+                param.watson = 'A'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
+                param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
+                param.dipole = convert.D2Cm(num.array([1.59, 1.36, 0.]))
         elif o == "--indole-water":
-            #  Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998).
-            param.name = "indole-water"
-            param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
-            param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+            if   param.isomer == 0:
+            # Rotation constants: Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998). Parameters of Strong subband.
+            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+                param.name = "indole-water"
+                param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
+                param.watson = 'A'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
+                param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
+                param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+            elif param.isomer == 1:
+            # Rotation constants: Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
+            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+                param.name = "indole-water"
+                param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
+                param.watson = 'A'
+                param.symmetry = 'N'
+                param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
+                param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
+                param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
         elif o == "--indole-water2":
             #  from YPChang's ab initio calculations (B3LYP/6-31+G*).
             param.name = "indole-water2"
