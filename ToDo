@@ -3,8 +3,5 @@ JK Python Stark effect calculations
 
 - parallelize by calculating individual Ms/fields separately and merging them afterwards (i.e., using ParallelPython)
 - use sparse matrices (i.e., using pysparse)
-- change scripts to use argparse and autmatically make sure that arguments are evaluated in the
-  right order
-  - i.e., for the molecules make sure that you only store the name and evaluate (in a separate
-    function per molecule) it after all arguments are parsed
 - provide (standalone) tool for merging files
+- change scripts to use argparse
