@@ -325,9 +325,11 @@ class AsymmetricRotor(Rotor):
         # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
         # Needs to be reimplemented correctly *soon*
         print "Fourgroup symmetry is currently not applied for M==0 states -- see code for details -- please try to fix this"
-	#if 0 == self.M and not self.dipole_components[1] and not self.dipole_components[2]:
-	#    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole moment is along a
-	#    self.symmetry = 'V'
+	if 0 == self.M \
+                and not self.dipole_components[1] and not self.dipole_components[2] \
+                and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
+	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole moment is along a
+	    self.symmetry = 'V'
 
 
     def states(self):
