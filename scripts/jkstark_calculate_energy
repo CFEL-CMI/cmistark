@@ -111,9 +111,9 @@ def indole_water1(param):
 
     Implemented isomers are
     0  -  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
-          and dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
     1  -  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
-          and dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
     """
     param.name = "indole-water"
     param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
@@ -148,12 +148,14 @@ def water(param):
     """Molecular parameters for H2O, D2O, HDO
 
     Implemented isomers are
-    0  -  H2O, exp values from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972), and
-               Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for rot. const. and dipole moment, respectively.
-    1  -  D2O, exp values from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973) for rot. const., and
-             Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973) for dipole moment.
-    2  -  HDO, exp values from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971), and
-             Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for dipole moment.
+    0  -  H2O: experimental inertial parameters from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972)
+               and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
+    1  -  D2O: experimental inertial parameters from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973)
+               and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
+    2  -  HDO: experimental inertial parameters from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
+          and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
+
+    Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
 
     get better data from
     - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
@@ -179,6 +181,8 @@ def water(param):
         param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
         param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
+
+
 
 def main(args):
     try:
@@ -311,9 +315,9 @@ def main(args):
         elif o == "--indole":
             pfunc = indole
         elif o == "--indole-water":
-            pfunc = indole_water_1
+            pfunc = indole_water1
         elif o == "--indole-water2":
-            pfunc = indole_water_2
+            pfunc = indole_water2
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             param.name = "phenylpyrrole"
