@@ -83,53 +83,57 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+
+
 def indole(param):
     """Molecular parameters for indole
 
     Implemented isomers are
-    0 - exp values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005). 
-    1 - exp values from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990) for rot. const., and
-        Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.                                 
+    0  -  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
+    1  -  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
+          and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
     """
     param.name = "indole"
     param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
     param.watson = 'A'
     param.symmetry = 'N'
-    if   param.isomer == 0:
+    if 0 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-    elif param.isomer == 1:
+    elif 1 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
         param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
 
-def indole_water_1(param):
-    """Molecular parameters for indole-water
+
+def indole_water1(param):
+    """Molecular parameters for the indole-water complex
 
     Implemented isomers are
-    0 - exp values from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998) for rot. const., and 
-        C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
-    1 - exp values from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003) for rot. const., and
-        C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+    0  -  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
+          and dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+    1  -  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
+          and dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
     """
     param.name = "indole-water"
     param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
     param.watson = 'A'
     param.symmetry = 'N'
-   if   param.isomer == 0:
+    if 0 == param.isomer:
        param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
        param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
        param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
-   elif param.isomer == 1:
+   elif 1 == param.isomer:
        param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
        param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
        param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
 
-def indole_water_2(param):
-    """Molecular parameters for indole-water2
+
+def indole_water2(param):
+    """Molecular parameters for indole-(water)_2
 
     Implemented isomers are
-    0 - calculated values of B3LYP/6-31+G* from Yuan-Pin Chang, 2011
+    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 20XX by Yuan-Pin Chang (2011)
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
@@ -139,15 +143,16 @@ def indole_water_2(param):
     param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
     param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
 
+
 def water(param):
     """Molecular parameters for H2O, D2O, HDO
 
     Implemented isomers are
-    0 - H2O, exp values from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972), and 
-             Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for rot. const. and dipole moment, respectively. 
-    1 - D2O, exp values from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973) for rot. const., and
+    0  -  H2O, exp values from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972), and
+               Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for rot. const. and dipole moment, respectively.
+    1  -  D2O, exp values from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973) for rot. const., and
              Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973) for dipole moment.
-    2 - HDO, exp values from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971), and
+    2  -  HDO, exp values from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971), and
              Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for dipole moment.
 
     get better data from
