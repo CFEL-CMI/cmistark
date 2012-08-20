@@ -47,9 +47,9 @@ def usage():
 def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
-    Implemented isoemrs are
-     1  -  cis conformer, experimental values from <add reference>
-     2  -  trans conformer, exp values, <add reference>
+    Implemented isomers are
+     1  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
+     2  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
 
      and so forth...
 
@@ -83,8 +83,97 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+def indole(param):
+    """Molecular parameters for indole
 
+    Implemented isomers are
+    0 - exp values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005). 
+    1 - exp values from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990) for rot. const., and
+        Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.                                 
+    """
+    param.name = "indole"
+    param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if   param.isomer == 0:
+        param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
+        param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
+        param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
+        param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
 
+def indole_water_1(param):
+    """Molecular parameters for indole-water
+
+    Implemented isomers are
+    0 - exp values from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998) for rot. const., and 
+        C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+    1 - exp values from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003) for rot. const., and
+        C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+    """
+    param.name = "indole-water"
+    param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+   if   param.isomer == 0:
+       param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
+       param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
+       param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+   elif param.isomer == 1:
+       param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
+       param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
+       param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+
+def indole_water_2(param):
+    """Molecular parameters for indole-water2
+
+    Implemented isomers are
+    0 - calculated values of B3LYP/6-31+G* from Yuan-Pin Chang, 2011
+    """
+    param.name = "indole-water2"
+    param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.isomer = 0
+    param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
+    param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
+
+def water(param):
+    """Molecular parameters for H2O, D2O, HDO
+
+    Implemented isomers are
+    0 - H2O, exp values from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972), and 
+             Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for rot. const. and dipole moment, respectively. 
+    1 - D2O, exp values from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973) for rot. const., and
+             Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973) for dipole moment.
+    2 - HDO, exp values from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971), and
+             Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991) for dipole moment.
+
+    get better data from
+    - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+    - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
+    - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
+    """
+    param.name = "water"
+    param.watson = 'A'
+    if param.isomer == 0:
+        param.mass = Masses['O'] + 2 * Masses['H']
+        param.symmetry = 'C2b'
+        param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
+        param.quartic = convert.Hz2J(num.array([37.594e6, -172.91e6, 973.29e6, 15.210e6, 41.05e6]))
+        param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
+    elif param.isomer == 1:
+        param.mass = Masses['O'] + 2 * Masses['D']
+        param.symmetry = 'C2b'
+        param.rotcon = convert.Hz2J(num.array([462278.854e6, 218038.233e6, 145258.022e6]))
+        param.dipole = convert.D2Cm(num.array([0., -1.8558, 0.]))
+    elif param.isomer == 2:
+        param.mass = Masses['O'] + Masses['H'] + Masses['D']
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
+        param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
+        param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
 
 def main(args):
     try:
@@ -215,53 +304,11 @@ def main(args):
                 param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
                 param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
         elif o == "--indole":
-            if   param.isomer == 0:
-                # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
-                param.name = "indole"
-                param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
-                param.watson = 'A'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
-                param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-            elif param.isomer == 1:
-                # rot const: W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990).
-                # dipole moment: Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
-                param.name = "indole"
-                param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
-                param.watson = 'A'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
-                param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
-                param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+            pfunc = indole
         elif o == "--indole-water":
-            if   param.isomer == 0:
-            # Rotation constants: Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998). Parameters of Strong subband.
-            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005).
-                param.name = "indole-water"
-                param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
-                param.watson = 'A'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
-                param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
-                param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
-            elif param.isomer == 1:
-            # Rotation constants: Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003).
-            # Dipole moments: C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005).
-                param.name = "indole-water"
-                param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
-                param.watson = 'A'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
-                param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
-                param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+            pfunc = indole_water_1
         elif o == "--indole-water2":
-            #  from YPChang's ab initio calculations (B3LYP/6-31+G*).
-            param.name = "indole-water2"
-            param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
-            param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
+            pfunc = indole_water_2
         elif o == "--phenylpyrrole":
             # A. J. Fleisher
             param.name = "phenylpyrrole"
@@ -270,39 +317,13 @@ def main(args):
             param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
             param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
-            # get better data from
-            # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
-            # - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-            # - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
-            # - Steenbeckeliers, and Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-            param.name = "water"
-            param.watson = 'A'
             if o in ("--H2O", "--water"):
-                # rotational constants from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972).
-                # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991).
-                param.mass = Masses['O'] + 2 * Masses['H']
                 param.isomer = 0
-                param.symmetry = 'C2b'
-                param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
-                param.quartic = convert.Hz2J(num.array([37.594e6, -172.91e6, 973.29e6, 15.210e6, 41.05e6]))
-                param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
             elif o == "--D2O":
-                # rotational constans from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973).
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973).
-                param.mass = Masses['O'] + 2 * Masses['D']
                 param.isomer = 1
-                param.symmetry = 'C2b'
-                param.rotcon = convert.Hz2J(num.array([462278.854e6, 218038.233e6, 145258.022e6]))
-                param.dipole = convert.D2Cm(num.array([0., -1.8558, 0.]))
             elif o == "--HDO":
-                # rot const.: F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971).
-                # dipole moments: Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991).
-                param.mass = Masses['O'] + Masses['H'] + Masses['D']
                 param.isomer = 2
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
-                param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
-                param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
+            pfunc = water
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
