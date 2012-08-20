@@ -44,6 +44,48 @@ def usage():
     print "See script for details"
 
 
+def three_aminophenol(param):
+    """Molecular parameters for 3-aminophenol
+
+    Implemented isoemrs are
+     1  -  cis conformer, experimental values from <add reference>
+     2  -  trans conformer, exp values, <add reference>
+
+     and so forth...
+
+     3   # cis conformer, MP2/<basis set> calculation using <Gaussian 2003.1> by Daniel Roesch, Basel, 2011
+
+     etc...
+
+     4   # trans conformer, calculated values of MP2 method from Daniel Roesch in Basel, 2011
+     5   # cis conformer, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
+     6   # trans conformer, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
+    """
+    param.name = "3-aminophenol"
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: # cis, Filsinger et al. PCCP ...
+        param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
+        param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
+        param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
+    elif param.isomer == 2:
+        param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
+        param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
+    elif param.isomer == 3:
+        param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
+        param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
+    elif param.isomer == 4:
+        param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
+        param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
+    elif param.isomer == 5:
+        param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
+        param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
+
+
+
+
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
@@ -57,19 +99,21 @@ def main(args):
                                                    "iodomethane",
                                                    "OCS",
                                                    "phenylpyrrole",
-                                                   "water", "H2O", "D2O", "HDO"])
+                                                   "water", "H2O", "D2O", "HDO"
+                                                   ])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
+    pfunc = None
     param = starkeffect.CalculationParameter
-    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 25))
+    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
     param.isomer = 0
     param.Jmin = 0
-    param.Jmax_calc = 10
-    param.Jmax_save = 6
+    param.Jmax_calc = 5
+    param.Jmax_save = 2
     param.M = None
     param.type = 'A'
     # scan commandline
@@ -99,34 +143,7 @@ def main(args):
             param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
             param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
         elif o in ("--3-aminophenol"):
-            # exp values
-            param.name = "3-aminophenol"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if param.isomer == 0:
-                # CIS, exp values
-                param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
-                param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
-            elif param.isomer == 1:
-                # TRANS, exp values
-                param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
-                param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
-            elif param.isomer == 2:
-                # CIS, calculated values of MP2 method from Daniel Roesch in Basel, 2011
-                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
-                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
-            elif param.isomer == 3:
-                # TRANS, calculated values of MP2 method from Daniel Roesch in Basel, 2011
-                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
-                param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
-            elif param.isomer == 4:
-                # CIS, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
-                param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
-                param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
-            elif param.isomer == 5:
-                # TRANS, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
-                param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
-                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
+            pfunc = three_aminophenol
         elif o == "--4-aminobenzonitrile":
             # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
             param.name = "4-aminobenzonitrile"
@@ -262,7 +279,7 @@ def main(args):
             param.watson = 'A'
             if o in ("--H2O", "--water"):
                 # rotational constants from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972).
-                # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991). 
+                # dipole moments from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991).
                 param.mass = Masses['O'] + 2 * Masses['H']
                 param.isomer = 0
                 param.symmetry = 'C2b'
@@ -288,9 +305,11 @@ def main(args):
                 param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
         else:
             assert False, "unhandled commandline option"
-
+    # finalize initialization
     if None == param.M:
         param.M = range(0, param.Jmax_save+1)
+    if None != pfunc:
+        pfunc(param)
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
