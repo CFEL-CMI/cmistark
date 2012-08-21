@@ -2,6 +2,6 @@ JK Python Stark effect calculations
 ===================================
 
 - parallelize by calculating individual Ms/fields separately and merging them afterwards (i.e., using ParallelPython)
-- use sparse matrices (i.e., using pysparse)
+- use sparse matrices (i.e., using scipy.sparse and scipy.sparse.linalg)
 - provide (standalone) tool for merging files
 - change scripts to use argparse
