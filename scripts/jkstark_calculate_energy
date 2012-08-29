@@ -30,13 +30,12 @@ __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 
 import numpy as num
 import getopt, sys
+import jkstark.moleculeparameters
 
-import jkext as jk
 import jkext.convert as convert
 import jkstark.molecule as molecule
 import jkstark.starkeffect as starkeffect
-from jkext.state import State
-from jkext.molecule import Masses
+from jkstark.moleculeparameters import *
 
 
 def usage():
@@ -49,7 +48,7 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "2,6-difluoro-iodobenzene",
-                                                   "3-aminophenol", "3-AP-CIS", "3-AP-TRANS", "3-AP-CIS_MP2", "3-AP-TRANS_MP2", "3-AP-CIS_B3LYP", "3-AP-TRANS_B3LYP",
+                                                   "3-aminophenol",
                                                    "4-aminobenzonitrile",
                                                    "benzonitrile",
                                                    "indole", "indole-water", "indole-water2",
@@ -57,23 +56,26 @@ def main(args):
                                                    "iodomethane",
                                                    "OCS",
                                                    "phenylpyrrole",
-                                                   "water", "H2O", "D2O", "HDO"])
+                                                   "water", "H2O", "D2O", "HDO"
+                                                   ])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
+    pfunc = None
     param = starkeffect.CalculationParameter
-    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 25))
+    param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 3))
     param.isomer = 0
     param.Jmin = 0
-    param.Jmax_calc = 10
-    param.Jmax_save = 6
+    param.Jmax_calc = 5
+    param.Jmax_save = 2
     param.M = None
     param.type = 'A'
     # scan commandline
     for o, a in opts:
+
         if o in ("-h", "--help"):
             usage()
             sys.exit()
@@ -90,208 +92,50 @@ def main(args):
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
         elif o == "--isomer":
             param.isomer = int(a)
+
         elif o == "--2,6-difluoro-iodobenzene":
-            # parameters from simple ab initio calculations (Jochen Küpper, 2010)
-            param.name = "2,6-difluoro-iodobenzene"
-            param.watson = 'A'
-            param.symmetry = 'C2a'
-            param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
-            param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
-            param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
-        elif o in ("--3-AP-CIS","--3-AP-TRANS"):
-            # exp values
-            param.name = "aminophenol"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if o == "--3-AP-CIS": #CIS
-                param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
-                param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
-            elif o == "--3-AP-TRANS": #TRANS
-                param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
-                param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
-        elif o in ("--3-AP-CIS_MP2","--3-AP-TRANS_MP2"):
-            # calculated values from Daniel Roesch in Basel, 2011
-            param.name = "3-aminophenol_MP2"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if o == "--3-AP-CIS_MP2": #CIS
-                param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
-                param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
-            elif o == "--3-AP-TRANS_MP2": #TRANS
-                param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
-                param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
-        elif o in ("--3-AP-CIS_B3LYP","--3-AP-TRANS_B3LYP"):
-            # calculated values from Daniel Roesch in Basel, 2011
-            param.name = "3-aminophenol_B3LYP"
-            param.watson = 'A'
-            param.symmetry = 'N'
-            if o == "--3-AP-CIS_B3LYP": #CIS
-                param.isomer = 0
-                param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
-                param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
-            elif o == "--3-AP-TRANS_B3LYP": #TRANS
-                param.isomer = 1
-                param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
-                param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
+            pfunc = difluoro_iodobenzene
+        elif o in ("--3-aminophenol"):
+            pfunc = three_aminophenol
         elif o == "--4-aminobenzonitrile":
-            # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
-            param.name = "4-aminobenzonitrile"
-            param.watson = 'A'
-            param.symmetry = 'C2a'
-            param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
-            param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
-            param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
+            pfunc = aminobenzonitrile
         elif o == "--benzonitrile":
-            # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
-            param.name = "benzonitrile"
-            param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'C2a'
-            param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
-            param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
-            param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
+            pfunc = benzonitrile
         elif o == "--iodobenzene":
-            # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
-            param.name = "iodobenzene"
-            param.watson = 'A'
-            param.symmetry = 'C2a'
-            param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
-            param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
-            # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
-            param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+            pfunc = iodobenzene
         elif o == "--OCS":
-            # paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
-            # Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346–351 (1974).
-            param.name = "OCS"
-            param.mass = Masses['O'] + Masses['C'] + Masses['S']
-            if 0 == param.isomer:
-                param.type = 'L'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
-                param.dipole = convert.D2Cm(num.array([0.71519]))
-                param.quartic  = convert.Hz2J(num.array([1.301777e3]))
-            elif 1 == param.isomer:
-                param.type = 'S'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
-                param.dipole = convert.D2Cm(num.array([0.71519]))
-                param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
-            elif 2 == param.isomer:
-                param.type = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
-                param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
-                param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
+            pfunc = OCS
         elif o == "--iodomethane":
-            # constants from Wlodarczak, G., Boucher, D., Bocquet, R., & Demaison, J. (1987). The rotational constants
-            # of methyl lodide. Journal Of Molecular Spectroscopy, 124(1), 53–65. doi:10.1016/0022-2852(87)90120-2 and
-            # Gadhi, J., Wlodarczak, G., Legrand, J., & Demaison, J. (1989). The dipole moments of methyl bromide and
-            # methyl iodide. Chemical Physics Letters, 156(4), 401–404. doi:10.1016/0009-2614(89)87116-7
-            #
-            # good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
-            param.name = "iodomethane"
-            param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
-            if 0 == param.isomer:
-                param.type = 'S'
-                param.symmetry = 'N'
-                param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6]))
-                param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0.]))
-                param.dipole = convert.D2Cm(num.array([1.6406]))
-            elif 1 == param.isomer:
-                param.type = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6, 7501.2757456e6]))
-                param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
-                param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
+            pfunc= iodomethane
         elif o == "--indole":
-            # Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005).
-            param.name = "indole"
-            param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
-            param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+            pfunc = indole
         elif o == "--indole-water":
-            #  Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998).
-            param.name = "indole-water"
-            param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
-            param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+            pfunc = indole_water1
         elif o == "--indole-water2":
-            #  from YPChang's ab initio calculations (B3LYP/6-31+G*).
-            param.name = "indole-water2"
-            param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
-            param.watson = 'A'
-            param.symmetry = 'N'
-            param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
-            param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
+            pfunc = indole_water2
         elif o == "--phenylpyrrole":
-            # A. J. Fleisher
-            if param.isomer == 0:
-                param.name = "phenylpyrrole"
-                param.watson = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
-                param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
-            elif param.isomer == 1:
-                # A. J. Fleisher
-                param.name = "phenylpyrrole"
-                param.isomer = 1
-                param.watson = 'A'
-                param.symmetry = 'C2a'
-                param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
-                param.dipole = convert.D2Cm(num.array([1.56, 0., 0.]))
+            pfunc = phenylpyrrole
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
-            # get better data from
-            # - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
-            # - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-            # - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
-            # - Steenbeckeliers, and Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-            param.name = "water"
-            param.watson = 'A'
             if o in ("--H2O", "--water"):
-                # rotational constans from Benedict, Classen, Shaw, J. Res. Natl. Bur. Std. (U.S.) 49, 91 (1952)
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-                param.mass = Masses['O'] + 2 * Masses['H']
                 param.isomer = 0
-                param.symmetry = 'C2b'
-                param.rotcon = convert.invcm2J(num.array([27.877, 14.512, 9.285]))
-                param.dipole = convert.D2Cm(num.array([0., -1.8546, 0.]))
             elif o == "--D2O":
-                # rotational constans from Herzberg
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-                param.mass = Masses['O'] + 2 * Masses['D']
                 param.isomer = 1
-                param.symmetry = 'C2b'
-                param.rotcon = convert.invcm2J(num.array([15.39, 7.26, 4.85]))
-                param.dipole = convert.D2Cm(num.array([0., -1.8558, 0.]))
             elif o == "--HDO":
-                # rotational constans from Herzberg
-                # dipole moments from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-                param.mass = Masses['O'] + Masses['H'] + Masses['D']
                 param.isomer = 2
-                param.symmetry = 'N'
-                param.rotcon = convert.invcm2J(num.array([23.48, 9.13, 6.40]))
-                param.dipole = convert.D2Cm(num.array([-0.6567, -1.7318, 0.]))
+            pfunc = water
         else:
             assert False, "unhandled commandline option"
-
+    # finalize initialization
     if None == param.M:
         param.M = range(0, param.Jmax_save+1)
+    if None != pfunc:
+        pfunc(param)
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
-    print "name and storage of the molecule object", param.name
     mol.starkeffect_calculation(param)
     # close file
     del mol
-
 
 if __name__ == "__main__":
     main(sys.argv)

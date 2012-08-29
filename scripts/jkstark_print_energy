@@ -85,7 +85,6 @@ def main(args):
 		assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
 		print "# state:", state.name()
 		for i in range(len(fields)):
-		#for i in range(5):
 		    print V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6
 
 

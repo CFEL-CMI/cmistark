@@ -88,7 +88,7 @@ class Molecule(jkext.molecule.Molecule):
             self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
         except:
             pass
-        
+
         if 'L' == param.type:
             Rotor = jkstark.starkeffect.LinearRotor
         elif 'S' == param.type:

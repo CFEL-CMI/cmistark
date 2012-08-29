@@ -1,9 +1,7 @@
 JK Python Stark effect calculations
 ===================================
 
-- provide tool for merging files
-- use sparse matrices (i.e., using pysparse)
-- parallelize by calculating individual Ms/fields separately and merging them afterwards
-
-Izan
-- reimplement AsymmetricRotor in starkeffect.py - derived from Rotor
+- parallelize by calculating individual Ms/fields separately and merging them afterwards (i.e., using ParallelPython)
+- use sparse matrices (i.e., using scipy.sparse and scipy.sparse.linalg)
+- provide (standalone) tool for merging files
+- change scripts to use argparse
