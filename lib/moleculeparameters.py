@@ -149,13 +149,13 @@ def water(param):
 def OCS(param):
     """Molecular parameters for OCS
 
-    Implemented isomers are
-    0  -  
-    1  -  
-    2  -      
-    
     Paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
     Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346–351 (1974).
+
+    Implemented isomers are
+    0  - using above parameters with linear-rotor hamiltonian
+    1  - using above parameters with symmetric-rotor hamiltonian
+    2  - using above parameters with asymmetric-rotor hamiltonian
     """
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
@@ -183,11 +183,11 @@ def iodomethane(param):
     of methyl lodide. Journal Of Molecular Spectroscopy, 124(1), 53–65. doi:10.1016/0022-2852(87)90120-2 and
     Gadhi, J., Wlodarczak, G., Legrand, J., & Demaison, J. (1989). The dipole moments of methyl bromide and
     methyl iodide. Chemical Physics Letters, 156(4), 401–404. doi:10.1016/0009-2614(89)87116-7
-    
+
     Implemented isomers are
-    0  -  
-    1  -  
-    2  - 
+    0  -
+    1  -
+    2  -
 
     good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
     """
