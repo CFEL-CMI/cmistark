@@ -324,7 +324,6 @@ class AsymmetricRotor(Rotor):
 	    self.hmat_type = num.float64
         # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
         # Needs to be reimplemented correctly *soon*
-        print "Fourgroup symmetry is currently not applied for M==0 states -- see code for details -- please try to fix this"
 	if 0 == self.M \
                 and not self.dipole_components[1] and not self.dipole_components[2] \
                 and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
