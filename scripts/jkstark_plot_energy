@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2009,2011 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,20 +15,13 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-#
-# some SGE commands for batch usage convenience
-#$ -cwd
-#$ -e $JOB_NAME.sge
-#$ -o $JOB_NAME.sge
-#$ -S $HOME/.python/bin/python
-#$ -V
 from __future__ import division
 
 """Plot adiabatic energy curves from HDF5 files to matplotlib graph
 
-Copyright (C) 2009,2011 Jochen Küpper"""
+Copyright (C) 2009,2011,2012 Jochen Küpper"""
 
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import getopt, sys
@@ -57,7 +50,7 @@ def main(args):
         sys.exit(2)
     # default values
     Jmin = 0
-    Jmax = 10
+    Jmax = 5
     Mmin = 0
     Mmax = None
     Kamax= None
@@ -155,7 +148,7 @@ def main(args):
                     elif energyunit == "invcm":
                         energies = J2invcm(energies)
                     plt.plot(V_m2kV_cm(fields), energies, color)
-                    # plt2.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)                             
+                    plt2.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
     plt.show()
 
 

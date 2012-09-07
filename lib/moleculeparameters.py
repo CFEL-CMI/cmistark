@@ -179,17 +179,14 @@ def OCS(param):
 	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
 
 def iodomethane(param):
-    """Constants from Wlodarczak, G., Boucher, D., Bocquet, R., & Demaison, J. (1987). The rotational constants
-    of methyl lodide. Journal Of Molecular Spectroscopy, 124(1), 53–65. doi:10.1016/0022-2852(87)90120-2 and
-    Gadhi, J., Wlodarczak, G., Legrand, J., & Demaison, J. (1989). The dipole moments of methyl bromide and
-    methyl iodide. Chemical Physics Letters, 156(4), 401–404. doi:10.1016/0009-2614(89)87116-7
+    """Constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53–65  (1987). doi:10.1016/0022-2852(87)90120-2
+    and Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401–404 (1989). doi:10.1016/0009-2614(89)87116-7
+
+    good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
 
     Implemented isomers are
     0  -
     1  -
-    2  -
-
-    good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
     """
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']

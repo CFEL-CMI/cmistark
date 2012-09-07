@@ -46,7 +46,7 @@ def main(args):
         sys.exit(2)
     # default values
     Jmin = 0
-    Jmax = 10
+    Jmax = 2
     Mmax = None
     Kamax = None
     isomer = 0
@@ -57,7 +57,7 @@ def main(args):
             sys.exit()
         elif o == "--Jmin":
             Jmin = int(a)
-        elif o == "--Jmax": 
+        elif o == "--Jmax":
             Jmax = int(a)
         elif o == "--Mmax":
             Mmax = int(a)
@@ -77,9 +77,9 @@ def main(args):
         # create Molecule object and specify storage file
         mol = molecule.Molecule(storage=name)
         # loop over state
-        for state in mol.starkeffect_states():  
+        for state in mol.starkeffect_states():
             if  state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax:
-                print # empty line for visual separation 
+                print # empty line for visual separation
                 fields, energies = mol.starkeffect(state)
 		fields, mueff = mol.mueff(state)
 		assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
