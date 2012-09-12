@@ -1,8 +1,22 @@
-# -*- coding: utf-8 -*-
-
+#!/usr/bin/env python
+# -*- coding: utf-8; fill-column: 120 -*-
+#
+# This file is part of JK Python extensions
+# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
 from __future__ import division
-
-__author__ = "Jochen K�pper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import getopt, sys
@@ -13,22 +27,18 @@ import jkstark.starkeffect as starkeffect
 from jkext.state import State
 from jkext.molecule import Masses
 
+
+
 def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
     Implemented isomers are
      1  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
      2  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
-
-     and so forth...
-
-     3   # cis conformer, MP2/<basis set> calculation using <Gaussian 2003.1> by Daniel Roesch, Basel, 2011
-
-     etc...
-
-     4   # trans conformer, calculated values of MP2 method from Daniel Roesch in Basel, 2011
-     5   # cis conformer, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
-     6   # trans conformer, calculated values of B3LYP method from Daniel Roesch in Basel, 2011
+     3  -  cis conformer, MP2/<basis set> calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
+     4  -  trans conformer, calculated values of MP2 method from Daniel Rösch in Basel, 2011
+     5  -  cis conformer, calculated values of B3LYP method from Daniel Rösch in Basel, 2011
+     6  -  trans conformer, calculated values of B3LYP method from Daniel Rösch in Basel, 2011
     """
     param.name = "3-aminophenol"
     param.watson = 'A'
@@ -52,6 +62,8 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+
+
 def indole(param):
     """Molecular parameters for indole
 
@@ -71,6 +83,8 @@ def indole(param):
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
         param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+
+
 
 def indole_water1(param):
     """Molecular parameters for the indole-water complex
@@ -94,6 +108,8 @@ def indole_water1(param):
         param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
         param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
 
+
+
 def indole_water2(param):
     """Molecular parameters for indole-(water)_2
 
@@ -107,6 +123,8 @@ def indole_water2(param):
     param.isomer = 0
     param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
     param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
+
+
 
 def water(param):
     """Molecular parameters for H2O, D2O, HDO
@@ -146,6 +164,8 @@ def water(param):
         param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
 
+
+
 def OCS(param):
     """Molecular parameters for OCS
 
@@ -178,6 +198,8 @@ def OCS(param):
 	param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
 	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
 
+
+
 def iodomethane(param):
     """Constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53–65  (1987). doi:10.1016/0022-2852(87)90120-2
     and Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401–404 (1989). doi:10.1016/0009-2614(89)87116-7
@@ -185,14 +207,13 @@ def iodomethane(param):
     good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
 
     Implemented isomers are
-    0  -
-    1  -
+    0  - above constants using symmetric-top Hamiltonian
+    1  - above constants using asymmetric-top Hamiltonian
     """
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
     if 0 == param.isomer:
 	param.type = 'S'
-	param.symmetry = 'N'
 	param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6]))
 	param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0.]))
 	param.dipole = convert.D2Cm(num.array([1.6406]))
@@ -203,6 +224,8 @@ def iodomethane(param):
 	param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
 	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
+
+
 def difluoro_iodobenzene(param):
     # parameters from simple ab initio calculations (Jochen Küpper, 2010)
     param.name = "2,6-difluoro-iodobenzene"
@@ -212,6 +235,8 @@ def difluoro_iodobenzene(param):
     param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
+
+
 def aminobenzonitrile(param):
     # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
     param.name = "4-aminobenzonitrile"
@@ -220,6 +245,8 @@ def aminobenzonitrile(param):
     param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
     param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
     param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
+
+
 
 def benzonitrile(param):
     # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
@@ -231,6 +258,8 @@ def benzonitrile(param):
     param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
+
+
 def iodobenzene(param):
     # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
     param.name = "iodobenzene"
@@ -240,6 +269,8 @@ def iodobenzene(param):
     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+
+
 
 def phenylpyrrole(param):
     # A. J. Fleisher
