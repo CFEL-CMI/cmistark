@@ -201,10 +201,10 @@ def OCS(param):
 
 
 def iodomethane(param):
-    """Constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53–65  (1987). doi:10.1016/0022-2852(87)90120-2
-    and Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401–404 (1989). doi:10.1016/0009-2614(89)87116-7
+    """B, DJ, and DK constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53–65 (1987) and
+    Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401–404 (1989).
 
-    good A constant is missing, current one is from: http://cccbdb.nist.gov/exp2.asp?casno=74884
+    A and DK constants from Pietilä, Koivusaari, Alanko, & Anttila, Mol Phys 87, 523 (1996)
 
     Implemented isomers are
     0  - above constants using symmetric-top Hamiltonian
@@ -214,14 +214,15 @@ def iodomethane(param):
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
     if 0 == param.isomer:
 	param.type = 'S'
-	param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6]))
-	param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0.]))
+        param.symmetry = 'p'
+	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6]))
+	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
 	param.dipole = convert.D2Cm(num.array([1.6406]))
     elif 1 == param.isomer:
 	param.type = 'A'
 	param.symmetry = 'C2a'
-	param.rotcon = convert.Hz2J(num.array([convert.J2Hz(convert.invcm2J(5.17340)), 7501.2757456e6, 7501.2757456e6]))
-	param.quartic  = convert.Hz2J(num.array([6.307583e3, 98.76798e3, 0., 0., 0.]))
+	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)]))
+	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
 	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
 
