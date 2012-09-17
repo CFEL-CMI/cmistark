@@ -221,7 +221,7 @@ def iodomethane(param):
     elif 1 == param.isomer:
 	param.type = 'A'
 	param.symmetry = 'C2a'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)]))
+	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
 	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
 	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
