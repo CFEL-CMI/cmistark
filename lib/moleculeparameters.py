@@ -33,12 +33,12 @@ def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
     Implemented isomers are
-     1  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
-     2  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
-     3  -  cis conformer, MP2/<basis set> calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
-     4  -  trans conformer, calculated values of MP2 method from Daniel Rösch in Basel, 2011
-     5  -  cis conformer, calculated values of B3LYP method from Daniel Rösch in Basel, 2011
-     6  -  trans conformer, calculated values of B3LYP method from Daniel Rösch in Basel, 2011
+     0  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
+     1  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
+     2  -  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
+     3  -  trans conformer, calculated values of MP2/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+     4  -  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+     5  -  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
     """
     param.name = "3-aminophenol"
     param.watson = 'A'
@@ -215,7 +215,7 @@ def iodomethane(param):
     if 0 == param.isomer:
 	param.type = 'S'
         param.symmetry = 'p'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6]))
+	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
 	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
 	param.dipole = convert.D2Cm(num.array([1.6406]))
     elif 1 == param.isomer:
