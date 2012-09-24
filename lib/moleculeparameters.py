@@ -188,8 +188,8 @@ def OCS(param):
 	param.dipole = convert.D2Cm(num.array([0.71519]))
 	param.quartic  = convert.Hz2J(num.array([1.301777e3]))
     elif 1 == param.isomer:
-	param.type = 'PS'
-	param.symmetry = 'N'
+	param.type = 'S'
+	param.symmetry = 'p'
 	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
 	param.dipole = convert.D2Cm(num.array([0.71519]))
 	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
@@ -215,7 +215,7 @@ def iodomethane(param):
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
     if 0 == param.isomer:
-	param.type = 'PS'
+	param.type = 'S'
         param.symmetry = 'p'
 	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
 	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])

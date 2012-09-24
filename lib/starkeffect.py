@@ -38,8 +38,7 @@ class CalculationParameter(object):
     - mass: mass of molecule/isomer
     - type: specify the type of rotor
       - 'L': linear top
-      - 'PS': prolate symmetric top
-      - 'OS': oblate symmetric top
+      - 'S': prolate symmetric top
       - 'A': asymmetric top
 
     The following parameter are used for an asymmetric top:
@@ -92,7 +91,7 @@ class Rotor(object):
         self.dipole = num.array(param.dipole, num.float64)
         # field strengths
         self.dcfield = num.float64(dcfield)
-        # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V')
+        # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V' for asym rotor, 'p' and 'o' for sym rotor)
         self.symmetry = param.symmetry
         self.tiny = num.finfo(num.dtype(num.float64)).tiny * 10
         # we have not yet calculated the correct energies - mark invalid
@@ -214,7 +213,7 @@ class SymmetricRotor(Rotor):
     def __init__(self, param, M, dcfield=0.):
 	"""Save the relevant parameters"""
         Rotor.__init__(self, param, M, dcfield)
-	assert 'PS' == param.type.upper() or 'OS' == param.type.upper()
+	assert 'S' == param.type.upper()
 	self.valid = False
 	self.stateorder_valid = False
 	self.watson = param.watson
@@ -265,15 +264,15 @@ class SymmetricRotor(Rotor):
 	matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
 	sqrt = num.sqrt
 	DJ, DJK, DK = self.quartic.tolist()
-        if 'PS' == self.type.upper():
+        if 'p' == self.symmetry:
 	    A, B = self.rotcon.tolist()
-        elif 'OS' == self.type.upper():
+        elif 'o' == self.symmetry:
             B, C = self.rotcon.tolist()
 	for J in range(Jmin, Jmax+1):
 	    for K in range(-J, J+1):
-                if 'PS' == self.type.upper():
+                if 'p' == self.symmetry:
                     value = B*J*(J+1) +(A-B)* K**2
-                elif 'OS' == self.type.upper():
+                elif 'o' == self.symmetry:
                     value = B*J*(J+1) +(C-B)* K**2
                 distortion = -DJ* J**2 *(J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value + distortion

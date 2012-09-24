@@ -91,7 +91,7 @@ class Molecule(jkext.molecule.Molecule):
 
         if 'L' == param.type:
             Rotor = jkstark.starkeffect.LinearRotor
-        elif 'PS' == param.type or 'OS' == param.type:
+        elif 'S' == param.type:
             Rotor = jkstark.starkeffect.SymmetricRotor
         elif 'A' == param.type:
             Rotor = jkstark.starkeffect.AsymmetricRotor
