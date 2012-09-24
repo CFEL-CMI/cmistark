@@ -38,7 +38,8 @@ class CalculationParameter(object):
     - mass: mass of molecule/isomer
     - type: specify the type of rotor
       - 'L': linear top
-      - 'S': symmetric top
+      - 'PS': prolate symmetric top
+      - 'OS': oblate symmetric top
       - 'A': asymmetric top
 
     The following parameter are used for an asymmetric top:
@@ -213,7 +214,7 @@ class SymmetricRotor(Rotor):
     def __init__(self, param, M, dcfield=0.):
 	"""Save the relevant parameters"""
         Rotor.__init__(self, param, M, dcfield)
-	assert 'S' == param.type.upper()
+	assert 'PS' == param.type.upper() or 'OS' == param.type.upper()
 	self.valid = False
 	self.stateorder_valid = False
 	self.watson = param.watson
@@ -264,10 +265,16 @@ class SymmetricRotor(Rotor):
 	matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
 	sqrt = num.sqrt
 	DJ, DJK, DK = self.quartic.tolist()
-	A, B = self.rotcon.tolist()
+        if 'PS' == param.type.upper():
+	    A, B = self.rotcon.tolist()
+        elif 'OS' == param.type.upper():
+            B, C = self.rotcon.tolist()
 	for J in range(Jmin, Jmax+1):
 	    for K in range(-J, J+1):
-                value = B*J*(J+1) +(A-B)* K**2
+                if 'PS' == param.type.upper():
+                    value = B*J*(J+1) +(A-B)* K**2
+                elif 'OS' == param.type.upper():
+                    value = B*J*(J+1) +(C-B)* K**2
                 distortion = -DJ* J**2 *(J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value + distortion
 
