@@ -265,15 +265,15 @@ class SymmetricRotor(Rotor):
 	matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
 	sqrt = num.sqrt
 	DJ, DJK, DK = self.quartic.tolist()
-        if 'PS' == param.type.upper():
+        if 'PS' == self.type.upper():
 	    A, B = self.rotcon.tolist()
-        elif 'OS' == param.type.upper():
+        elif 'OS' == self.type.upper():
             B, C = self.rotcon.tolist()
 	for J in range(Jmin, Jmax+1):
 	    for K in range(-J, J+1):
-                if 'PS' == param.type.upper():
+                if 'PS' == self.type.upper():
                     value = B*J*(J+1) +(A-B)* K**2
-                elif 'OS' == param.type.upper():
+                elif 'OS' == self.type.upper():
                     value = B*J*(J+1) +(C-B)* K**2
                 distortion = -DJ* J**2 *(J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value + distortion
