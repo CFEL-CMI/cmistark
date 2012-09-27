@@ -147,8 +147,11 @@ def main(args):
                         energies = J2MHz(energies)
                     elif energyunit == "invcm":
                         energies = J2invcm(energies)
+                    plt.figure(1)
                     plt.plot(V_m2kV_cm(fields), energies, color)
-                    plt2.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                    if plotdips == True:
+                        plt.figure(2)
+                        plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
     plt.show()
 
 
