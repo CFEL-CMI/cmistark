@@ -81,7 +81,8 @@ def indole(param):
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
     elif 1 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
-        param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
+        param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
+        #param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
     print param.isomer
     print param.rotcon
@@ -218,10 +219,11 @@ def iodomethane(param):
 	param.type = 'S'
         param.symmetry = 'p'
 	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
-	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
+        param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
 	param.dipole = convert.D2Cm(num.array([1.6406]))
     elif 1 == param.isomer:
 	param.type = 'A'
+        param.watson = 'A'
 	param.symmetry = 'C2a'
 	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
 	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])

@@ -1,7 +1,7 @@
 JK Python Stark effect calculations
 ===================================
 
-- implement oblate symmetric top. Distinguis by param.symmetry=='o' or 'p'
+- implement oblate symmetric top. Distinguis by param.symmetry=='o' or 'p' - done
 - use sparse matrices (i.e., using scipy.sparse and scipy.sparse.linalg)
 - parallelize by calculating individual Ms/fields separately and merging them afterwards (i.e., using ParallelPython)
 - provide (standalone) tool for merging files

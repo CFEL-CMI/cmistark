@@ -274,7 +274,7 @@ class SymmetricRotor(Rotor):
                     value = B*J*(J+1) +(A-B)* K**2
                 elif 'o' == self.symmetry:
                     value = B*J*(J+1) +(C-B)* K**2
-                distortion = -DJ* J**2 *(J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value + distortion
 
 
