@@ -214,8 +214,9 @@ class SymmetricRotor(Rotor):
 	"""Save the relevant parameters"""
         Rotor.__init__(self, param, M, dcfield)
 	assert 'S' == param.type.upper()
+        self.symmetry = self.symmetry.lower()
+        assert 'p' == self.symmetry or 'o' == self.symmetry
 	self.valid = False
-	self.stateorder_valid = False
 	self.watson = param.watson
         assert self.rotcon.shape == (2,)
 	assert self.dipole.shape == (1,)
@@ -231,16 +232,52 @@ class SymmetricRotor(Rotor):
 
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
+        energy = []
+        DJ, DJK, DK = self.quartic.tolist()
+        if 'p' == self.symmetry:
+           AC, B = self.rotcon.tolist()
+        else:
+            B, AC = self.rotcon.tolist()
+        for J in range(self.Jmin, self.Jmax+1):
+            for K in range(-J, J+1):
+                rigid = B * J*(J+1) + (AC-B) * K**2
+                distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                energy.append(rigid+distortion)
+        eng_sort = num.sort(energy)
+        self.levels = {}
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
         eval = num.linalg.eigvalsh(hmat) # calculate only energies
         eval = num.sort(eval)
-        for J in range(self.Jmin, self.Jmax_save+1):
-            i = J - self.Jmin
-            state = State(J, 0, 0, self.M, self.isomer)
-            self.levels[state.id()] = eval[i]
+        #print eng_sort, eval
+        i = 0
+        for state in self.stateorder():
+            if state.J() <= self.Jmax_save:
+                self.levels[state.id()] = eval[i]
+                #print state.J(), state.Ka(), eval[i]
+            i += 1
         # done - data is now valid
         self.valid = True
 
+    def stateorder(self):
+        if False == self.stateorder_valid:
+            label = []
+            energy = []
+            DJ, DJK, DK = self.quartic.tolist()
+            if 'p' == self.symmetry:
+               AC, B = self.rotcon.tolist()
+            else:
+                B, AC = self.rotcon.tolist()
+            for J in range(self.Jmin, self.Jmax_save+1):
+                for K in range(-J, J+1):
+                    rigid = B * J*(J+1) + (AC-B) * K**2
+                    distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                    state = State(J, abs(K), 0, self.M, self.isomer) # negative K is not allowd for State().
+                    energy.append(rigid+distortion)
+                    label.append(state)
+            idx = num.argsort(energy)
+            self.stateorder_dict = num.array(label)[idx]
+            self.stateorder_valid = True
+        return self.stateorder_dict
 
     def hamiltonian(self, Jmin, Jmax, dcfield):
         """Return Hamiltonian matrix"""
@@ -261,21 +298,16 @@ class SymmetricRotor(Rotor):
 
 	Gordy & Cook,
 	"""
-	matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
-	sqrt = num.sqrt
 	DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
-	    A, B = self.rotcon.tolist()
-        elif 'o' == self.symmetry:
-            B, C = self.rotcon.tolist()
+           AC, B = self.rotcon.tolist()
+        else:
+            B, AC = self.rotcon.tolist()
 	for J in range(Jmin, Jmax+1):
 	    for K in range(-J, J+1):
-                if 'p' == self.symmetry:
-                    value = B*J*(J+1) +(A-B)* K**2
-                elif 'o' == self.symmetry:
-                    value = B*J*(J+1) +(C-B)* K**2
+                rigid = B * J*(J+1) + (AC-B) * K**2
                 distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
-		hmat[self.index(J, K), self.index(J, K)] += value + distortion
+		hmat[self.index(J, K), self.index(J, K)] += rigid + distortion
 
 
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
@@ -285,23 +317,31 @@ class SymmetricRotor(Rotor):
         mu = float(self.dipole)
         for J in range(Jmin, Jmax):
             for K in range(-J, J+1):
-		    if 0 != M and 0 != K: # then also 0 != J
-                        hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
-		    value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
-		    hmat[self.index(J+1, K), self.index(J, K)] += value
-		    hmat[self.index(J, K), self.index(J+1, K)] += value
-
+                # diagonal term
+                if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
+                    hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
+                # off-diagonal term
+                value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
+                hmat[self.index(J+1, K), self.index(J, K)] += value
+                hmat[self.index(J, K), self.index(J+1, K)] += value
+        # add last diagonal term
+        J = Jmax
+        for K in range(-J, J+1):
+            # diagonal term
+            if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
+                hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
 
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
         list = []
-        M = self.M
-        iso = self.isomer
         for J in range(self.Jmin, self.Jmax_save+1):
-            list.append(State(J, 0, 0, M, iso))
+            for K in range(0, J+1):
+                if 'p' == self.symmetry:
+                    list.append(State(J, K, 0, self.M, self.isomer))
+                    # print State(J, K, 0, self.M, self.isomer).name()
+                else:
+                    list.append(State(J, 0, K, self.M, self.isomer)) 
         return list
-
-
 
 class AsymmetricRotor(Rotor):
     """Representation of an asymmetric top for energy level calculation purposes.
