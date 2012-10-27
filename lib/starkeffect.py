@@ -327,15 +327,26 @@ class SymmetricRotor(Rotor):
         The symmetry of asymmetric rotor functions (in terms of eveness of Ka and Kc) is of course independent of the
         representation used in the calculation.
         """
-        def Four_symmetry(J, Ka, Kc):
-            """Determine Fourgroup symmetry of asymmetric top state in representation(s) I
+
+        def Four_symmetry(J, K):
+            """Determine Fourgroup symmetry of the corresponding Wang transformed symmetric top state of 
+            a symmetric top state JK, in representation(s) I
 
             see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
-            if Ka%2 == 0 and Kc%2 == 0:   sym = 'A'   # ee
-            elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ba'  # eo
-            elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Bc'  # oe
-            elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Bb'  # oo
-            else: assert False
+            if 0 == J % 2: # J even
+                if K < 0: # K > 0 --> s odd
+                    if 0 == K % 2: sym = 'Ba' # K even
+                    else: sym = 'Bc' # K odd
+                if K >= 0: # K <= 0 --> s even
+                    if 0 == K % 2: sym = 'A' # K even
+                    else: sym = 'Bb' # K odd
+            else: # J odd
+                if K < 0: # K <= 0 --> s even
+                    if 0 == K % 2: sym = 'A' # K even
+                    else: sym = 'Bb' # K odd
+                if K >= 0: # K >= 0 --> s odd
+                    if 0 == K % 2: sym = 'Ba' # K even
+                    else: sym = 'Bc' # K odd
             return sym
 
         if False == self.stateorder_valid:
@@ -346,9 +357,9 @@ class SymmetricRotor(Rotor):
             label = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
             for J in range(M, self.Jmax+1):
                 for K in range(0,J+1):
-                    label[Four_symmetry(J, K, 0)].append(State(J, K, 0, M, iso))
+                    label[Four_symmetry(J, K)].append(State(J, K, 0, M, iso))
                     if K != 0:
-                        label[Four_symmetry(J, K, 0)].append(State(J, K, 0, M, iso))
+                        label[Four_symmetry(J, -K)].append(State(J, K, 0, M, iso))
                 # get block diagonal hamiltonian (make sure you calculate this in 'V'!)
                 if 0 == J:
                     blocks = {'A': num.zeros((1, 1), self.hmat_type)}
@@ -387,14 +398,12 @@ class SymmetricRotor(Rotor):
                 del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.symmetry, ))
-            #print "symmetries", symmetries
             total_label = []
             total_energy = []
             for sym in symmetries:
-                idx = num.argsort(eigenvalues[sym])
-                for element in num.array(label[sym]):
+                for element in label[sym]:
                     total_label.append(element)
-                for element in num.sort(eigenvalues[sym]):
+                for element in eigenvalues[sym]:
                     total_energy.append(element)
             idx = num.argsort(total_energy)
             self.stateorder_dict = num.array(total_label)[idx]
