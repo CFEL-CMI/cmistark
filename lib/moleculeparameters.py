@@ -284,3 +284,20 @@ def phenylpyrrole(param):
     param.symmetry = 'C2a'
     param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
     param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
+
+def three_fluorophenol(param):
+    """Molecular parameters for three_fluorophenol
+	Parameters come from Yuan Pin Chang 
+        0 - cis
+        1 - trans   
+       """
+    param.name = "three_fluorophenol"
+    param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0:
+         param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
+         param.dipole = convert.D2Cm(num.array([0.6251, 0.5345, 0.0025]))
+    elif param.isomer == 1:
+         param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
+         param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))

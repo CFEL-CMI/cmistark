@@ -55,6 +55,7 @@ def main(args):
                                                    "iodomethane",
                                                    "OCS",
                                                    "phenylpyrrole",
+                                                   "3-fluorophenol",
                                                    "water", "H2O", "D2O", "HDO"
                                                    ])
     except getopt.GetoptError, err:
@@ -95,6 +96,8 @@ def main(args):
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):
             pfunc = three_aminophenol
+        elif o in "--3-fluorophenol":
+            pfunc = three_fluorophenol
         elif o == "--4-aminobenzonitrile":
             pfunc = aminobenzonitrile
         elif o == "--benzonitrile":
