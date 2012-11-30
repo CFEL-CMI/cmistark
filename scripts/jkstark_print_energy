@@ -38,7 +38,7 @@ def usage():
 
 def main(args):
     try:
-        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Kamax=", "Mmax=", "isomer="])
+        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Kamax=", "Mmin=", "Mmax=", "isomer="])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -47,6 +47,7 @@ def main(args):
     # default values
     Jmin = 0
     Jmax = 2
+    Mmin = 0
     Mmax = None
     Kamax = None
     isomer = 0
@@ -59,6 +60,8 @@ def main(args):
             Jmin = int(a)
         elif o == "--Jmax":
             Jmax = int(a)
+        elif o == "--Mmin":
+            Mmin = int(a)
         elif o == "--Mmax":
             Mmax = int(a)
         elif o == "--Kamax":
@@ -78,7 +81,7 @@ def main(args):
         mol = molecule.Molecule(storage=name)
         # loop over state
         for state in mol.starkeffect_states():
-            if  state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax:
+            if  Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax:
                 print # empty line for visual separation
                 fields, energies = mol.starkeffect(state)
 		fields, mueff = mol.mueff(state)

@@ -34,7 +34,9 @@ from jkext.state import State
 
 def usage():
     # ToDo implement a useful usage description
-    print "See script for details"
+    print """
+           --help: help
+           --energy-unit=: MHz, invcm, J"""
 
 
 def main(args):

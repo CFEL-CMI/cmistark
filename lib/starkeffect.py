@@ -234,15 +234,24 @@ class SymmetricRotor(Rotor):
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
-        hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
-        eval = num.linalg.eigvalsh(hmat) # calculate only energies
-        eval = num.sort(eval)
-        i = 0
+        blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
+        #eval = num.linalg.eigvalsh(hmat) # calculate only energies
+        #eval = num.sort(eval)
+        #if self.M == 0:
+        #    print self.dcfield
+        #    print eval
+        #i = 0
         #oldJ = -1
         #oldK = -1
-        for state in self.stateorder():
-            if state.J() <= self.Jmax_save:
-                self.levels[state.id()] = eval[i]
+        for symmetry in blocks.keys():
+            eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
+            eval = num.sort(eval)
+            i = 0
+            for state in self.stateorder(symmetry):
+                if state.J() <= self.Jmax_save:
+                    self.levels[state.id()] = eval[i]
+                    #if state.M() == 0:
+                    #    print i, state.J(), state.Ka(), state.M(), jkext.convert.J2MHz(eval[i])
                 i += 1
                 #if state.Ka() == oldK and state.J() == oldJ:
                 #    pass
@@ -256,8 +265,8 @@ class SymmetricRotor(Rotor):
         self.valid = True
 
 
-    def hamiltonian(self, Jmin, Jmax, dcfield):
-        """Return Hamiltonian matrix"""
+    def hamiltonian(self, Jmin, Jmax, dcfield, symmetry):
+        #"""Return Hamiltonian matrix"""
         self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
         matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize
         # create hamiltonian matrix
@@ -267,7 +276,10 @@ class SymmetricRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
-        return hmat
+        blocks = self.wang(hmat, symmetry, Jmin, Jmax)
+        del hmat
+        return blocks
+        #return hmat
 
 
     def rigid(self, hmat, Jmin, Jmax):
@@ -319,7 +331,7 @@ class SymmetricRotor(Rotor):
                     list.append(State(J, 0, K, self.M, self.isomer)) 
         return list
 
-    def stateorder(self):
+    def stateorder(self, symmetry):
         """Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
 
         See Gordy & Cook, Table 7.5.
@@ -364,9 +376,10 @@ class SymmetricRotor(Rotor):
                 if 0 == J:
                     blocks = {'A': num.zeros((1, 1), self.hmat_type)}
                 else:
-                    hmat = self.hamiltonian(J, J, None)
-                    blocks = self.wang(hmat, 'V', J, J)
-                    del hmat
+                    #hmat = self.hamiltonian(J, J, None)
+                    #blocks = self.wang(hmat, 'V', J, J)
+                    blocks = self.hamiltonian(J, J, None, 'V')
+                    #del hmat
                 # store sorted eigenenergies for respective J and block
                 for sym in blocks.keys():
                     if 0 < blocks[sym].size:
@@ -401,15 +414,16 @@ class SymmetricRotor(Rotor):
             total_label = []
             total_energy = []
             for sym in symmetries:
-                for element in label[sym]:
-                    total_label.append(element)
-                for element in eigenvalues[sym]:
-                    total_energy.append(element)
-            idx = num.argsort(total_energy)
-            self.stateorder_dict = num.array(total_label)[idx]
+                #for element in label[sym]:
+                #    total_label.append(element)
+                #for element in eigenvalues[sym]:
+                #    total_energy.append(element)
+                idx = num.argsort(eigenvalues[sym])
+                self.stateorder_dict[sym] = num.array(label[sym])[idx]
+            #self.stateorder_dict = num.array(total_label)[idx]
             self.stateorder_valid = True
             
-        return self.stateorder_dict
+        return self.stateorder_dict[symmetry]
 
     def wang(self, hmat, symmetry, Jmin, Jmax):
         """Wang transform matrix and return a dictionary with the individual (sub)matrices."""
@@ -466,7 +480,7 @@ class SymmetricRotor(Rotor):
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif 'C2a' == symmetry:
+        elif 'p' == symmetry: # 'C2a'
             # C2 rotation about a-axis is symmetry element
             #
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices E = Aa (contains E+ and
