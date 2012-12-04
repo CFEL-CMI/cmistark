@@ -38,11 +38,14 @@ class _isomer_mass(tables.IsDescription):
 class Molecule(jkext.molecule.Molecule):
     """Representation of a Molecule"""
 
-    def __init__(self, atoms=None, storage=None, name="Generic molecule"):
+    def __init__(self, atoms=None, storage=None, name="Generic molecule", readonly=False):
         """Create Molecule from a list of atoms."""
         jkext.molecule.Molecule.__init__(self, atoms, name)
         try:
-            self.__storage = tables.openFile(storage, mode='a', title=name)
+            if readonly:
+                self.__storage = tables.openFile(storage, mode='r')
+            else:
+                self.__storage = tables.openFile(storage, mode='a', title=name)
             self.__storage.getNode("/")._v_title = name
         except:
             self.__storage = None
