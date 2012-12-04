@@ -84,8 +84,6 @@ def indole(param):
         param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
         #param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-    print param.isomer
-    print param.rotcon
 
 
 
@@ -200,7 +198,6 @@ def OCS(param):
 	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
 	param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
 	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
-    print param.isomer, param.type, param.rotcon
 
 
 def iodomethane(param):
@@ -287,9 +284,9 @@ def phenylpyrrole(param):
 
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
-	Parameters come from Yuan Pin Chang 
+	Parameters come from Yuan Pin Chang
         0 - cis
-        1 - trans   
+        1 - trans
        """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
