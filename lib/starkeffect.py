@@ -1,8 +1,7 @@
-
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2011,2012 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -122,6 +121,7 @@ class Rotor(object):
                     print "%10.3g" % (mat[i,j]),
                 else:
                     print "%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ),
+            print
 
 
 
@@ -328,7 +328,7 @@ class SymmetricRotor(Rotor):
                 if 'p' == self.symmetry:
                     list.append(State(J, K, 0, self.M, self.isomer))
                 else:
-                    list.append(State(J, 0, K, self.M, self.isomer)) 
+                    list.append(State(J, 0, K, self.M, self.isomer))
         return list
 
     def stateorder(self, symmetry):
@@ -341,7 +341,7 @@ class SymmetricRotor(Rotor):
         """
 
         def Four_symmetry(J, K):
-            """Determine Fourgroup symmetry of the corresponding Wang transformed symmetric top state of 
+            """Determine Fourgroup symmetry of the corresponding Wang transformed symmetric top state of
             a symmetric top state JK, in representation(s) I
 
             see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
@@ -422,8 +422,8 @@ class SymmetricRotor(Rotor):
                 self.stateorder_dict[sym] = num.array(label[sym])[idx]
             #self.stateorder_dict = num.array(total_label)[idx]
             self.stateorder_valid = True
-            
         return self.stateorder_dict[symmetry]
+
 
     def wang(self, hmat, symmetry, Jmin, Jmax):
         """Wang transform matrix and return a dictionary with the individual (sub)matrices."""
@@ -444,9 +444,9 @@ class SymmetricRotor(Rotor):
             dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
         else:
             dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
-        # self.print_mat(hmat, "Original Hamiltonian")
+        self.print_mat(hmat, "Original Hamiltonian")
         hmat = dot(dot(Wmat, hmat), Wmat)
-        # self.print_mat(hmat, "Wang transformed Hamiltonian")
+        self.print_mat(hmat, "Wang transformed Hamiltonian")
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
@@ -837,9 +837,9 @@ class AsymmetricRotor(Rotor):
 	    dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
 	else:
 	    dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
-	# self.print_mat(hmat, "Original Hamiltonian")
+	self.print_mat(hmat, "Original Hamiltonian")
 	hmat = dot(dot(Wmat, hmat), Wmat)
-	# self.print_mat(hmat, "Wang transformed Hamiltonian")
+	self.print_mat(hmat, "Wang transformed Hamiltonian")
 	# delete Wang matrix (it's not used anymore)
 	del Wmat
 	# sort out matrix blocks
@@ -955,8 +955,8 @@ class AsymmetricRotor(Rotor):
 	#             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
 	#                 print "There is a problem with your symmetry"
 	#                 print  sym, "and ", sym2, "are connected for M =", self.M
-	# for symmetry in blocks.keys():
-	#     self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
+        for symmetry in blocks.keys():
+            self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
 	return blocks
 
 
