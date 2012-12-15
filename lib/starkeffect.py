@@ -205,6 +205,7 @@ class LinearRotor(Rotor):
 
 
 
+
 class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
@@ -566,6 +567,9 @@ class SymmetricRotor(Rotor):
         #     self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
         return blocks
 
+
+
+
 class AsymmetricRotor(Rotor):
     """Representation of an asymmetric top for energy level calculation purposes.
 
@@ -596,7 +600,8 @@ class AsymmetricRotor(Rotor):
 	if 0 == self.M \
                 and not self.dipole_components[1] and not self.dipole_components[2] \
                 and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
-	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole moment is along a
+	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole
+	    # moment is along a
 	    self.symmetry = 'V'
 
 
@@ -837,9 +842,9 @@ class AsymmetricRotor(Rotor):
 	    dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
 	else:
 	    dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
-	self.print_mat(hmat, "Original Hamiltonian")
+        # self.print_mat(hmat, "Original Hamiltonian")
 	hmat = dot(dot(Wmat, hmat), Wmat)
-	self.print_mat(hmat, "Wang transformed Hamiltonian")
+	# self.print_mat(hmat, "Wang transformed Hamiltonian")
 	# delete Wang matrix (it's not used anymore)
 	del Wmat
 	# sort out matrix blocks
@@ -955,8 +960,8 @@ class AsymmetricRotor(Rotor):
 	#             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
 	#                 print "There is a problem with your symmetry"
 	#                 print  sym, "and ", sym2, "are connected for M =", self.M
-        for symmetry in blocks.keys():
-            self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
+        # for symmetry in blocks.keys():
+        #     self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
 	return blocks
 
 
