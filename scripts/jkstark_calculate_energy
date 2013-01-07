@@ -50,6 +50,7 @@ def main(args):
                                                    "3-aminophenol",
                                                    "4-aminobenzonitrile",
                                                    "benzonitrile",
+						     "glycine",
                                                    "indole", "indole-water", "indole-water2",
                                                    "iodobenzene",
                                                    "iodomethane",
@@ -91,7 +92,6 @@ def main(args):
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
         elif o == "--isomer":
             param.isomer = int(a)
-
         elif o == "--2,6-difluoro-iodobenzene":
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):
@@ -102,6 +102,8 @@ def main(args):
             pfunc = aminobenzonitrile
         elif o == "--benzonitrile":
             pfunc = benzonitrile
+	elif o == "--glycine":
+            pfunc = glycine
         elif o == "--iodobenzene":
             pfunc = iodobenzene
         elif o == "--OCS":

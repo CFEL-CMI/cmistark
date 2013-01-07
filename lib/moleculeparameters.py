@@ -260,7 +260,38 @@ def benzonitrile(param):
     param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
-
+def glycine(param):
+    """Molecular parameters for TEST glycine
+        
+        Implemented isomers are
+        0  -  Test
+        1  -  Test
+        2  -  Test
+        3  -  Test
+        4  -  Test
+        5  -  Test
+        """
+    param.name = "glycine"
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: # cis, Filsinger et al. PCCP ...
+        param.rotcon = convert.Hz2J(num.array([3734.93e6, 1823.2095e6, 1226.493e6]))
+        param.dipole = convert.D2Cm(num.array([1.7718, 1.517, 0.]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([3730.1676e6, 1828.25774e6, 1228.1948e6]))
+        param.dipole = convert.D2Cm(num.array([0.5563, 0.5375, 0.]))
+    elif param.isomer == 2:
+        param.rotcon = convert.Hz2J(num.array([3748.0923e6, 1824.5812e6, 1228.7585e6]))
+        param.dipole = convert.D2Cm(num.array([1.793, 1.4396, 0.]))
+    elif param.isomer == 3:
+        param.rotcon = convert.Hz2J(num.array([3736.8454e6, 1831.7399e6, 1230.7259e6]))
+        param.dipole = convert.D2Cm(num.array([0.3953, 0.8203, 0.]))
+    elif param.isomer == 4:
+        param.rotcon = convert.Hz2J(num.array([3755.0444e6, 1828.9366e6, 1231.0926e6]))
+        param.dipole = convert.D2Cm(num.array([1.8575, 1.6484, 0.]))
+    elif param.isomer == 5:
+        param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
+        param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
 def iodobenzene(param):
     # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
