@@ -50,7 +50,7 @@ def main(args):
                                                    "3-aminophenol",
                                                    "4-aminobenzonitrile",
                                                    "benzonitrile",
-						     "glycine",
+                                                   "glycine",
                                                    "indole", "indole-water", "indole-water2",
                                                    "iodobenzene",
                                                    "iodomethane",
