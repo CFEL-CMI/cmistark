@@ -56,8 +56,9 @@ def main(args):
                                                    "iodomethane",
                                                    "OCS",
                                                    "phenylpyrrole",
-                                                   "3-fluorophenol",
-                                                   "water", "H2O", "D2O", "HDO"
+                                                   "water", "H2O", "D2O", "HDO",
+                                                   "sulfur_dioxide",
+                                                   "3-fluorophenol"
                                                    ])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -126,6 +127,8 @@ def main(args):
             elif o == "--HDO":
                 param.isomer = 2
             pfunc = water
+        elif o == "--sulfur_dioxide":
+            pfunc = sulfur_dioxide
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
