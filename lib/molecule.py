@@ -126,7 +126,8 @@ class Molecule(jkext.molecule.Molecule):
             # store calculated values for this M
             for id in energies.keys():
                 self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
-        self.__storage.flush()
+            # flush HDF5 file after every M
+            self.__storage.flush()
 
 
     def starkeffect_merge(self, state, newfields=None, newenergies=None):
