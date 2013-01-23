@@ -81,8 +81,7 @@ def indole(param):
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
     elif 1 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
-        param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
-        #param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
+        param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
 
 
