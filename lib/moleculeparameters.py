@@ -17,6 +17,20 @@
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
+__doc__ = """This modules implements the molecular parameters of all our candidates.
+
+The relevant parameters are
+- rotational constants
+- centrifugal distortion constants
+  - for a linear top: D
+  - for a symmetric top: D_J, D_{JK}, D_K
+  - for an asymmetric top
+    - in Watson's A reduction: \Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K
+- dipole moments
+  - for linear and symmetric tops: \mu
+  - for an asymmetric top \mu_a, \mu_b, \mu_c
+- symmetry
+"""
 
 import numpy as num
 import getopt, sys
