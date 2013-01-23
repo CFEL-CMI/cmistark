@@ -329,3 +329,13 @@ def three_fluorophenol(param):
     elif param.isomer == 1:
          param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
          param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
+
+def sulfur_dioxide(param):
+    # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
+    param.name = "sulfur_dioxide"
+    param.watson = 'A'
+    param.symmetry = 'C2b'
+    param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6])) # A=2.026cm^-1, B=0.3442 cm^-1, C=0.2935 cm^-1.  Alternative papers: J. Chem. Phys. 19, 502 (1951), or  J. Chem. Phys. 22, 904 (1954).  or  F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
+    param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531])) # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
+    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
+
