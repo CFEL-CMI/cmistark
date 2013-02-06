@@ -43,7 +43,7 @@ class Molecule(jkext.molecule.Molecule):
         jkext.molecule.Molecule.__init__(self, atoms, name)
         try:
             if readonly:
-                self.__storage = tables.openFile(storage, mode='r')
+                self.__storage = tables.openFile(storage, mode='r+')
             else:
                 self.__storage = tables.openFile(storage, mode='a', title=name)
             self.__storage.getNode("/")._v_title = name
@@ -114,8 +114,10 @@ class Molecule(jkext.molecule.Molecule):
             isomer['num']  = param.isomer
             isomer.append()
         for M in param.M:
+            print "M=", M #test molecule.py by YP
             energies = {}
             for field in param.dcfields:
+                if M == 0: print "M=", M, ", field=", field #test molecule.py by YP
                 calc = Rotor(param, M, field)
                 for state in calc.states():
                     id = state.id()
