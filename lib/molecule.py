@@ -114,10 +114,8 @@ class Molecule(jkext.molecule.Molecule):
             isomer['num']  = param.isomer
             isomer.append()
         for M in param.M:
-            print "M=", M #test molecule.py by YP
             energies = {}
             for field in param.dcfields:
-                if M == 0: print "M=", M, ", field=", field #test molecule.py by YP
                 calc = Rotor(param, M, field)
                 for state in calc.states():
                     id = state.id()
