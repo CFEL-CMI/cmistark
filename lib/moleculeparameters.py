@@ -298,7 +298,8 @@ def glycine(param):
         param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
         param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
     elif param.isomer == 2:
-        
+        param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
+        param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
     elif param.isomer == 3:
         param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
         param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
