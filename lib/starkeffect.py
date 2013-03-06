@@ -585,7 +585,8 @@ class AsymmetricRotor(Rotor):
                 and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
 	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole
 	    # moment is along a
-	     self.symmetry = 'W'
+	    # self.symmetry = 'W'
+            pass
 
 
     def states(self):
@@ -1040,12 +1041,12 @@ if __name__ == "__main__":
     p.quartic = jkext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
     p.dipole = jkext.convert.D2Cm([1.7, 0.0, 0.0])
     p.watson = 'A'
-    p.symmetry = 'W'
+    p.symmetry = 'C2a'
     iRotor = AsymmetricRotor
     for M in p.M:
-        for field in jkext.convert.kV_cm2V_m(num.linspace(0.,100.,2)):
+        for field in jkext.convert.kV_cm2V_m(num.linspace(0.,100.,101)):
             line = str(jkext.convert.V_m2kV_cm(field)) + " "
-            print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
+            #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
             top.energy(State(1, 0, 1, M, p.isomer))
             for state in [State(0, 0, 0, M, p.isomer),
@@ -1059,8 +1060,8 @@ if __name__ == "__main__":
                           State(10, 2, 8, M, p.isomer), State(5, 4, 1, M, p.isomer), State(12, 0, 12, M, p.isomer),
                           ]:
                 if state.M() <= state.J() and state.J() <= p.Jmax_save:
-                    print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-                        % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
-                           top.energy(state))
-                    #line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
+                    #print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
+                    #    % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
+                    #       top.energy(state))
+                    line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
             print line  
