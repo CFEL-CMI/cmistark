@@ -244,6 +244,7 @@ def iodomethane(param):
 def difluoro_iodobenzene(param):
     # parameters from simple ab initio calculations (Jochen Küpper, 2010)
     param.name = "2,6-difluoro-iodobenzene"
+    param.type = 'A'
     param.watson = 'A'
     param.symmetry = 'C2a'
     param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
@@ -255,6 +256,7 @@ def difluoro_iodobenzene(param):
 def aminobenzonitrile(param):
     # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
     param.name = "4-aminobenzonitrile"
+    param.type = 'A'
     param.watson = 'A'
     param.symmetry = 'C2a'
     param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
@@ -267,10 +269,11 @@ def benzonitrile(param):
     # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
     param.name = "benzonitrile"
     param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
+    param.type = 'A'
     param.watson = 'A'
     param.symmetry = 'C2a'
     param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
-    param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
+    param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500.0, 10.95, 628.0]))
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 def glycine(param):
@@ -334,6 +337,7 @@ def three_fluorophenol(param):
        """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
+    param.type = 'A'
     param.watson = 'A'
     param.symmetry = 'N'
     if param.isomer == 0:

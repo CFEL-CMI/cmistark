@@ -81,7 +81,7 @@ def main(args):
         mol = molecule.Molecule(storage=name)
         # loop over state
         for state in mol.starkeffect_states():
-            if  Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax:
+            if  Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() == isomer:
                 print # empty line for visual separation
                 fields, energies = mol.starkeffect(state)
 		fields, mueff = mol.mueff(state)
