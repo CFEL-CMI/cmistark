@@ -19,7 +19,7 @@ __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
 import scipy as num
-import scipy.linalg.fblas
+import scipy.linalg.blas
 
 import jkext.convert
 from jkext.state import State
@@ -425,9 +425,9 @@ class SymmetricRotor(Rotor):
             Wmat[self.index(J, 0), self.index(J, 0)] = 1.
         # transform Hamiltonian matrix
         if self.complex:
-            dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
+            dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
         else:
-            dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
+            dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
         #self.print_mat(hmat, "Original Hamiltonian")
         hmat = dot(dot(Wmat, hmat), Wmat)
         #self.print_mat(hmat, "Wang transformed Hamiltonian")
@@ -861,9 +861,9 @@ class AsymmetricRotor(Rotor):
 	    Wmat[self.index(J, 0), self.index(J, 0)] = 1.
 	# transform Hamiltonian matrix
 	if self.complex:
-	    dot = lambda a, b: scipy.linalg.fblas.cgemm(1., a, b)
+	    dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
 	else:
-	    dot = lambda a, b: scipy.linalg.fblas.dgemm(1., a, b)
+	    dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
         #self.print_mat(hmat, "Original Hamiltonian")
 	hmat = dot(dot(Wmat, hmat), Wmat)
 	#self.print_mat(hmat, "Wang transformed Hamiltonian")
