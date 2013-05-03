@@ -128,7 +128,8 @@ def indole_water2(param):
     """Molecular parameters for indole-(water)_2
 
     Implemented isomers are
-    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 20XX by Yuan-Pin Chang (2011)
+    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 20XX by Yuan-Pin Chang (2011);
+          see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
@@ -276,9 +277,11 @@ def benzonitrile(param):
     param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500.0, 10.95, 628.0]))
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
+
+
 def glycine(param):
     """Molecular parameters for TEST glycine
-        
+
         Implemented isomers are
         0  -  Paper
         1  -  Paper
@@ -310,6 +313,8 @@ def glycine(param):
         param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
+
+
 def iodobenzene(param):
     # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
     param.name = "iodobenzene"
@@ -330,6 +335,8 @@ def phenylpyrrole(param):
     param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
     param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
 
+
+
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
 	Parameters come from Yuan Pin Chang
@@ -348,12 +355,17 @@ def three_fluorophenol(param):
          param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
          param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
 
+
+
 def sulfur_dioxide(param):
     # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
     param.name = "sulfur_dioxide"
     param.watson = 'A'
     param.symmetry = 'C2b'
-    param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6])) # A=2.026cm^-1, B=0.3442 cm^-1, C=0.2935 cm^-1.  Alternative papers: J. Chem. Phys. 19, 502 (1951), or  J. Chem. Phys. 22, 904 (1954).  or  F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
-    param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531])) # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
+    # A=2.026cm^-1, B=0.3442 cm^-1, C=0.2935 cm^-1.
+    # Alternative papers: J. Chem. Phys. 19, 502 (1951), or  J. Chem. Phys. 22, 904 (1954). or
+    # F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
+    param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6]))
+    # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
+    param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
     param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
-
