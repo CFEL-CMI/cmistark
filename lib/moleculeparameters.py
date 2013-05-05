@@ -128,7 +128,7 @@ def indole_water2(param):
     """Molecular parameters for indole-(water)_2
 
     Implemented isomers are
-    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 20XX by Yuan-Pin Chang (2011);
+    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
           see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
     """
     param.name = "indole-water2"
