@@ -281,7 +281,7 @@ class SymmetricRotor(Rotor):
 	DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
            AC, B = self.rotcon.tolist()
-        else:
+        elif 'o' == self.symmetry:
             B, AC = self.rotcon.tolist()
 	for J in range(Jmin, Jmax+1):
 	    for K in range(-J, J+1):
@@ -318,7 +318,7 @@ class SymmetricRotor(Rotor):
             for K in range(0, J+1):
                 if 'p' == self.symmetry:
                     list.append(State(J, K, 0, self.M, self.isomer))
-                else:
+                elif 'o' == self.symmetry:
                     list.append(State(J, 0, K, self.M, self.isomer))
         return list
 
@@ -585,7 +585,7 @@ class AsymmetricRotor(Rotor):
                 and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
 	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole
 	    # moment is along a
-	    # self.symmetry = 'W'
+	    self.symmetry = 'W'
             pass
 
 
