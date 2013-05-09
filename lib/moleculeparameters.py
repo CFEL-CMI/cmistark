@@ -373,14 +373,15 @@ def sulfur_dioxide(param):
 
 
 def six_chloropyridazine_three_carbonitrile(param):
-    param.name = "six_chloropyridazine_three_carbonitrile"
+    """See Hansen et al, to be submitted to J. Chem. Phys."""
+    param.name = "6-chloropyridazine-3-carbonitrile"
     param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
     param.type = 'A'
     param.watson = None
     param.symmetry = 'N'
     if param.isomer == 0:
-        param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
+        param.rotcon = convert.Hz2J(num.array([5905.472e6, 717.422e6, 639.708e6]))
         param.dipole = convert.D2Cm(num.array([0, 4.37, 2.83]))
     elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
+        param.rotcon = convert.Hz2J(num.array([5905.472e6, 717.422e6, 639.708e6]))
         param.dipole = convert.D2Cm(num.array([0, 0, 2.83]))
