@@ -56,7 +56,7 @@ def main(args):
     Mmin = 0
     Mmax = None
     Kamax= None
-    isomer = 0
+    isomer = [0]
     userstates = None
     energyunit = "MHz" # energy unit, can also be "J" and "invcm"
     legend = False
@@ -78,7 +78,9 @@ def main(args):
         elif o == "--Kamax":
             Kamax = int(a)
         elif o == "--isomer":
-            isomer = int(a)
+            isomer = []
+            for i in a.split(','):
+                isomer.append(int(i))
         elif o == "--states": # quantum states to plot, format "000,1010"
             userstates = a    # uses m if given, uses all possible m otherwise
         elif o == "--energy-unit":
@@ -96,10 +98,10 @@ def main(args):
     if None == Kamax:
         Kamax = Jmax
 
-    # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
     colors = ['blue', 'red', 'green','yellow','cyan','magenta','black']
     colorindex = 0
 
+    # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
     for name in args:
         # create Molecule object and specify storage file
         mol = molecule.Molecule(storage=name)
@@ -142,7 +144,7 @@ def main(args):
         else:
             # loop over state
             for state in mol.starkeffect_states():
-                if Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() == isomer:
+                if Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer:
                     fields, energies = mol.starkeffect(state)
                     fields, mueff = mol.mueff(state)
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"

@@ -346,7 +346,7 @@ def three_fluorophenol(param):
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
     param.type = 'A'
-    param.watson = 'A'
+    param.watson = None
     param.symmetry = 'N'
     if param.isomer == 0:
          param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
@@ -369,3 +369,18 @@ def sulfur_dioxide(param):
     # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
     param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
     param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
+
+
+
+def six_chloropyridazine_three_carbonitrile(param):
+    param.name = "six_chloropyridazine_three_carbonitrile"
+    param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
+    param.type = 'A'
+    param.watson = None
+    param.symmetry = 'N'
+    if param.isomer == 0:
+        param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
+        param.dipole = convert.D2Cm(num.array([0, 4.37, 2.83]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
+        param.dipole = convert.D2Cm(num.array([0, 0, 2.83]))

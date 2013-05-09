@@ -58,7 +58,8 @@ def main(args):
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
                                                    "sulfur_dioxide",
-                                                   "3-fluorophenol"
+                                                   "3-fluorophenol",
+                                                   "6-chloropyridazine-3-carbonitrile"
                                                    ])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -129,6 +130,8 @@ def main(args):
             pfunc = water
         elif o == "--sulfur_dioxide":
             pfunc = sulfur_dioxide
+        elif o == "--6-chloropyridazine-3-carbonitrile":
+            pfunc = six_chloropyridazine_three_carbonitrile
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
