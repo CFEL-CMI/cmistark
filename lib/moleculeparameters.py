@@ -373,7 +373,7 @@ def sulfur_dioxide(param):
 
 
 def six_chloropyridazine_three_carbonitrile(param):
-    """See Hansen et al, to be submitted to J. Chem. Phys."""
+    """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
     param.name = "6-chloropyridazine-3-carbonitrile"
     param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
     param.type = 'A'
