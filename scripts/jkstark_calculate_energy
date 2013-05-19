@@ -40,7 +40,13 @@ from jkstark.moleculeparameters import *
 
 def usage():
     # ToDo implement a useful usage description
-    print "See script for details"
+    print """
+           --help: help
+           --dc-fields: specify the range of the DC elecric field (in kV/cm) in a way such as start:end:step, example: --dc-fields=0:150:151
+           --Jmax_calc: specify the maximum value of J included in the calculation.
+           --Jmax_save: specify the maximum value of J of Stark curves saved in the output file.
+           --<moleculename>: specify which molecule is used in the calculation.
+          """
 
 def main(args):
     try:
