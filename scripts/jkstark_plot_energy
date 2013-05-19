@@ -144,7 +144,7 @@ def main(args):
         else:
             # loop over state
             for state in mol.starkeffect_states():
-                if Mmin <= state.M() <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer:
+                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer:
                     fields, energies = mol.starkeffect(state)
                     fields, mueff = mol.mueff(state)
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"

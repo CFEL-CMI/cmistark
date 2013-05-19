@@ -74,6 +74,9 @@ class Molecule(jkext.molecule.Molecule):
         Molecule's HDF5 storage file.
         """
         if energies == None and fields == None:
+            #print "J,Kc,M,id", state.J(), state.Kc(), state.M(), state.id()
+            #print "state name", state.name() # YP debug
+            #print "hdf name", state.hdfname() # YP debug
             return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
                 jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
         elif energies == None or fields == None:

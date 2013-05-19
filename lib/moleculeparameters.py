@@ -76,7 +76,43 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+def oblate(param):
+    """Molecular parameters for an artificial oblate top
+    """
+    param.name = "oblate"
+    param.mass = 6 * Masses['C'] + 6 * Masses['H']
+    if 0 == param.isomer:
+        param.type = 'S'
+        param.symmetry = 'o'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6]))
+        param.quartic  = num.array([convert.Hz2J(0.0), convert.Hz2J(0.0), convert.invcm2J(0.0)])
+        param.dipole = convert.D2Cm(num.array([1.]))
+    elif 1 == param.isomer:
+        param.type = 'A'
+        param.watson = 'A'
+        param.symmetry = 'C2c'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 3000.0e6, 1000.0e6]))
+        param.quartic  = num.array([0., 0., 0., 0., 0.])
+        param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
 
+def prolate(param):
+    """Molecular parameters for an artificial prolate top
+    """
+    param.name = "prolate"
+    param.mass = 6 * Masses['C'] + 6 * Masses['H']
+    if 0 == param.isomer:
+        param.type = 'S'
+        param.symmetry = 'p'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6]))
+        param.quartic  = num.array([convert.Hz2J(0.0), convert.Hz2J(0.0), convert.invcm2J(0.0)])
+        param.dipole = convert.D2Cm(num.array([1.]))
+    elif 1 == param.isomer:
+        param.type = 'A'
+        param.watson = 'A'
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6, 1000.0e6]))
+        param.quartic  = num.array([0., 0., 0., 0., 0.])
+        param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 def indole(param):
     """Molecular parameters for indole
