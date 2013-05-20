@@ -19,7 +19,7 @@ Current maintainer: Jochen Küpper <software@jochen-kuepper.de>
 """
 
 
-setup(name="jkstark",
+setup(name="cmistark",
       author              = "Jochen Küpper",
       author_email        = "software@jochen-kuepper.de",
       description         = "JK Python Stark effect extensions",
@@ -27,10 +27,10 @@ setup(name="jkstark",
       url                 = "http://desy.cfel.de/cid/cmi",
       version             = "0.1.0",
       long_description    = long_description,
-      package_dir         = {'jkstark': 'lib'},
-      packages            = ['jkstark'],
-      scripts             = ['scripts/jkstark_brute-force-orientation',
-                             'scripts/jkstark_calculate_energy',
-                             'scripts/jkstark_plot_energy',
-                             'scripts/jkstark_print_energy']
+      package_dir         = {'cmistark': 'lib'},
+      packages            = ['cmistark'],
+      scripts             = ['scripts/cmistark_brute-force-orientation',
+                             'scripts/cmistark_calculate_energy',
+                             'scripts/cmistark_plot_energy',
+                             'scripts/cmistark_print_energy']
       )

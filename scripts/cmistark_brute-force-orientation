@@ -35,7 +35,7 @@ import numpy
 
 import jkext.const as const
 import jkext.convert as convert
-import jkstark.molecule as molecule
+import cmistark.molecule as molecule
 from jkext.state import State
 
 

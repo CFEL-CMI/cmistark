@@ -36,8 +36,8 @@ import numpy as num
 import getopt, sys
 
 import jkext.convert as convert
-import jkstark.molecule as molecule
-import jkstark.starkeffect as starkeffect
+import cmistark.molecule as molecule
+import cmistark.starkeffect as starkeffect
 from jkext.state import State
 from jkext.molecule import Masses
 

@@ -25,7 +25,7 @@ import tables
 import jkext.hdf5, jkext.molecule, jkext.util
 from jkext.state import State
 
-import jkstark.starkeffect
+import cmistark.starkeffect
 
 
 class _isomer_mass(tables.IsDescription):
@@ -93,11 +93,11 @@ class Molecule(jkext.molecule.Molecule):
             pass
 
         if 'L' == param.type:
-            Rotor = jkstark.starkeffect.LinearRotor
+            Rotor = cmistark.starkeffect.LinearRotor
         elif 'S' == param.type:
-            Rotor = jkstark.starkeffect.SymmetricRotor
+            Rotor = cmistark.starkeffect.SymmetricRotor
         elif 'A' == param.type:
-            Rotor = jkstark.starkeffect.AsymmetricRotor
+            Rotor = cmistark.starkeffect.AsymmetricRotor
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
         # calculate and store energies
@@ -175,7 +175,7 @@ class Molecule(jkext.molecule.Molecule):
 if __name__ == "__main__":
     # test Stark calculation and storage/retrieval
     from jkext.convert import *
-    param = jkstark.starkeffect.CalculationParameter
+    param = cmistark.starkeffect.CalculationParameter
     param.name = 'cis'
     param.isomer = 0
     param.watson = 'A'

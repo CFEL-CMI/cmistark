@@ -26,7 +26,7 @@ __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 import numpy as num
 import getopt, sys
 
-import jkstark.molecule as molecule
+import cmistark.molecule as molecule
 from jkext.convert import *
 from jkext.state import State
 

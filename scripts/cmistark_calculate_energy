@@ -21,7 +21,7 @@ from __future__ import division
 
 Copyright (C) 2008,2009,2011,2012 Jochen Küpper
 
-This is a simple driver around the functionality in the import modules of the jkstark Python extension. It allows user
+This is a simple driver around the functionality in the import modules of the cmistark Python extension. It allows user
 interaction and defines the actual molecular properties used in the calculations. The constants should not be changed -
 unless there is a real bug, instead you should consider to create "isomers" for new constants sets coming up with time.
 """
@@ -30,12 +30,12 @@ __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 
 import numpy as num
 import getopt, sys
-import jkstark.moleculeparameters
+import cmistark.moleculeparameters
 
 import jkext.convert as convert
-import jkstark.molecule as molecule
-import jkstark.starkeffect as starkeffect
-from jkstark.moleculeparameters import *
+import cmistark.molecule as molecule
+import cmistark.starkeffect as starkeffect
+from cmistark.moleculeparameters import *
 
 
 def usage():
