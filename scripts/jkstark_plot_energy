@@ -36,7 +36,15 @@ def usage():
     # ToDo implement a useful usage description
     print """
            --help: help
-           --energy-unit=: MHz, invcm, J"""
+           --Jmin:      specify the minimum value of J
+           --Jmax:      specify the maximum value of J
+           --Mmin:      specify the minimum value of M
+           --Mmax:      specify the maximum value of M
+           --isomer:    specify which isomer is used, when <moleculename> have more than one isomers defined in moleculeparameter.py
+           --states=: specify states to plot, format: "000,1010"
+           --dipole: plot the effective dipole moments
+           --energy-unit=: MHz, invcm, J
+          """
 
 
 def main(args):
