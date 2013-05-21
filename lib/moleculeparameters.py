@@ -35,11 +35,11 @@ The relevant parameters are
 import numpy as num
 import getopt, sys
 
-import jkext.convert as convert
+import cmistark.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
-from jkext.state import State
-from jkext.molecule import Masses
+from cmistark.state import State
+from cmistark.moleculeproperty import Masses
 
 
 

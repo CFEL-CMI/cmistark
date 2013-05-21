@@ -21,8 +21,8 @@ __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 import scipy as num
 import scipy.linalg.blas
 
-import jkext.convert
-from jkext.state import State
+import cmistark.convert
+from cmistark.state import State
 
 
 class CalculationParameter(object):
@@ -61,7 +61,7 @@ class CalculationParameter(object):
     Jmax_calc = 10
     Jmax_save = 6
     # fields
-    dcfields = jkext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
+    dcfields = cmistark.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
     # molecular parameters
     mass = num.zeros((1,), num.float64)      # kg
     rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
@@ -1097,16 +1097,16 @@ if __name__ == "__main__":
     p.M = [0]
     p.rtype = 'A'
     p.isomer = 0
-    p.rotcon = jkext.convert.invcm2J(num.array([0.18919, 0.02503, 0.02210]))
-    p.quartic = jkext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
-    p.dipole = jkext.convert.D2Cm([1.7, 0.0, 0.0])
+    p.rotcon = cmistark.convert.invcm2J(num.array([0.18919, 0.02503, 0.02210]))
+    p.quartic = cmistark.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
+    p.dipole = cmistark.convert.D2Cm([1.7, 0.0, 0.0])
     p.watson = 'A'
     p.symmetry = 'C2a'
     iRotor = AsymmetricRotor
     for M in p.M:
-        for field in jkext.convert.kV_cm2V_m(num.linspace(0.,100.,101)):
-            line = str(jkext.convert.V_m2kV_cm(field)) + " "
-            #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
+        for field in cmistark.convert.kV_cm2V_m(num.linspace(0.,100.,101)):
+            line = str(cmistark.convert.V_m2kV_cm(field)) + " "
+            #print "\nM = %d, field strength = %.0f kV/cm" % (M, cmistark.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
             top.energy(State(1, 0, 1, M, p.isomer))
             for state in [State(0, 0, 0, M, p.isomer),
@@ -1121,7 +1121,7 @@ if __name__ == "__main__":
                           ]:
                 if state.M() <= state.J() and state.J() <= p.Jmax_save:
                     #print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-                    #    % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
+                    #    % (cmistark.convert.J2MHz(top.energy(state)), cmistark.convert.J2invcm(top.energy(state)),
                     #       top.energy(state))
-                    line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
+                    line = line + str(cmistark.convert.J2invcm(top.energy(state))) + " "
             print line  
