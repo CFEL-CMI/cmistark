@@ -2,7 +2,8 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2009,2011,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2009,2011,2012,2013 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2012,2013 Yuan-Pin Chang <yuan.pin.chang@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -26,7 +27,7 @@ interaction and defines the actual molecular properties used in the calculations
 unless there is a real bug, instead you should consider to create "isomers" for new constants sets coming up with time.
 """
 
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import getopt, sys
@@ -39,17 +40,19 @@ from cmistark.moleculeparameters import *
 
 
 def usage():
-    # ToDo implement a useful usage description
+    # ToDo implement a useful usage description -- use argparse instead of getopt to auto-create it
     print """
            --help:      help
-           --dc-fields: specify the range of the DC elecric field (in kV/cm) in a way such as start:end:step, example: --dc-fields=0:150:151
+           --dc-fields: specify the range of the DC elecric field (in kV/cm):
+                        start:end:step (example: --dc-fields=0:150:151)
            --Jmax_calc: specify the maximum value of J included in the calculation
            --Jmax_save: specify the maximum value of J of Stark curves saved in the output file
            --<moleculename>: specify which molecule is used in the calculation
            --Jmin:      specify the minimum value of J included in the calculation
            --Mmax:      specify the maximum value of M included in the calculation
-           --isomer:    specify which isomer is used, when <moleculename> have more than one isomers defined in moleculeparameter.py
-          """
+           --isomer:    specify which isomer is used, when <moleculename> have more than
+                        one isomers defined in moleculeparameter.py
+"""
 
 def main(args):
     try:
