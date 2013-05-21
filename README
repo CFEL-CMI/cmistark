@@ -122,7 +122,7 @@ nonzero M states are double degenerate, and only
 states with positive M are stored. Values of J,
 Ka and Kc are positives.
 
-For symmetric tops, states have products of K and M
+For symmetric tops, states having products of K and M
 equal to +|KM| and -|KM| split in the DC electric
 field. We label the states corresponding to -|KM|
 with negative K values in the output file, as only
@@ -134,15 +134,15 @@ the output file are also double degenerate.
 * Structure of <moleculename>.molecule
 
 For each state (J,Ka,Kc,M,isomer), the Stark energy
-as function of the DC field strength is stored by
-the following structures:
+as function of DC field strength is stored by the
+following structures:
 
 /_J/_Ka/_Kc/_M/_isomer/dcfield 
 /_J/_Ka/_Kc/_M/_isomer/dcstarkenergy
 
-The following example source code of Python show
-how to read the curve for the 00000 state by using
-PyTables:
+The following example source code of Python shows
+how to read the curve for the 00000 state from
+<moleculename>.molecule by using PyTables:
 
 import tables 
 import numpy 
@@ -157,3 +157,22 @@ array = f.getNode("/_0/_0/_0/_0/_0/dcstarkenergy")
 #read the array from the dcstarkenergy folder in 0 0 0 0 state
 
 print numpy.array(array.read()) 
+
+* Descriptions of source code files:
+
+Three files in lib folder provide all functions
+used to calculate and then write/read Stark curves.
+Above script files perform the calculations by
+calling these functions. The basic descriptions
+of each file in lib folder is provided as following:
+
+- molecule.py: perform Stark effect calculation by calling
+               functions from starkeffect.py and store
+               results in an output file 
+
+- moleculeparameter.py: contain all molecular parameters
+                        of individual molecules
+
+- starkeffect.py: contain all functions, equations
+                  and algorithms required for calculating
+                  Stark effect.
