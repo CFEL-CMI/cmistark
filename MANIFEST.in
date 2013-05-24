@@ -1,0 +1,2 @@
+include AUTHORS LICENSE README COPYING MANIFEST THANKS user-install.csh
+include scripts/starkeffect_merge.py

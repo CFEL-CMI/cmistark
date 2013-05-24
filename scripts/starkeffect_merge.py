@@ -31,12 +31,12 @@ Copyright (C) 2008 Jochen Küpper"""
 __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 
 
-import jkext.molecule
+import cmistark.molecule
 import sys
 
 list = []
 for file in sys.argv[1:]:
-    mol = jkext.molecule.Molecule(storage=file)
+    mol = cmistark.molecule.Molecule(storage=file)
     list.append(mol)
 
 for mol in list[1:]:

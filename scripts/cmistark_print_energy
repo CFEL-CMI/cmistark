@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2009,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2009,2012,2013 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,16 +19,16 @@ from __future__ import division
 
 """Print adiabatic energy curves from HDF5 file to commandline
 
-Copyright (C) 2009,2012 Jochen Küpper"""
+Copyright (C) 2009,2012,2103 Jochen Küpper"""
 
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import getopt, sys
 
 import cmistark.molecule as molecule
-from jkext.convert import *
-from jkext.state import State
+from cmistark.convert import *
+from cmistark.state import State
 
 
 def usage():
@@ -40,8 +40,9 @@ def usage():
            --Mmin:      specify the minimum value of M
            --Mmax:      specify the maximum value of M
            --Kamax:     specify the maximum value of Ka
-           --isomer:    specify which isomer is used, when <moleculename> have more than one isomers defined in moleculeparameter.py
-          """
+           --isomer:    specify which isomer is used, when <moleculename> has
+                        more than one isomers defined in moleculeparameter.py
+"""
 
 
 def main(args):

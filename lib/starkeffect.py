@@ -221,7 +221,7 @@ class SymmetricRotor(Rotor):
     
     Note that in the field, states corresponding to +|KM| and -|KM| become not degenerate. While always keeping M positive in this program,
 
-    we label states corresponding to -|KM| by using negative K values in the putput hdf files.
+    we label states corresponding to -|KM| by using negative K values in the output hdf files.
     """
     def __init__(self, param, M, dcfield=0.):
 	"""Save the relevant parameters"""
@@ -330,9 +330,6 @@ class SymmetricRotor(Rotor):
         """Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
 
         See Gordy & Cook, Table 7.5.
-
-        The symmetry of asymmetric rotor functions (in terms of eveness of Ka and Kc) is of course independent of the
-        representation used in the calculation.
         """
 
         def Four_symmetry(J, K):
