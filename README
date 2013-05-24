@@ -26,7 +26,7 @@ Installation is performed by executing the generic Python install command:
     python setup.py install
 in the unpacked source code directory.
 
-Alternatively, on Unix-like systems the provided shell-script user-install.sh
+Alternatively, on Unix-like systems the provided shell-script user-install.csh
 can be used to install the program.
 
 
@@ -105,18 +105,25 @@ example of using cmistark_print_energy with options:
 
 * State labels of stored Stark curves
 
-For linear and asymmetric tops, all curves of nonzero M states are double
-degenerate, and only states with positive M are stored. Values of J, Ka and Kc
-are positives.
+In the output file <moleculename>.molecule, each Stark curve has a state
+label (J,Ka,Kc,M,isomer), which represents the adiabatic quantum number
+label of the rotational state in the field, as well as the type of isomer.
+J, Ka, Kc, M are integer, assuming no orbital angular momentum and spin
+of electrons and nuclear spins involved. For all types of rotors, the
+vlue of J is not less than zero.
+
+For asymmetric tops and linear rotors, only states with positive M are
+stored, as all curves of nonzero M states are double degenerate. The values
+of both Ka and Kc are not less than zero for asymmetric tops, or set
+to zero for linear rotors. 
 
 For symmetric tops, states having products of K and M equal to +|KM| and -|KM|
 split in the DC electric field. We label the states corresponding to -|KM| with
-negative K values in the output file, as only positive M states are stored.
-However, it should be note that states with K>0 and M<0 can also yield -|KM|.
+negative values of K in the output file, as only positive M states will be stored.
+However, it should be noted that states with K>0 and M<0 can also yield -|KM|.
 Thus, all curves of nonzero M states in the output file are also double
-degenerate.
-
-
+degenerate. The state label for prolate tops is (J,K,0,M,isomer), or
+(J,0,K,M,isomer) for oblate tops.
 
 * Structure of <moleculename>.molecule
 
@@ -158,6 +165,17 @@ as following:
 
 - starkeffect.py: contain all functions, equations and algorithms required for
                   calculating Stark effect.
+
+(Only for stand-alone version) The descriptions of rest of files in lib
+folder are also provided as following:
+
+- codata.py: store most scientific constants
+- const.py: call required math. and phys. constants from codata.py
+- convert.py: perform unit conversions
+- hdf5.py: read/write output files in the format of hdf5 via PyTables
+- moleculeproperty.py: create a molecule (as a object) from a list of atoms
+- state.py: create state labels and corresponding id numbers.
+- util.py: provide array operations
 
 
 
