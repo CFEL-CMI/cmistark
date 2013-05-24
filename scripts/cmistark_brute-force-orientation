@@ -3,7 +3,7 @@
 #
 # This file is part of JK Python extensions
 # Copyright (C) 2009 Frank Filsinger
-# Copyright (C) 2009 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2009,2013 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -55,8 +55,9 @@ def create_population(mol, temperature, Jmax, nsswtype, nssweights):
             Ka = 0
             for Kc in range(J, -1, -1):
                 state = State(J, Ka, Kc, M, 0)
+                print mol.starkeffect(state)
                 energy = mol.starkeffect(state)[1][0]
-                boltzmann = math.exp(-energy/(const.boltzmann * temperature))
+                boltzmann = math.exp(-energy/(const.Boltzmann * temperature))
                 if 0 == state.M():
                     degeneracy = 1
                 else:
