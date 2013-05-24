@@ -20,6 +20,7 @@ The following external Python packages are also required:
  - PyTables
  - matplotlib
 
+
 * Installation:
 
 Installation is performed by executing the generic Python install command:
@@ -118,12 +119,14 @@ of both Ka and Kc are not less than zero for asymmetric tops, or set
 to zero for linear rotors. 
 
 For symmetric tops, states having products of K and M equal to +|KM| and -|KM|
-split in the DC electric field. We label the states corresponding to -|KM| with
-negative values of K in the output file, as only positive M states will be stored.
-However, it should be noted that states with K>0 and M<0 can also yield -|KM|.
-Thus, all curves of nonzero M states in the output file are also double
-degenerate. The state label for prolate tops is (J,K,0,M,isomer), or
-(J,0,K,M,isomer) for oblate tops.
+split in the DC electric field. In the output file states corresponding with
+negative |KM| are stored with negative K (and positive M)l; this is really an
+implementation detail and the sign stored with K in this case is always the sign
+of the product KM. We note that states with K>0 and M<0 also yield -|KM|. Thus,
+all curves of nonzero M states in the output file are also double degenerate.
+
+
+>>>>>>> some modifications/cleanup
 
 * Structure of <moleculename>.molecule
 
@@ -131,24 +134,21 @@ For each state (J,Ka,Kc,M,isomer), the Stark energy as function of DC field
 strength is stored by the following structures:
     /_J/_Ka/_Kc/_M/_isomer/dcfield
     /_J/_Ka/_Kc/_M/_isomer/dcstarkenergy
+The state label for prolate tops is (J,K,0,M,isomer), or (J,0,K,M,isomer) for 
+oblate tops.
 
 The following example source code of Python shows how to read the curve for the
 00000 state from <moleculename>.molecule by using PyTables:
 
 import tables
 import numpy
-
 stark_file = "<moleculename>.molecule"
-
 f=tables.openFile(stark_file)
-
-print f #print the entire file structure
-
 array = f.getNode("/_0/_0/_0/_0/_0/dcstarkenergy")
-#read the array from the dcstarkenergy folder in 0 0 0 0 state
-
 print numpy.array(array.read())
 
+A script cmistark_print_energies, that provides ASCII output for specified
+conditions and states, is provided in the package for convenience.
 
 
 * Descriptions of source code files:
