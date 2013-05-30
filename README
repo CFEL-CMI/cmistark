@@ -20,6 +20,7 @@ The following external Python packages are also required:
  - PyTables
  - matplotlib
 
+
 * Installation:
 
 Installation is performed by executing the generic Python install command:
@@ -110,19 +111,21 @@ label (J,Ka,Kc,M,isomer), which represents the adiabatic quantum number
 label of the rotational state in the field, as well as the type of isomer.
 J, Ka, Kc, M are integer, assuming no orbital angular momentum and spin
 of electrons and nuclear spins involved. For all types of rotors, the
-vlue of J is not less than zero.
+value of J is not less than zero.
 
 For asymmetric tops and linear rotors, only states with positive M are
 stored, as all curves of nonzero M states are double degenerate. The values
 of both Ka and Kc are not less than zero for asymmetric tops, or set
-to zero for linear rotors. 
+to zero for linear rotors. The state lable for linear rotors is thus
+(J,0,0,M,isomer). 
 
 For symmetric tops, states having products of K and M equal to +|KM| and -|KM|
-split in the DC electric field. We label the states corresponding to -|KM| with
-negative values of K in the output file, as only positive M states will be stored.
-However, it should be noted that states with K>0 and M<0 can also yield -|KM|.
-Thus, all curves of nonzero M states in the output file are also double
-degenerate. The state label for prolate tops is (J,K,0,M,isomer), or
+split in the DC electric field. In the output file states corresponding with
+negative |KM| are stored with negative K (and positive M); this is really an
+implementation detail and the sign stored with K in this case is always the sign
+of the product KM. We note that states with K>0 and M<0 also yield -|KM|. Thus,
+all curves of nonzero M states in the output file are also double degenerate.
+Finally, the state label for prolate tops is (J,K,0,M,isomer), or
 (J,0,K,M,isomer) for oblate tops.
 
 * Structure of <moleculename>.molecule
@@ -137,18 +140,13 @@ The following example source code of Python shows how to read the curve for the
 
 import tables
 import numpy
-
 stark_file = "<moleculename>.molecule"
-
 f=tables.openFile(stark_file)
-
-print f #print the entire file structure
-
 array = f.getNode("/_0/_0/_0/_0/_0/dcstarkenergy")
-#read the array from the dcstarkenergy folder in 0 0 0 0 state
-
 print numpy.array(array.read())
 
+A script cmistark_print_energies, that provides ASCII output for specified
+conditions and states, is provided in the package for convenience.
 
 
 * Descriptions of source code files:
@@ -174,7 +172,7 @@ folder are also provided as following:
 - convert.py: perform unit conversions
 - hdf5.py: read/write output files in the format of hdf5 via PyTables
 - moleculeproperty.py: create a molecule (as a object) from a list of atoms
-- state.py: create state labels and corresponding id numbers.
+- state.py: create state labels and corresponding id numbers
 - util.py: provide array operations
 
 
