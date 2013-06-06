@@ -76,44 +76,6 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
-def oblate(param):
-    """Molecular parameters for an artificial oblate top
-    """
-    param.name = "oblate"
-    param.mass = 6 * Masses['C'] + 6 * Masses['H']
-    if 0 == param.isomer:
-        param.type = 'S'
-        param.symmetry = 'o'
-        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6]))
-        param.quartic  = num.array([convert.Hz2J(0.0), convert.Hz2J(0.0), convert.invcm2J(0.0)])
-        param.dipole = convert.D2Cm(num.array([1.]))
-    elif 1 == param.isomer:
-        param.type = 'A'
-        param.watson = 'A'
-        param.symmetry = 'C2c'
-        param.rotcon = convert.Hz2J(num.array([3000.0e6, 3000.0e6, 1000.0e6]))
-        param.quartic  = num.array([0., 0., 0., 0., 0.])
-        param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
-
-def prolate(param):
-    """Molecular parameters for an artificial prolate top
-    """
-    param.name = "prolate"
-    param.mass = 6 * Masses['C'] + 6 * Masses['H']
-    if 0 == param.isomer:
-        param.type = 'S'
-        param.symmetry = 'p'
-        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6]))
-        param.quartic  = num.array([convert.Hz2J(0.0), convert.Hz2J(0.0), convert.invcm2J(0.0)])
-        param.dipole = convert.D2Cm(num.array([1.]))
-    elif 1 == param.isomer:
-        param.type = 'A'
-        param.watson = 'A'
-        param.symmetry = 'C2a'
-        param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6, 1000.0e6]))
-        param.quartic  = num.array([0., 0., 0., 0., 0.])
-        param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
-
 def indole(param):
     """Molecular parameters for indole
 
@@ -157,25 +119,6 @@ def indole_water1(param):
         param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
         param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
         param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
-
-
-
-def indole_water2(param):
-    """Molecular parameters for indole-(water)_2
-
-    Implemented isomers are
-    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
-          see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
-    """
-    param.name = "indole-water2"
-    param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    param.isomer = 0
-    param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
-    param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
-
-
 
 def water(param):
     """Molecular parameters for H2O, D2O, HDO
@@ -314,43 +257,6 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-
-def glycine(param):
-    """Molecular parameters for TEST glycine
-
-        Implemented isomers are
-        0  -  Paper
-        1  -  Paper
-        2  -  Anthony Meijer
-        3  -  Anthony Meijer
-        4  -  Test
-        5  -  Test
-        """
-    param.name = "glycine"
-    param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    if param.isomer == 0: # cis, Filsinger et al. PCCP ...
-        param.rotcon = convert.Hz2J(num.array([10.3415e9, 3.87618e9, 2.91235e9]))
-        param.dipole = convert.D2Cm(num.array([0.911, 0.697, 0.]))
-    elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
-        param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
-    elif param.isomer == 2:
-        param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
-        param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
-    elif param.isomer == 3:
-        param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
-        param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
-    elif param.isomer == 4:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-    elif param.isomer == 5:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-
-
-
 def iodobenzene(param):
     # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
     param.name = "iodobenzene"
@@ -360,37 +266,6 @@ def iodobenzene(param):
     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
-
-
-
-def phenylpyrrole(param):
-    # A. J. Fleisher
-    param.name = "phenylpyrrole"
-    param.watson = 'A'
-    param.symmetry = 'C2a'
-    param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
-    param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
-
-
-
-def three_fluorophenol(param):
-    """Molecular parameters for three_fluorophenol
-	Parameters come from Yuan Pin Chang
-        0 - cis
-        1 - trans
-       """
-    param.name = "three_fluorophenol"
-    param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
-    param.type = 'A'
-    param.watson = None
-    param.symmetry = 'N'
-    if param.isomer == 0:
-         param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
-         param.dipole = convert.D2Cm(num.array([0.6251, 0.5345, 0.0025]))
-    elif param.isomer == 1:
-         param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
-         param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
-
 
 
 def sulfur_dioxide(param):
@@ -407,17 +282,3 @@ def sulfur_dioxide(param):
     param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
 
 
-
-def six_chloropyridazine_three_carbonitrile(param):
-    """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
-    param.name = "6-chloropyridazine-3-carbonitrile"
-    param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
-    param.type = 'A'
-    param.watson = None
-    param.symmetry = 'N'
-    if param.isomer == 0:
-        param.rotcon = convert.Hz2J(num.array([5905.472e6, 717.422e6, 639.708e6]))
-        param.dipole = convert.D2Cm(num.array([0, 4.37, 2.83]))
-    elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([5905.472e6, 717.422e6, 639.708e6]))
-        param.dipole = convert.D2Cm(num.array([0, 0, 2.83]))

@@ -929,7 +929,6 @@ class AsymmetricRotor(Rotor):
 	# sort out matrix blocks
         if 'W' == symmetry:
             # use Wang submatrices E+/-,O+/-
-            # YP: I^l representation has to be used, otherwise the results of O- and O+ are flipped, and don't fit with any literature at all.
             idx = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
             i = 0
             for J in range(Jmin, Jmax+1):
