@@ -17,7 +17,7 @@
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
-__doc__ = """This modules implements the molecular parameters of all our candidates.
+__doc__ = """This modules implements the molecular parameters of all investigated molecules.
 
 The relevant parameters are
 - rotational constants
@@ -76,6 +76,7 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+
 def oblate(param):
     """Molecular parameters for an artificial oblate top
     """
@@ -95,9 +96,9 @@ def oblate(param):
         param.quartic  = num.array([0., 0., 0., 0., 0.])
         param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
 
+
 def prolate(param):
-    """Molecular parameters for an artificial prolate top
-    """
+    """Molecular parameters for an artificial prolate top"""
     param.name = "prolate"
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     if 0 == param.isomer:
