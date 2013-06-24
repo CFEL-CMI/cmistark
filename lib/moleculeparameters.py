@@ -289,16 +289,15 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 def diiodoethane(param):
-    """Molecular parameters for diiodo-ethane (for Lincoln collarboration)
-        
-        Implemented isomers are
-        0  -  anti-conformation (C2h symmetry)
-        1  -  gauge-conformation (C2 symmetry)
-        Structural parameters are from the supplementary material of "Photodissociation Reaction of 1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study"
-        by Qingyu Kong et al., J. Phys. Chem. A, 109, 10451-10458 (2005)
-        Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
-        
-        """
+    """Molecular parameters for diiodo-ethane, implemented isomers are
+    0  -  anti-conformation (C2h symmetry)
+    1  -  gauge-conformation (C2 symmetry)
+
+    Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
+    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study", J. Phys. Chem. A, 109, 10451-10458 (2005)
+
+    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
+    """
     param.name = "diiodoethane"
     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
     param.watson = 'A'
