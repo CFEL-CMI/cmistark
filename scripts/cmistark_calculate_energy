@@ -68,6 +68,7 @@ def main(args):
                                                    "indole", "indole-water", "indole-water2",
                                                    "iodobenzene",
                                                    "iodomethane",
+                                                   "diiodoethane",
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
@@ -130,6 +131,8 @@ def main(args):
             pfunc = prolate
         elif o == "--iodomethane":
             pfunc= iodomethane
+        elif o == "--diiodoethane":
+            pfunc= diiodoethane    
         elif o == "--indole":
             pfunc = indole
         elif o == "--indole-water":

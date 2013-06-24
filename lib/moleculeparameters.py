@@ -288,6 +288,28 @@ def difluoro_iodobenzene(param):
     param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
+def diiodoethane(param):
+    """Molecular parameters for diiodo-ethane (for Lincoln collarboration)
+        
+        Implemented isomers are
+        0  -  anti-conformation (C2h symmetry)
+        1  -  gauge-conformation (C2 symmetry)
+        Structural parameters are from the supplementary material of "Photodissociation Reaction of 1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study"
+        by Qingyu Kong et al., J. Phys. Chem. A, 109, 10451-10458 (2005)
+        Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
+        
+        """
+    param.name = "diiodoethane"
+    param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
+    param.watson = 'A'
+    if param.isomer == 0: # anti
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([2.79227492e10, 3.09470163e8, 3.07270856e8]))
+        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
+    elif param.isomer == 1: # gauge
+        param.symmetry = 'C2b'
+        param.rotcon = convert.Hz2J(num.array([6.18776669e9, 4.92744613e8, 4.63936461e8]))
+        param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
 
 
 def aminobenzonitrile(param):
