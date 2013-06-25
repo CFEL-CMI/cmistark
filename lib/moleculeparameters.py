@@ -182,7 +182,7 @@ def water(param):
     """Molecular parameters for H2O, D2O, HDO
 
     Implemented isomers are
-    0  -  H2O: experimental inertial parameters from F. C. De Lucia, P. Helminger, R. L. Cook, and W. Gordy, Phys. Rev. A, 5, 487 (1972)
+    0  -  H2O: experimental inertial parameters from F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
                and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
     1  -  D2O: experimental inertial parameters from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973)
                and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
@@ -191,18 +191,16 @@ def water(param):
 
     Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
 
-    get better data from
+    values and references are from
     - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
-    - DeLucia, Helminger, Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-    - DeLucia and Helminger, J. Mol. Spectrosc. 56, 138 (1975)
     """
     param.name = "water"
     param.watson = 'A'
     if param.isomer == 0:
         param.mass = Masses['O'] + 2 * Masses['H']
         param.symmetry = 'C2b'
-        param.rotcon = convert.Hz2J(num.array([835840.29e6, 435351.72e6, 278138.7e6]))
-        param.quartic = convert.Hz2J(num.array([37.594e6, -172.91e6, 973.29e6, 15.210e6, 41.05e6]))
+        param.rotcon = convert.Hz2J(num.array([835840.288e6, 435351.717e6, 278138.700e6]))
+        param.quartic = convert.Hz2J(num.array([37.59422e6, -172.9128e6, 973.29052e6, 15.210402e6, 41.0502e6]))
         param.dipole = convert.D2Cm(num.array([0., -1.857, 0.]))
     elif param.isomer == 1:
         param.mass = Masses['O'] + 2 * Masses['D']
