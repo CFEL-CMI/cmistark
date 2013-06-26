@@ -188,11 +188,9 @@ def water(param):
                and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
     2  -  HDO: experimental inertial parameters from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
           and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
+    These values and references are also listed at http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
 
     Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
-
-    values and references are from
-    - http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
     """
     param.name = "water"
     param.watson = 'A'
