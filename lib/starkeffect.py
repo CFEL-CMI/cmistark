@@ -47,9 +47,10 @@ class CalculationParameter(object):
       - 'S' for Watson's S reduction
     - symmetry defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
       the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b',
-      'C2c', 'V' for full Fourgroup symmetry, for asym top. For sym top, the options are 'p' and 'o'.
-      (added by YP in 2013) 'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asym top. This can only be
-      correct for zero-field calculations or M=0.
+      'C2c', 'V' for full Fourgroup symmetry, for asym top.
+      'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asym top. This can only be correct for
+      zero-field calculations or M=0.
+      For a symmetric top, the options are 'p' and 'o'.
     """
     name = ' '
     isomer = 0
@@ -224,9 +225,7 @@ class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-range, K-range and J-range.
-    
     Note that in the field, states corresponding to +|KM| and -|KM| become not degenerate. While always keeping M positive in this program,
-
     we label states corresponding to -|KM| by using negative K values in the output hdf files.
     """
     def __init__(self, param, M, dcfield=0.):
@@ -241,7 +240,6 @@ class SymmetricRotor(Rotor):
         assert self.rotcon.shape == (2,)
 	assert self.dipole.shape == (1,)
 	assert self.quartic.shape == (3,)
-
 
     def index(self, J, K):
 	# this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
@@ -287,6 +285,7 @@ class SymmetricRotor(Rotor):
         self.valid = True
 
     def hamiltonian(self, Jmin, Jmax, K, dcfield):
+        """@YP: please put "K" behind "dcfield" -- to be symmetric with AsymmetricRotor code"""
         matrixsize = Jmax - max({abs(K),Jmin}) + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
@@ -331,7 +330,7 @@ class SymmetricRotor(Rotor):
     def rigid_old(self, hmat, Jmin, Jmax):
 	"""Add the rigid-rotor matrix element terms to hmat -- representation I^l
 
-	Gordy & Cook,
+	Gordy & Cook, @YP: please add section, edition, year
 	"""
 	DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
@@ -350,7 +349,7 @@ class SymmetricRotor(Rotor):
         M = self.M
         mu = float(self.dipole)
         matrixsize = Jmax - max({abs(K),Jmin}) + 1
-        for J in range(max({Jmin,abs(K)}),Jmax): 
+        for J in range(max({Jmin,abs(K)}),Jmax):
             # diagonal term
             if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
                 hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
@@ -488,7 +487,7 @@ class AsymmetricRotor(Rotor):
 	    for state in self.stateorder(symmetry):
 		if state.J() <= self.Jmax_save:
 		    self.levels[state.id()] = eval[i]
-                    self.levelssym[state.id()] = symmetry #YP: for debuging 
+                    self.levelssym[state.id()] = symmetry #YP: for debuging
 		i += 1
 	# done - data is now valid
 	self.valid = True
@@ -928,4 +927,4 @@ if __name__ == "__main__":
                     #    % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
                     #       top.energy(state))
                     line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
-            print line  
+            print line
