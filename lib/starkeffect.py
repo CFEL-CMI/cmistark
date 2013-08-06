@@ -242,50 +242,28 @@ class SymmetricRotor(Rotor):
 	assert self.quartic.shape == (3,)
 
     def index(self, J, K):
-	# this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
-	# Therefore, we must be called only through hamiltonian
+	# The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
+	# The index starts from zero.
 	return J - max({abs(K), self.Jmin})
 
     def recalculate(self):
-        """Perform calculation of rotational state energies for current parameters"""
-        ###print "in func recalculate before K loop"
+        """Perform calculation of rotational state energies with current parameters for individual K"""
         self.levels = {}
-        for K in range(-self.Jmax, self.Jmax+1):
-            ###print "in func recalculate, in K loop, line 1, K", K
-            blocks = self.hamiltonian(self.Jmin, self.Jmax, K, self.dcfield)
+        for K in range(-self.Jmax, self.Jmax+1): # scan K
+            blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, K) # create a full hamt for a single K. (note not |K|.)
             eval = num.linalg.eigvalsh(blocks) # calculate only energies
             eval = num.sort(eval)
-            ###print "in func recalculate, in K loop, after eva", eval
             i = 0
-            ###print "in func recalculate, in K loop, before state loop"
             for state in self.stateorder(K):
-                ###print "in func recalculate, in K loop, in state loop, before if loop, J,Ka,Kc,M,id", state.J(), state.Ka(), state.Kc(), state.M(), state.id()
-                if state.J() <= self.Jmax_save:
-                    self.levels[state.id()] = eval[i]
-                    ###print "in func recalculate, in if loop, self.levels", self.levels
-                    ###print "in func recalculate, in if loop,J,Ka,Kc,M,id,energy", state.J(), state.Ka(), state.Kc(), state.M(), state.id(), eval[i]
-                i += 1
-        # done - data is now valid
-        ###print "in func recalculate after K loop"
-        self.valid = True
-
-    def recalculate_old(self):
-        """Perform calculation of rotational state energies for current parameters"""
-        self.levels = {}
-        blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
-        for symmetry in blocks.keys():
-            eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
-            eval = num.sort(eval)
-            i = 0
-            for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
                     self.levels[state.id()] = eval[i]
                 i += 1
         # done - data is now valid
         self.valid = True
 
-    def hamiltonian(self, Jmin, Jmax, K, dcfield):
-        """@YP: please put "K" behind "dcfield" -- to be symmetric with AsymmetricRotor code"""
+    def hamiltonian(self, Jmin, Jmax, dcfield, K):
+        # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>) 
+        # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
         matrixsize = Jmax - max({abs(K),Jmin}) + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
@@ -296,26 +274,10 @@ class SymmetricRotor(Rotor):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
 
-    def hamiltonian_old(self, Jmin, Jmax, dcfield, symmetry):
-        #"""Return Hamiltonian matrix"""
-        self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
-        matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize
-        # create hamiltonian matrix
-        hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
-        # start matrix with appropriate field-free rotor terms
-        self.rigid(hmat, Jmin, Jmax)
-        # fill matrix with appropriate Stark terms for nonzero fields
-        if None != dcfield and self.tiny < abs(dcfield):
-            self.stark_DC(hmat, Jmin, Jmax, dcfield)
-        blocks = self.wang(hmat, symmetry, Jmin, Jmax)
-        del hmat
-        return blocks
-        #return hmat
-
     def rigid(self, hmat, Jmin, Jmax, K):
-        """Add the rigid-rotor matrix element terms to hmat -- representation I^l
+        """Add the rigid-rotor matrix element terms to hmat -- representation I^l for prolate, III^l for oblate
 
-        Gordy & Cook,
+        Gordy & Cook, section 6, (1984), and Zare, section 6.3, (1988)
         """
         DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
@@ -327,28 +289,11 @@ class SymmetricRotor(Rotor):
             distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
             hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
 
-    def rigid_old(self, hmat, Jmin, Jmax):
-	"""Add the rigid-rotor matrix element terms to hmat -- representation I^l
-
-	Gordy & Cook, @YP: please add section, edition, year
-	"""
-	DJ, DJK, DK = self.quartic.tolist()
-        if 'p' == self.symmetry:
-           AC, B = self.rotcon.tolist() #AC refers to A for p
-        elif 'o' == self.symmetry:
-           B, AC = self.rotcon.tolist() #AC refers to C for o
-	for J in range(Jmin, Jmax+1):
-	    for K in range(-J, J+1):
-                rigid = B * J*(J+1) + (AC-B) * K**2
-                distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
-		hmat[self.index(J, K), self.index(J, K)] += rigid + distortion
-
     def stark_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = num.sqrt
         M = self.M
         mu = float(self.dipole)
-        matrixsize = Jmax - max({abs(K),Jmin}) + 1
         for J in range(max({Jmin,abs(K)}),Jmax):
             # diagonal term
             if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
@@ -362,28 +307,6 @@ class SymmetricRotor(Rotor):
         if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
             hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
 
-
-    def stark_DC_old(self, hmat, Jmin, Jmax, dcfield):
-        """Add the dc Stark-effect matrix element terms to hmat"""
-        sqrt = num.sqrt
-        M = self.M
-        mu = float(self.dipole)
-        for J in range(Jmin, Jmax):
-            for K in range(-J, J+1):
-                # diagonal term
-                if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
-                    hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
-                # off-diagonal term
-                value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
-                hmat[self.index(J+1, K), self.index(J, K)] += value
-                hmat[self.index(J, K), self.index(J+1, K)] += value
-        # add last diagonal term
-        J = Jmax
-        for K in range(-J, J+1):
-            # diagonal term
-            if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
-                hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
-
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
         list = []
@@ -396,21 +319,15 @@ class SymmetricRotor(Rotor):
         return list
 
     def stateorder(self, K):
-        """Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
-
-        See Gordy & Cook, Table 7.5.
+        """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax).
         """
-        ###print "stateorder"
-        ###print "Jmin,Jmax,K,M", self.Jmin, self.Jmax, K, self.M
         if False == self.stateorder_valid:
             self.stateorder_dict = []
             M = self.M
             iso = self.isomer
-            label = []
-            for J in range(max(abs(K),self.Jmin), self.Jmax+1):
+            for J in range(max(abs(K),self.Jmin), self.Jmax+1): # add states in an ascending order of energy
                 if 'p' == self.symmetry:
                     self.stateorder_dict.append(State(J, K, 0, M, iso))
-                    ###print "in loop, J,K,M", J,K,M
                 elif 'o' == self.symmetry:
                     self.stateorder_dict.append(State(J, 0, K, M, iso))
         return self.stateorder_dict
@@ -448,6 +365,7 @@ class AsymmetricRotor(Rotor):
                 and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
 	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole
 	    # moment is along a
+            print "if loop for W"
 	    self.symmetry = 'W'
             pass
 
@@ -481,6 +399,8 @@ class AsymmetricRotor(Rotor):
         self.levelssym = {}
 	blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
 	for symmetry in blocks.keys():
+            if self.M == 0:
+                print "sym, block", symmetry, blocks[symmetry]
 	    eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
 	    eval = num.sort(eval)
 	    i = 0
@@ -562,11 +482,13 @@ class AsymmetricRotor(Rotor):
 		    # J+1, K+1 / J-1, K-1 case
 		    value = (muB * dcfield * sqrt(((J+K+1) * (J+K+2)) * ((J+1)**2 - M**2))
 			    / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                    print "debug, ub, J+1, K+1 / J-1, K-1 case, J, K, value", J, K, value
 		    hmat[self.index(J+1, K+1), self.index(J, K)] += value
 		    hmat[self.index(J, K), self.index(J+1, K+1)] += value
 		    # J+1, K-1 / J-1, K+1 case
 		    value = (-1 * muB * dcfield * sqrt(((J-K+1) * (J-K+2)) * ((J+1)**2 - M**2))
 			      / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                    print "debug, ub, J+1, K-1 / J-1, K+1 case, J, K, value", J, K, value
 		    hmat[self.index(J+1, K-1), self.index(J, K)] += value
 		    hmat[self.index(J, K), self.index(J+1, K-1)] += value
 	if  self.dipole_components[2]:
