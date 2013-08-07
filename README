@@ -103,7 +103,6 @@ example of using cmistark_print_energy with options:
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
-
 * State labels of stored Stark curves
 
 In the output file <moleculename>.molecule, each Stark curve has a state
@@ -127,6 +126,7 @@ of the product KM. We note that states with K>0 and M<0 also yield -|KM|. Thus,
 all curves of nonzero M states in the output file are also double degenerate.
 Finally, the state label for prolate tops is (J,K,0,M,isomer), or
 (J,0,K,M,isomer) for oblate tops.
+
 
 * Structure of <moleculename>.molecule
 
