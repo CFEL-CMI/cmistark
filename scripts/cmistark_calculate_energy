@@ -18,11 +18,11 @@
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
 
-"""Calculate adiabatic energy curves and store them in HDF5 file
+"""Calculate adiabatic energy curves and store them in a HDF5 file
 
 Copyright (C) 2008,2009,2011,2012 Jochen Küpper
 
-This is a simple driver around the functionality in the import modules of the cmistark Python extension. It allows user
+This is a simple driver around the functionality in the import modules of the CMIstark Python extension. It allows user
 interaction and defines the actual molecular properties used in the calculations. The constants should not be changed -
 unless there is a real bug, instead you should consider to create "isomers" for new constants sets coming up with time.
 """
@@ -135,7 +135,7 @@ def main(args):
         elif o == "--iodomethane":
             pfunc= iodomethane
         elif o == "--diiodoethane":
-            pfunc= diiodoethane    
+            pfunc= diiodoethane
         elif o == "--indole":
             pfunc = indole
         elif o == "--indole-water":
