@@ -58,9 +58,9 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
-                                                   "oblate",
-                                                   "prolate",
-                                                   "asymmetry_top",
+                                                   "oblate_symmetric_top",
+                                                   "prolate_symmetric_top",
+                                                   "asymmetric_top",
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
                                                    "4-aminobenzonitrile",
@@ -110,8 +110,8 @@ def main(args):
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
         elif o == "--isomer":
             param.isomer = int(a)
-        elif o == "--asymmetry_top":
-            pfunc = asymmetry_top
+        elif o == "--asymmetric_top":
+            pfunc = asymmetric_top
         elif o == "--2,6-difluoro-iodobenzene":
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):
@@ -128,10 +128,10 @@ def main(args):
             pfunc = iodobenzene
         elif o == "--OCS":
             pfunc = OCS
-        elif o == "--oblate":
-            pfunc = oblate
-        elif o == "--prolate":
-            pfunc = prolate
+        elif o == "--oblate_symmetric_top":
+            pfunc = oblate_symmetric_top
+        elif o == "--prolate_symmetric_top":
+            pfunc = prolate_symmetric_top
         elif o == "--iodomethane":
             pfunc= iodomethane
         elif o == "--diiodoethane":

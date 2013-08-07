@@ -41,16 +41,16 @@ import cmistark.starkeffect as starkeffect
 from jkext.state import State
 from jkext.molecule import Masses
 
-def asymmetry_top(param):
+def asymmetric_top(param):
     """Molecular parameters for an artificial asymmetry top
 
     Implemented isomers are
-     0  - modified example in Fig7.2 in Gordy & Cook
+    0  - (modified) example from Fig 7.2 in Gordy & Cook (1984)
     """
-    param.name = "asymmetry_top"
+    param.name = "asymmetric_top"
     param.watson = 'A'
     param.symmetry = 'N'
-    if param.isomer == 0: 
+    if param.isomer == 0:
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
         param.dipole = convert.D2Cm(num.array([0., 1., 0.]))
 
@@ -90,10 +90,9 @@ def three_aminophenol(param):
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
 
-def oblate(param):
-    """Molecular parameters for an artificial oblate top
-    """
-    param.name = "oblate"
+def oblate_symmetric_top(param):
+    """Molecular parameters for an artificial oblate top"""
+    param.name = "oblate_symmetric_top"
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     if 0 == param.isomer:
         param.type = 'S'
@@ -110,9 +109,9 @@ def oblate(param):
         param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
 
 
-def prolate(param):
+def prolate_symmetric_top(param):
     """Molecular parameters for an artificial prolate top"""
-    param.name = "prolate"
+    param.name = "prolate_symmetric_top"
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     if 0 == param.isomer:
         param.type = 'S'
@@ -127,6 +126,7 @@ def prolate(param):
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 1000.0e6, 1000.0e6]))
         param.quartic  = num.array([0., 0., 0., 0., 0.])
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
+
 
 def indole(param):
     """Molecular parameters for indole
@@ -147,7 +147,6 @@ def indole(param):
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
         param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-
 
 
 def indole_water1(param):
