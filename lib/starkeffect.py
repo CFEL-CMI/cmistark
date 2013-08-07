@@ -262,7 +262,7 @@ class SymmetricRotor(Rotor):
         self.valid = True
 
     def hamiltonian(self, Jmin, Jmax, dcfield, K):
-        # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>) 
+        # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
         matrixsize = Jmax - max({abs(K),Jmin}) + 1
         # create hamiltonian matrix
@@ -275,11 +275,12 @@ class SymmetricRotor(Rotor):
         return hmat
 
     def rigid(self, hmat, Jmin, Jmax, K):
-        """Add the rigid-rotor matrix element terms to hmat -- representation I for prolate, III for oblate
+        """Add the rigid-rotor matrix element terms to hmat
 
-           (I(III)^l or ^r yield same results for sym tops.)
-          
-        Gordy & Cook, section 6, (1984), and Zare, section 6.3, (1988)
+        representation I for prolate, III for oblate symmetric tops
+        (I(III)^l or ^r yield same results for sym tops.)
+
+        Gordy & Cook (1984), section 6, and Zare (1988), section 6.3
         """
         DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
@@ -321,8 +322,7 @@ class SymmetricRotor(Rotor):
         return list
 
     def stateorder(self, K):
-        """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax).
-        """
+        """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax)."""
         if False == self.stateorder_valid:
             self.stateorder_dict = []
             M = self.M
@@ -375,7 +375,6 @@ class AsymmetricRotor(Rotor):
 
     def states(self):
 	"""Return list of states for which the Stark energies were calculated."""
-
         list = []
 	M = self.M
 	iso = self.isomer
@@ -531,8 +530,11 @@ class AsymmetricRotor(Rotor):
 	    else: assert False
 	    return sym
 
+
         def Wang_subm(J, Ka, Kc):
-            """Determine Wang submatrice of asymmetric top state in representation(s) I
+            """Determine Wang submatrix of asymmetric top state in representation(s) I
+
+            @YP: give real name (Wang_submatrix?)
 
             see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
             if J%2 == 0:
@@ -550,6 +552,7 @@ class AsymmetricRotor(Rotor):
             else: assert False
             return sym
 
+        # @YP: what is this following code? It is likely leftover or at wrong indentation level
 	if False == self.stateorder_valid:
 	    self.stateorder_dict = {}
 	    M = self.M
@@ -569,7 +572,7 @@ class AsymmetricRotor(Rotor):
                         label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		    if Kc > 0:
 			Ka = Ka+1
-                        if 'W' == self.symmetry or 'Wb' == self.symmetry: 
+                        if 'W' == self.symmetry or 'Wb' == self.symmetry:
                             label[Wang_subm(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                         else:
 			    label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
@@ -638,6 +641,7 @@ class AsymmetricRotor(Rotor):
 		self.stateorder_dict[sym] = num.array(label[sym])[idx]
 	    self.stateorder_valid = True
 	return self.stateorder_dict[symmetry]
+
 
     def wang(self, hmat, symmetry, Jmin, Jmax):
 	"""Wang transform matrix and return a dictionary with the individual (sub)matrices."""
