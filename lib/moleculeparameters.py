@@ -41,6 +41,19 @@ import cmistark.starkeffect as starkeffect
 from jkext.state import State
 from jkext.molecule import Masses
 
+def asymmetry_top(param):
+    """Molecular parameters for an artificial asymmetry top
+
+    Implemented isomers are
+     0  - modified example in Fig7.2 in Gordy & Cook
+    """
+    param.name = "asymmetry_top"
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: 
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([0., 1., 0.]))
+
 
 
 def three_aminophenol(param):
