@@ -28,7 +28,7 @@ The relevant parameters are
     - in Watson's A reduction: \Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K
 - dipole moments
   - for linear and symmetric tops: \mu
-  - for an asymmetric top \mu_a, \mu_b, \mu_c
+  - for an asymmetric top: \mu_a, \mu_b, \mu_c
 - symmetry
 """
 
@@ -41,19 +41,24 @@ import cmistark.starkeffect as starkeffect
 from jkext.state import State
 from jkext.molecule import Masses
 
-def asymmetric_top(param):
-    """Molecular parameters for an artificial asymmetry top
 
-    Implemented isomers are
-    0  - (modified) example from Fig 7.2 in Gordy & Cook (1984)
+def asymmetric_top(param):
+    """Molecular parameters for an artificial asymmetric top
+
+    Implemented isomers are (modified) examples of
+     0 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b != 0
+     1 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c != 0
     """
     param.name = "asymmetric_top"
     param.watson = 'A'
-    param.symmetry = 'N'
     if param.isomer == 0:
+        param.symmetry = 'C2b' 
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
         param.dipole = convert.D2Cm(num.array([0., 1., 0.]))
-
+    elif param.isomer == 1:
+        param.symmetry = 'C2c'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
 
 
 def three_aminophenol(param):
@@ -172,7 +177,6 @@ def indole_water1(param):
         param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
 
 
-
 def indole_water2(param):
     """Molecular parameters for indole-(water)_2
 
@@ -187,7 +191,6 @@ def indole_water2(param):
     param.isomer = 0
     param.rotcon = convert.Hz2J(num.array([1323.5e6, 814.34e6, 587.86e6]))
     param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
-
 
 
 def water(param):
@@ -223,7 +226,6 @@ def water(param):
         param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
         param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
-
 
 
 def OCS(param):
@@ -286,7 +288,6 @@ def iodomethane(param):
 	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
 
-
 def difluoro_iodobenzene(param):
     # parameters from simple ab initio calculations (Jochen Küpper, 2010)
     param.name = "2,6-difluoro-iodobenzene"
@@ -296,6 +297,7 @@ def difluoro_iodobenzene(param):
     param.rotcon = convert.Hz2J(num.array([1740e6, 713e6, 506e6]))
     param.quartic = convert.Hz2J(num.array([0., 0., 0., 0., 0.]))
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
+
 
 def diiodoethane(param):
     """Molecular parameters for diiodo-ethane, implemented isomers are
@@ -331,7 +333,6 @@ def aminobenzonitrile(param):
     param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
 
 
-
 def benzonitrile(param):
     # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
     param.name = "benzonitrile"
@@ -342,7 +343,6 @@ def benzonitrile(param):
     param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
     param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500.0, 10.95, 628.0]))
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
-
 
 
 def glycine(param):
@@ -380,7 +380,6 @@ def glycine(param):
         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
 
-
 def iodobenzene(param):
     # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
     param.name = "iodobenzene"
@@ -392,7 +391,6 @@ def iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
 
 
-
 def phenylpyrrole(param):
     # A. J. Fleisher
     param.name = "phenylpyrrole"
@@ -400,7 +398,6 @@ def phenylpyrrole(param):
     param.symmetry = 'C2a'
     param.rotcon = convert.Hz2J(num.array([3508.34e6, 703.50e6, 604.84e6]))
     param.dipole = convert.D2Cm(num.array([-1.56, 0., 0.]))
-
 
 
 def three_fluorophenol(param):
@@ -422,7 +419,6 @@ def three_fluorophenol(param):
          param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
 
 
-
 def sulfur_dioxide(param):
     # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
     param.name = "sulfur_dioxide"
@@ -435,7 +431,6 @@ def sulfur_dioxide(param):
     # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
     param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
     param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
-
 
 
 def six_chloropyridazine_three_carbonitrile(param):
