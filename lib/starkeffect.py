@@ -368,14 +368,23 @@ class AsymmetricRotor(Rotor):
             if not self.dipole_components[1] and not self.dipole_components[2] and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
 	    # in representation(s) I the symmetry group of the Hamiltonian can be diagonalized into four Wang submatrices
             # even in a field if M == 0 and the dipole moment is along the a axis
-	        self.symmetry = 'W'
-            elif self.dipole_components[1] != 0 and not self.dipole_components[2]:
-            # Wang submatrices coupling case for a nonzero dipole moment component u_b, while u_c = 0 (u_a can be zero or nonzero)
+	        self.symmetry = 'Wa'
+            elif not self.dipole_components[0] and not self.dipole_components[2]:
+            # Wang submatrices coupling case for only u_b != 0
                 self.symmetry = 'Wb'
-            elif not self.dipole_components[1] and self.dipole_components[2] != 0:
-            # Wang submatrices coupling case for a nonzero dipole moment component u_c, while u_b = 0 (u_a can be zero or nonzero)
+            elif not self.dipole_components[0] and not self.dipole_components[1]:
+            # Wang submatrices coupling case for only u_c != 0
                 self.symmetry = 'Wc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
+            # Wang submatrices coupling case for only u_c = 0
+                self.symmetry = 'Wab'
             elif self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for only u_a = 0
+                self.symmetry = 'Wbc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for ile u_b = 0
+                self.symmetry = 'Wac'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
             # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
                 self.symmetry = 'N'
             pass
@@ -536,59 +545,59 @@ class AsymmetricRotor(Rotor):
 	    return sym
 
 
-        def Wang_subm(J, Ka, Kc):
+        def Wang_submatrix(J, Ka, Kc):
             """Determine Wang submatrix of asymmetric top state in representation(s) I
-
-            @YP: give real name (Wang_submatrix?)
 
             see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
             if J%2 == 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Ep'  # ee
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Em'  # eo
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Om'  # oe
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Op'  # oo
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Epe'  # eee (K,s,J)
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Eme'  # eoe
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Ome'  # oee
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Ope'  # ooe
                 else: assert False
             elif J%2 != 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Em'  # ee
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ep'  # eo
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Op'  # oe
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Om'  # oo
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Emo'  # eeo
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Epo'  # eoo
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Opo'  # oeo
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Omo'  # ooo
                 else: assert False
             else: assert False
             return sym
 
         # @YP: what is this following code? It is likely leftover or at wrong indentation level
+        # @JK: this is used to decide if running stateorder (when self.stateorder_valid = f) or not
+        # the indentation level is right, (this is in function stateorder).
 	if False == self.stateorder_valid:
 	    self.stateorder_dict = {}
 	    M = self.M
 	    iso = self.isomer
-            if 'W' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry:
-                eigenvalues = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
-                label = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
+            if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                eigenvalues = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
+                label = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
             else:
                 eigenvalues = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
                 label = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
 	    for J in range(M, self.Jmax+1):
 		Ka = 0
 		for Kc in range(J,-1,-1):
-                    if 'W' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry:
-                        label[Wang_subm(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                        label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                     else:
                         label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		    if Kc > 0:
 			Ka = Ka+1
-                        if 'W' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry: 
-                            label[Wang_subm(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                        if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry: 
+                            label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                         else:
 			    label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		# get block diagonal hamiltonian (make sure you calculate this in 'V'!)
 		if 0 == J:
-                    if 'W' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry:
-                        blocks = {'Ep': num.zeros((1, 1), self.hmat_type)}
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                        blocks = {'Epe': num.zeros((1, 1), self.hmat_type)}
                     else:
 		        blocks = {'A': num.zeros((1, 1), self.hmat_type)}
 		else:
-                    if 'W' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry:
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                         blocks = self.hamiltonian(J, J, None, 'W')
                     else:
 		        blocks = self.hamiltonian(J, J, None, 'V')
@@ -597,24 +606,50 @@ class AsymmetricRotor(Rotor):
 		    if 0 < blocks[sym].size:
 			eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
 	    # sort assignments according to energy
-            if 'W' == self.symmetry:
+            if 'Wa' == self.symmetry:
                 symmetries = ['Ep', 'Em', 'Op', 'Om']
+                eigenvalues['Ep'] = eigenvalues['Epe'] + eigenvalues['Epo']
+                eigenvalues['Em'] = eigenvalues['Eme'] + eigenvalues['Emo']
+                eigenvalues['Op'] = eigenvalues['Ope'] + eigenvalues['Opo']
+                eigenvalues['Om'] = eigenvalues['Ome'] + eigenvalues['Omo']
+                label['Ep'] = label['Epe'] + label['Epo']
+                label['Em'] = label['Eme'] + label['Emo']
+                label['Op'] = label['Ope'] + label['Opo']
+                label['Om'] = label['Ome'] + label['Omo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
             elif 'Wb' == self.symmetry:
-                symmetries = ['EpOm', 'EmOp']
-                eigenvalues['EpOm'] = eigenvalues['Ep'] + eigenvalues['Om']
-                eigenvalues['EmOp'] = eigenvalues['Em'] + eigenvalues['Op']
-                label['EpOm'] = label['Ep'] + label['Om']
-                label['EmOp'] = label['Em'] + label['Op']
-                del label['Ep'], label['Om'], label['Em'], label['Op']
-                del eigenvalues['Ep'], eigenvalues['Om'], eigenvalues['Em'], eigenvalues['Op']
+                symmetries = ['EmeOpo', 'OmeEpo', 'EpeOmo', 'OpeEmo']
+                eigenvalues['EmeOpo'] = eigenvalues['Eme'] + eigenvalues['Opo']
+                eigenvalues['OmeEpo'] = eigenvalues['Ome'] + eigenvalues['Epo']
+                eigenvalues['EpeOmo'] = eigenvalues['Epe'] + eigenvalues['Omo']
+                eigenvalues['OpeEmo'] = eigenvalues['Ope'] + eigenvalues['Emo']
+                label['EmeOpo'] = label['Eme'] + label['Opo']
+                label['OmeEpo'] = label['Ome'] + label['Epo']
+                label['EpeOmo'] = label['Epe'] + label['Omo']
+                label['OpeEmo'] = label['Ope'] + label['Emo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
             elif 'Wc' == self.symmetry:
-                symmetries = ['EpOp', 'EmOm']
-                eigenvalues['EpOp'] = eigenvalues['Ep'] + eigenvalues['Op']
-                eigenvalues['EmOm'] = eigenvalues['Em'] + eigenvalues['Om']
-                label['EpOp'] = label['Ep'] + label['Op']
-                label['EmOm'] = label['Em'] + label['Om']
-                del label['Ep'], label['Om'], label['Em'], label['Op']
-                del eigenvalues['Ep'], eigenvalues['Om'], eigenvalues['Em'], eigenvalues['Op']
+                symmetries = ['EpeOpo', 'EmeOmo', 'OpeEpo', 'OmeEmo']
+                eigenvalues['EpeOpo'] = eigenvalues['Epe'] + eigenvalues['Opo']
+                eigenvalues['EmeOmo'] = eigenvalues['Eme'] + eigenvalues['Omo']
+                eigenvalues['OpeEpo'] = eigenvalues['Ope'] + eigenvalues['Epo']
+                eigenvalues['OmeEmo'] = eigenvalues['Ome'] + eigenvalues['Emo']
+                label['EpeOpo'] = label['Epe'] + label['Opo']
+                label['EmeOmo'] = label['Eme'] + label['Omo']
+                label['OpeEpo'] = label['Ope'] + label['Epo']
+                label['OmeEmo'] = label['Ome'] + label['Emo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wab' == self.symmetry:
+                symmetries = ['EpOm','EmOp']
+                eigenvalues['EpOm'] = eigenvalues['Epe'] + eigenvalues['Epo'] + eigenvalues['Ome'] + eigenvalues['Omo']
+                eigenvalues['EmOp'] = eigenvalues['Eme'] + eigenvalues['Emo'] + eigenvalues['Ope'] + eigenvalues['Opo']
+                label['EpOm'] = label['Epe'] + label['Epo'] + label['Ome'] + label['Omo']
+                label['EmOp'] = label['Eme'] + label['Emo'] + label['Ope'] + label['Opo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
 	    elif 'V' == self.symmetry:
 		symmetries = ['A', 'Ba', 'Bb', 'Bc']
 	    elif 'C2a' == self.symmetry:
@@ -683,17 +718,51 @@ class AsymmetricRotor(Rotor):
 	del Wmat
 	# sort out matrix blocks
         if 'W' == symmetry:
-            # use Wang submatrices E+/-,O+/-
+            # use Wang submatrices E+/-,O+/- + e/o label for Jeven/Jodd (this e/o for J specifies V group symmetries at the same time)
+            idx = {'Epe': [], 'Epo': [], 'Eme': [], 'Emo': [], 'Ope': [], 'Opo': [], 'Ome': [], 'Omo': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('Eme') # K even
+                        else: order.append('Ome') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Epe') # K even
+                        else: order.append('Ope') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Emo') # K even
+                        else: order.append('Omo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('Epo') # K even
+                        else: order.append('Opo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wa' == symmetry:
+            # use Wang submatrices E+/-,O+/- for only u_a!=0 and M=0 case
             idx = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
-                for K in range(-J,0): # K < 0 --> s = 1
-                    if 0 == K % 2: order.append('Em') # K even
-                    else: order.append('Om') # K odd
-                for K in range(0,J+1): # K >= 0 --> s = 0
-                    if 0 == K % 2: order.append('Ep') # K even
-                    else: order.append('Op') # K odd
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('Em') # K even
+                        else: order.append('Om') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Ep') # K even
+                        else: order.append('Op') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Em') # K even
+                        else: order.append('Om') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('Ep') # K even
+                        else: order.append('Op') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
                 i += 2*J+1
@@ -701,18 +770,28 @@ class AsymmetricRotor(Rotor):
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
         elif 'Wb' == symmetry:
-            # for u_b !=0 and u_c = 0 and M=0
-            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples 1. Om and Ep, 2. Op and Em
-            idx = {'EpOm': [], 'EmOp': []}
+            # for only u_b !=0 and M=0
+            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
+            # 1. Om of even(odd) J and Ep of odd(even) J, 2. Op of even(odd)J and Em odd(even)J
+            # four blocks are remained.
+            idx = {'EmeOpo': [], 'OmeEpo': [], 'EpeOmo': [], 'OpeEmo': []} # rule of naming: K(e/o)s(p/m)J(e/o)K'(e/o)s'(p/m)J'(e/o)
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
-                for K in range(-J,0): # K < 0 --> s = 1
-                    if 0 == K % 2: order.append('EmOp') # K even
-                    else: order.append('EpOm') # K odd
-                for K in range(0,J+1): # K >= 0 --> s = 0
-                    if 0 == K % 2: order.append('EpOm') # K even
-                    else: order.append('EmOp') # K odd
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmeOpo') # K even
+                        else: order.append('OmeEpo') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpeOmo') # K even
+                        else: order.append('OpeEmo') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('OpeEmo') # K even
+                        else: order.append('EpeOmo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('OmeEpo') # K even
+                        else: order.append('EmeOpo') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
                 i += 2*J+1
@@ -721,17 +800,53 @@ class AsymmetricRotor(Rotor):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
         elif 'Wc' == symmetry:
             # for u_c !=0 and u_b = 0 and M=0
-            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples 1. Op and Ep, 2. Om and Em
-            idx = {'EpOp': [], 'EmOm': []}
+            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
+            # 1. Op of even(odd) J and Ep of odd(even) J, 2. Om of even(odd) J and Em of odd(even) J
+            idx = {'EpeOpo': [], 'EmeOmo': [], 'OpeEpo': [], 'OmeEmo': []}
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
-                for K in range(-J,0): # K < 0 --> s = 1
-                    if 0 == K % 2: order.append('EmOm') # K even
-                    else: order.append('EmOm') # K odd
-                for K in range(0,J+1): # K >= 0 --> s = 0
-                    if 0 == K % 2: order.append('EpOp') # K even
-                    else: order.append('EpOp') # K odd
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmeOmo') # K even
+                        else: order.append('OmeEmo') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpeOpo') # K even
+                        else: order.append('OpeEpo') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('OmeEmo') # K even
+                        else: order.append('EmeOmo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('OpeEpo') # K even
+                        else: order.append('EpeOpo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wab' == symmetry:
+            # for only u_c != 0  and M=0
+            # combine the coupling cases of Wa and Wb
+            idx = {'EpOm': [], 'EmOp': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmOp') # K even
+                        else: order.append('EpOm') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpOm') # K even
+                        else: order.append('EmOp') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EmOp') # K even
+                        else: order.append('EpOm') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('EpOm') # K even
+                        else: order.append('EmOp') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
                 i += 2*J+1
