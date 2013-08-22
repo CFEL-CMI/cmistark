@@ -25,6 +25,7 @@ import cmistark.convert
 from cmistark.state import State
 
 
+
 class CalculationParameter(object):
     """Container of parameters for calculation of Stark energies plus some more generic parameters of the molecule
 
@@ -47,9 +48,10 @@ class CalculationParameter(object):
       - 'S' for Watson's S reduction
     - symmetry defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
       the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b',
-      'C2c', 'V' for full Fourgroup symmetry, for asym top. For sym top, the options are 'p' and 'o'.
-      (added by YP in 2013) 'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asym top. This can only be
-      correct for zero-field calculations or M=0.
+      'C2c', 'V' for full Fourgroup symmetry, for asym top.
+      'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asym top. This can only be correct for
+      zero-field calculations or M=0.
+      For a symmetric top, the options are 'p' and 'o'.
     """
     name = ' '
     isomer = 0
@@ -67,7 +69,6 @@ class CalculationParameter(object):
     rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
-
 
 
 
@@ -113,11 +114,13 @@ class Rotor(object):
             self.recalculate()
         return self.levels[state.id()]
 
+
     def statesymmetry(self, state):
         """Return symmetry for |state|."""
         if self.valid == False:
             self.recalculate()
         return self.levelssym[state.id()]
+
 
     def print_mat(self, mat, text=""):
         """Print matrix for debuging purposes."""
@@ -218,9 +221,7 @@ class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-range, K-range and J-range.
-    
     Note that in the field, states corresponding to +|KM| and -|KM| become not degenerate. While always keeping M positive in this program,
-
     we label states corresponding to -|KM| by using negative K values in the output hdf files.
     """
     def __init__(self, param, M, dcfield=0.):
@@ -236,84 +237,74 @@ class SymmetricRotor(Rotor):
 	assert self.dipole.shape == (1,)
 	assert self.quartic.shape == (3,)
 
-
     def index(self, J, K):
-	# this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
-	# Therefore, we must be called only through hamiltonian
-	blockstart = J*(J-1) + J - self.Jmin_matrixsize
-	return blockstart + K + J
-
+	# The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
+	# The index starts from zero.
+	return J - max({abs(K), self.Jmin})
 
     def recalculate(self):
-        """Perform calculation of rotational state energies for current parameters"""
+        """Perform calculation of rotational state energies with current parameters for individual K"""
         self.levels = {}
-        blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
-        for symmetry in blocks.keys():
-            eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
+        for K in range(-self.Jmax, self.Jmax+1): # scan K
+            blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, K) # create a full hamt for a single K. (note not |K|.)
+            eval = num.linalg.eigvalsh(blocks) # calculate only energies
             eval = num.sort(eval)
             i = 0
-            for state in self.stateorder(symmetry):
+            for state in self.stateorder(K):
                 if state.J() <= self.Jmax_save:
                     self.levels[state.id()] = eval[i]
                 i += 1
         # done - data is now valid
         self.valid = True
 
-
-    def hamiltonian(self, Jmin, Jmax, dcfield, symmetry):
-        #"""Return Hamiltonian matrix"""
-        self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
-        matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize
+    def hamiltonian(self, Jmin, Jmax, dcfield, K):
+        # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
+        # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
+        matrixsize = Jmax - max({abs(K),Jmin}) + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
-        self.rigid(hmat, Jmin, Jmax)
+        self.rigid(hmat, Jmin, Jmax, K)
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
-            self.stark_DC(hmat, Jmin, Jmax, dcfield)
-        blocks = self.wang(hmat, symmetry, Jmin, Jmax)
-        del hmat
-        return blocks
-        #return hmat
+            self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
+        return hmat
 
+    def rigid(self, hmat, Jmin, Jmax, K):
+        """Add the rigid-rotor matrix element terms to hmat
 
-    def rigid(self, hmat, Jmin, Jmax):
-	"""Add the rigid-rotor matrix element terms to hmat -- representation I^l
+        representation I for prolate, III for oblate symmetric tops
+        (I(III)^l or ^r yield same results for sym tops.)
 
-	Gordy & Cook,
-	"""
-	DJ, DJK, DK = self.quartic.tolist()
+        Gordy & Cook (1984), section 6, and Zare (1988), section 6.3
+        """
+        DJ, DJK, DK = self.quartic.tolist()
         if 'p' == self.symmetry:
            AC, B = self.rotcon.tolist() #AC refers to A for p
         elif 'o' == self.symmetry:
            B, AC = self.rotcon.tolist() #AC refers to C for o
-	for J in range(Jmin, Jmax+1):
-	    for K in range(-J, J+1):
-                rigid = B * J*(J+1) + (AC-B) * K**2
-                distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
-		hmat[self.index(J, K), self.index(J, K)] += rigid + distortion
+        for J in range(max({Jmin,abs(K)}), Jmax+1):
+            rigid = B * J*(J+1) + (AC-B) * K**2
+            distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+            hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
 
-
-    def stark_DC(self, hmat, Jmin, Jmax, dcfield):
+    def stark_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = num.sqrt
         M = self.M
         mu = float(self.dipole)
-        for J in range(Jmin, Jmax):
-            for K in range(-J, J+1):
-                # diagonal term
-                if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
-                    hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
-                # off-diagonal term
-                value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
-                hmat[self.index(J+1, K), self.index(J, K)] += value
-                hmat[self.index(J, K), self.index(J+1, K)] += value
-        # add last diagonal term
-        J = Jmax
-        for K in range(-J, J+1):
+        for J in range(max({Jmin,abs(K)}),Jmax):
             # diagonal term
             if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
                 hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
+                # off-diagonal term
+            value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
+            hmat[self.index(J+1, K), self.index(J, K)] += value
+            hmat[self.index(J, K), self.index(J+1, K)] += value
+        # add last diagonal term
+        J = Jmax
+        if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
+            hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
 
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
@@ -326,288 +317,18 @@ class SymmetricRotor(Rotor):
                     list.append(State(J, 0, K, self.M, self.isomer))
         return list
 
-    def stateorder(self, symmetry):
-        """Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
-
-        See Gordy & Cook, Table 7.5.
-        """
-
-        def Four_symmetry(J, K):
-            """Determine Fourgroup symmetry of the corresponding Wang transformed symmetric top state of
-            a symmetric top state JK, in representation(s) I for prolate top, III for oblate top
-
-            see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
-            if self.symmetry == 'p':
-                if 0 == J % 2: # J even
-                    if K < 0: # K > 0 --> s odd
-                        if 0 == K % 2: sym = 'Ba' # K even
-                        else: sym = 'Bc' # K odd
-                    if K >= 0: # K <= 0 --> s even
-                        if 0 == K % 2: sym = 'A' # K even
-                        else: sym = 'Bb' # K odd
-                else: # J odd
-                    if K < 0: # K <= 0 --> s even
-                        if 0 == K % 2: sym = 'A' # K even
-                        else: sym = 'Bb' # K odd
-                    if K >= 0: # K >= 0 --> s odd
-                        if 0 == K % 2: sym = 'Ba' # K even
-                        else: sym = 'Bc' # K odd
-            if self.symmetry == 'o':
-                if 0 == J % 2: # J even
-                    if K < 0: # K > 0 --> s odd
-                        if 0 == K % 2: sym = 'Bc' # K even
-                        else: sym = 'Bb' # K odd
-                    if K >= 0: # K <= 0 --> s even
-                        if 0 == K % 2: sym = 'A' # K even
-                        else: sym = 'Ba' # K odd
-                else: # J odd
-                    if K < 0: # K <= 0 --> s even
-                        if 0 == K % 2: sym = 'A' # K even
-                        else: sym = 'Ba' # K odd
-                    if K >= 0: # K >= 0 --> s odd
-                        if 0 == K % 2: sym = 'Bc' # K even
-                        else: sym = 'Bb' # K odd
-            return sym
-
+    def stateorder(self, K):
+        """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax)."""
         if False == self.stateorder_valid:
-            self.stateorder_dict = {}
+            self.stateorder_dict = []
             M = self.M
             iso = self.isomer
-            eigenvalues = {'A': [], 'Ba': [], 'Bb': [], 'Bc': [], 'Ac': [], 'ab': [], 'Aa': [], 'bc': []}
-            label = {'A': [], 'Ba': [], 'Bb': [], 'Bc': [], 'Ac': [], 'ab': [], 'Aa': [], 'bc': []}
-            for J in range(abs(M), self.Jmax+1):
-                if 0 == J:
-                    blocks = {'A': num.zeros((1, 1), self.hmat_type)}
-                else:
-                    #hmat = self.hamiltonian(J, J, None)
-                    blocks = self.hamiltonian(J, J, None, 'V')
+            for J in range(max(abs(K),self.Jmin), self.Jmax+1): # add states in an ascending order of energy
                 if 'p' == self.symmetry:
-                    tempAa = []
-                    tempbc = []
-                    for K in range(0,J+1): #YP: the orders and setting of for and if loops has to be fixed this way so that the energy order without the field (E(|K|large)>E(|K|small)) and in the field (E(KM<0)>E(KM>0)) is correct
-                        if Four_symmetry(J, K) == 'A':
-                            label['Aa'].append(State(J, K, 0, M, iso))
-                        elif Four_symmetry(J, K) == 'Bc':
-                            label['bc'].append(State(J, K, 0, M, iso))
-                        elif Four_symmetry(J, K) == 'Ba':
-                            label['Aa'].append(State(J, K, 0, M, iso))
-                        elif Four_symmetry(J, K) == 'Bb':
-                            label['bc'].append(State(J, K, 0, M, iso))
-                        if K !=0 :
-                            if Four_symmetry(J, -K) == 'A':
-                                label['Aa'].append(State(J, -K, 0, M, iso))
-                            elif Four_symmetry(J, -K) == 'Bc':
-                                label['bc'].append(State(J, -K, 0, M, iso))
-                            elif Four_symmetry(J, -K) == 'Ba':
-                                label['Aa'].append(State(J, -K, 0, M, iso))
-                            elif Four_symmetry(J, -K) == 'Bb':
-                                label['bc'].append(State(J, -K, 0, M, iso))
-                    for sym in blocks.keys():
-                        if 0 < blocks[sym].size:
-                            if sym == 'A':
-                                tempAa += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Bc':
-                                tempbc += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Ba':
-                                tempAa += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Bb':
-                                tempbc += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                    eigenvalues['Aa'] += num.sort(tempAa).tolist()
-                    eigenvalues['bc'] += num.sort(tempbc).tolist()
+                    self.stateorder_dict.append(State(J, K, 0, M, iso))
                 elif 'o' == self.symmetry:
-                    tempAc = []
-                    tempab = []
-                    for K in range(J,-1,-1): #YP: the orders and settings of for and if loops has to be fixed this way so that the energy order without the file (E(|K|large)<E(|K|small)) in the field (E(KM<0)>E(KM>0)) is correct
-                        if Four_symmetry(J, K) == 'A':
-                            label['Ac'].append(State(J, 0, K, M, iso))
-                        elif Four_symmetry(J, K) == 'Bc':
-                            label['Ac'].append(State(J, 0, K, M, iso))
-                        elif Four_symmetry(J, K) == 'Ba':
-                            label['ab'].append(State(J, 0, K, M, iso))
-                        elif Four_symmetry(J, K) == 'Bb':
-                            label['ab'].append(State(J, 0, K, M, iso))
-                        if K !=0 :
-                            if Four_symmetry(J, -K) == 'A':
-                                label['Ac'].append(State(J, 0, -K, M, iso))
-                            elif Four_symmetry(J, -K) == 'Bc':
-                                label['Ac'].append(State(J, 0, -K, M, iso))
-                            elif Four_symmetry(J, -K) == 'Ba':
-                                label['ab'].append(State(J, 0, -K, M, iso))
-                            elif Four_symmetry(J, -K) == 'Bb':
-                                label['ab'].append(State(J, 0, -K, M, iso))
-                    for sym in blocks.keys():
-                        if 0 < blocks[sym].size:
-                            if sym == 'A':
-                                tempAc += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Bc':
-                                tempAc += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Ba':
-                                tempab += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                            elif sym == 'Bb':
-                                tempab += num.linalg.eigvalsh(num.array(blocks[sym])).tolist()
-                    eigenvalues['Ac'] += num.sort(tempAc).tolist()
-                    eigenvalues['ab'] += num.sort(tempab).tolist()
-
-            # sort assignments according to energy
-            if 'V' == self.symmetry:
-                symmetries = ['A', 'Ba', 'Bb', 'Bc']
-            elif 'p' == self.symmetry: # equivalent to 'C2a' in asym
-                symmetries = ['Aa', 'bc']
-                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
-            elif 'o' == self.symmetry: # equivalent to 'C2c' in asym
-                symmetries = ['Ac', 'ab']
-                del eigenvalues['A'], eigenvalues['Ba'], eigenvalues['Bb'], eigenvalues['Bc']
-            elif 'N' == self.symmetry:
-                for sym in blocks.keys():
-                    eigenvalues['N'] += eigenvalues[sym]
-                    label['N'] += label[sym]
-                    del label[sym]
-                    del eigenvalues[sym]
-                symmetries = ['N']
-            else:
-                raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.symmetry, ))
-            total_label = []
-            total_energy = []
-            for sym in symmetries:
-                idx = num.argsort(eigenvalues[sym],kind='mergesort')
-                self.stateorder_dict[sym] = num.array(label[sym])[idx]
-            self.stateorder_valid = True
-        return self.stateorder_dict[symmetry]
-
-
-    def wang(self, hmat, symmetry, Jmin, Jmax):
-        """Wang transform matrix and return a dictionary with the individual (sub)matrices."""
-        matrixsize = ((Jmax + 1) * Jmax + Jmax + 1) - (Jmin *(Jmin-1) + Jmin)
-        blocks = {}
-        # set up Wang matrix
-        Wmat = num.zeros(hmat.shape, self.hmat_type)
-        value = 1/num.sqrt(2.)
-        for J in range(Jmin, Jmax+1):
-            for K in range(-J, 0):
-                Wmat[self.index(J,  K), self.index(J,  K)] = -value
-                Wmat[self.index(J, -K), self.index(J,  K)] = value
-                Wmat[self.index(J,  K), self.index(J, -K)] = value
-                Wmat[self.index(J, -K), self.index(J, -K)] = value
-            Wmat[self.index(J, 0), self.index(J, 0)] = 1.
-        # transform Hamiltonian matrix
-        if self.complex:
-            dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
-        else:
-            dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
-        #self.print_mat(hmat, "Original Hamiltonian")
-        hmat = dot(dot(Wmat, hmat), Wmat)
-        #self.print_mat(hmat, "Wang transformed Hamiltonian")
-        # delete Wang matrix (it's not used anymore)
-        del Wmat
-        # sort out matrix blocks
-        if 'V' == symmetry:
-            # full Fourgroup symmetry (field free Hamiltonian or M=0!!!)
-            # I^r (not I^l?) representation for prolate, III for oblate, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
-            # or, as used here, A, Ba, Bb, Bc
-            # - in calculations for a single J this is the same
-            # - in claculations for multiple J the correspondence flips with J (see Gordy+Cook Table 7.5)
-            idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if self.symmetry == 'p':
-                    if 0 == J % 2: # J even
-                        for K in range(-J, 0): # K > 0 --> s odd
-                            if 0 == K % 2: order.append('Ba') # K even
-                            else: order.append('Bc') # K odd
-                        for K in range(0, J+1): # K <= 0 --> s even
-                            if 0 == K % 2: order.append('A') # K even
-                            else: order.append('Bb') # K odd
-                    else: # J odd
-                        for K in range(-J, 0): # K <= 0 --> s even
-                            if 0 == K % 2: order.append('A') # K even
-                            else: order.append('Bb') # K odd
-                        for K in range(0, J+1): # K >= 0 --> s odd
-                            if 0 == K % 2: order.append('Ba') # K even
-                            else: order.append('Bc') # K odd
-                elif self.symmetry == 'o':
-                    if 0 == J % 2: # J even
-                        for K in range(-J, 0): # K > 0 --> s odd
-                            if 0 == K % 2: order.append('Bc') # K even
-                            else: order.append('Bb') # K odd
-                        for K in range(0, J+1): # K <= 0 --> s even
-                            if 0 == K % 2: order.append('A') # K even
-                            else: order.append('Ba') # K odd
-                    else: # J odd
-                        for K in range(-J, 0): # K <= 0 --> s even
-                            if 0 == K % 2: order.append('A') # K even
-                            else: order.append('Ba') # K odd
-                        for K in range(0, J+1): # K >= 0 --> s odd
-                            if 0 == K % 2: order.append('Bc') # K even
-                            else: order.append('Bb') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
-            for sym in order:
-                if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif 'p' == symmetry: # 'C2a'
-            # C2 rotation about a-axis is symmetry element fo prolate tops
-            #
-            # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices E = Aa (contains E+ and
-            # E- / A and Ba) and O (contains O+ and O- / Bb and Bc).
-            # In this case E and O corresponds to columns with K even and odd, respectively.
-            idx = {'Aa': [], 'bc': []}
-            if 0 == Jmin % 2: # Jmin even
-                order = ['Aa', 'bc']
-            else: # J odd
-                order = ['bc', 'Aa']
-            for i in range(matrixsize):
-                idx[order[i%2]].append(i)
-            for sym in order:
-                if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif 'o' == symmetry:
-            # C2 rotation about c-axis is symmetry element
-            #
-            # III representation, Wang transformed Hamiltonian factorizes into two submatrices 'Ac' (contains 'A' and
-            # 'Bc') and 'ab' (contains 'Ba' and 'Bb').
-            idx = {'Ac': [], 'ab': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
-            for sym in order:
-                if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
-        elif 'N' == symmetry:
-            # nothing to do, return
-            blocks['N'] = hmat
-        else:
-            # something went wrong
-            raise SyntaxError("unknown Hamiltonian symmetry")
-        # for sym in set(order):
-        #     for sym2 in set(order):
-        #         if sym != sym2:
-        #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
-        #                 print "There is a problem with your symmetry"
-        #                 print  sym, "and ", sym2, "are connected for M =", self.M
-        # for symmetry in blocks.keys():
-        #     self.print_mat(blocks[symmetry], "symmetry %s" % (symmetry)) # calculate only energies
-        return blocks
-
-
+                    self.stateorder_dict.append(State(J, 0, K, M, iso))
+        return self.stateorder_dict
 
 
 class AsymmetricRotor(Rotor):
@@ -637,18 +358,34 @@ class AsymmetricRotor(Rotor):
 	    self.hmat_type = num.float64
         # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
         # Needs to be reimplemented correctly *soon*
-	if 0 == self.M \
-                and not self.dipole_components[1] and not self.dipole_components[2] \
-                and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
-	    # in representation(s) I the symmetry group of the Hamiltonian is V even in a field if M == 0 and the dipole
-	    # moment is along a
-	    self.symmetry = 'W'
+	if 0 == self.M:
+            if not self.dipole_components[1] and not self.dipole_components[2] and self.tiny < abs(self.rotcon[1] - self.rotcon[2]):
+	    # in representation(s) I the symmetry group of the Hamiltonian can be diagonalized into four Wang submatrices
+            # even in a field if M == 0 and the dipole moment is along the a axis
+	        self.symmetry = 'Wa'
+            elif not self.dipole_components[0] and not self.dipole_components[2]:
+            # Wang submatrices coupling case for only u_b != 0
+                self.symmetry = 'Wb'
+            elif not self.dipole_components[0] and not self.dipole_components[1]:
+            # Wang submatrices coupling case for only u_c != 0
+                self.symmetry = 'Wc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
+            # Wang submatrices coupling case for only u_c = 0
+                self.symmetry = 'Wab'
+            elif self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for only u_a = 0
+                self.symmetry = 'Wbc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for ile u_b = 0
+                self.symmetry = 'Wac'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
+                self.symmetry = 'N'
             pass
 
 
     def states(self):
 	"""Return list of states for which the Stark energies were calculated."""
-
         list = []
 	M = self.M
 	iso = self.isomer
@@ -681,7 +418,6 @@ class AsymmetricRotor(Rotor):
 	    for state in self.stateorder(symmetry):
 		if state.J() <= self.Jmax_save:
 		    self.levels[state.id()] = eval[i]
-                    self.levelssym[state.id()] = symmetry #YP: for debuging 
 		i += 1
 	# done - data is now valid
 	self.valid = True
@@ -711,9 +447,9 @@ class AsymmetricRotor(Rotor):
 
 
     def rigid(self, hmat, Jmin, Jmax):
-	"""Add the rigid-rotor matrix element terms to hmat -- representation I^l
+	"""Add the rigid-rotor matrix element terms to hmat -- representation I^r
 
-	Gordy & Cook,
+	Gordy & Cook, section 7, Table 7.2
 	"""
 	sqrt = num.sqrt
 	A, B, C = self.rotcon.tolist()
@@ -786,15 +522,15 @@ class AsymmetricRotor(Rotor):
     def stateorder(self, symmetry):
 	"""Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
 
-	See Gordy & Cook, Table 7.5.
+	See Zare, 1988, Chapter 6.
 
 	The symmetry of asymmetric rotor functions (in terms of eveness of Ka and Kc) is of course independent of the
 	representation used in the calculation.
 	"""
 	def Four_symmetry(J, Ka, Kc):
-	    """Determine Fourgroup symmetry of asymmetric top state in representation(s) I
+	    """Determine Fourgroup symmetry of asymmetric top state
 
-	    see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
+	    see Zare, 1988, Eq 6.71"""
 	    if Ka%2 == 0 and Kc%2 == 0:   sym = 'A'   # ee
 	    elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ba'  # eo
 	    elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Bc'  # oe
@@ -802,21 +538,22 @@ class AsymmetricRotor(Rotor):
 	    else: assert False
 	    return sym
 
-        def Wang_subm(J, Ka, Kc):
-            """Determine Wang submatrice of asymmetric top state in representation(s) I
 
-            see Gordy & Cook (1984), Table 7.5 or Allen & Cross (1963), Table 2n2"""
+        def Wang_submatrix(J, Ka, Kc):
+            """Determine Wang submatrix of asymmetric top state in representation(s) I^r
+
+            see Zare, 1988, Table 6.4"""
             if J%2 == 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Ep'  # ee
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Em'  # eo
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Op'  # oe
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Om'  # oo
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Epe'  # eee (K,s,J)
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Eme'  # eoe
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Ome'  # oee
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Ope'  # ooe
                 else: assert False
             elif J%2 != 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Em'  # ee
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ep'  # eo
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Om'  # oe
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Op'  # oo
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Emo'  # eeo
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Epo'  # eoo
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Opo'  # oeo
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Omo'  # ooo
                 else: assert False
             else: assert False
             return sym
@@ -825,33 +562,33 @@ class AsymmetricRotor(Rotor):
 	    self.stateorder_dict = {}
 	    M = self.M
 	    iso = self.isomer
-            if 'W' == self.symmetry:
-                eigenvalues = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
-                label = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
+            if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                eigenvalues = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
+                label = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
             else:
                 eigenvalues = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
                 label = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
 	    for J in range(M, self.Jmax+1):
 		Ka = 0
 		for Kc in range(J,-1,-1):
-                    if 'W' == self.symmetry:
-                        label[Wang_subm(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                        label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                     else:
                         label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		    if Kc > 0:
 			Ka = Ka+1
-                        if 'W' == self.symmetry:
-                            label[Wang_subm(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                        if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry: 
+                            label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                         else:
 			    label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		# get block diagonal hamiltonian (make sure you calculate this in 'V'!)
 		if 0 == J:
-                    if 'W' == self.symmetry:
-                        blocks = {'Ep': num.zeros((1, 1), self.hmat_type)}
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
+                        blocks = {'Epe': num.zeros((1, 1), self.hmat_type)}
                     else:
 		        blocks = {'A': num.zeros((1, 1), self.hmat_type)}
 		else:
-                    if 'W' == self.symmetry:
+                    if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                         blocks = self.hamiltonian(J, J, None, 'W')
                     else:
 		        blocks = self.hamiltonian(J, J, None, 'V')
@@ -860,8 +597,50 @@ class AsymmetricRotor(Rotor):
 		    if 0 < blocks[sym].size:
 			eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
 	    # sort assignments according to energy
-            if 'W' == self.symmetry:
+            if 'Wa' == self.symmetry:
                 symmetries = ['Ep', 'Em', 'Op', 'Om']
+                eigenvalues['Ep'] = eigenvalues['Epe'] + eigenvalues['Epo']
+                eigenvalues['Em'] = eigenvalues['Eme'] + eigenvalues['Emo']
+                eigenvalues['Op'] = eigenvalues['Ope'] + eigenvalues['Opo']
+                eigenvalues['Om'] = eigenvalues['Ome'] + eigenvalues['Omo']
+                label['Ep'] = label['Epe'] + label['Epo']
+                label['Em'] = label['Eme'] + label['Emo']
+                label['Op'] = label['Ope'] + label['Opo']
+                label['Om'] = label['Ome'] + label['Omo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wb' == self.symmetry:
+                symmetries = ['EmeOpo', 'OmeEpo', 'EpeOmo', 'OpeEmo']
+                eigenvalues['EmeOpo'] = eigenvalues['Eme'] + eigenvalues['Opo']
+                eigenvalues['OmeEpo'] = eigenvalues['Ome'] + eigenvalues['Epo']
+                eigenvalues['EpeOmo'] = eigenvalues['Epe'] + eigenvalues['Omo']
+                eigenvalues['OpeEmo'] = eigenvalues['Ope'] + eigenvalues['Emo']
+                label['EmeOpo'] = label['Eme'] + label['Opo']
+                label['OmeEpo'] = label['Ome'] + label['Epo']
+                label['EpeOmo'] = label['Epe'] + label['Omo']
+                label['OpeEmo'] = label['Ope'] + label['Emo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wc' == self.symmetry:
+                symmetries = ['EpeOpo', 'EmeOmo', 'OpeEpo', 'OmeEmo']
+                eigenvalues['EpeOpo'] = eigenvalues['Epe'] + eigenvalues['Opo']
+                eigenvalues['EmeOmo'] = eigenvalues['Eme'] + eigenvalues['Omo']
+                eigenvalues['OpeEpo'] = eigenvalues['Ope'] + eigenvalues['Epo']
+                eigenvalues['OmeEmo'] = eigenvalues['Ome'] + eigenvalues['Emo']
+                label['EpeOpo'] = label['Epe'] + label['Opo']
+                label['EmeOmo'] = label['Eme'] + label['Omo']
+                label['OpeEpo'] = label['Ope'] + label['Epo']
+                label['OmeEmo'] = label['Ome'] + label['Emo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wab' == self.symmetry:
+                symmetries = ['EpOm','EmOp']
+                eigenvalues['EpOm'] = eigenvalues['Epe'] + eigenvalues['Epo'] + eigenvalues['Ome'] + eigenvalues['Omo']
+                eigenvalues['EmOp'] = eigenvalues['Eme'] + eigenvalues['Emo'] + eigenvalues['Ope'] + eigenvalues['Opo']
+                label['EpOm'] = label['Epe'] + label['Epo'] + label['Ome'] + label['Omo']
+                label['EmOp'] = label['Eme'] + label['Emo'] + label['Ope'] + label['Opo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
 	    elif 'V' == self.symmetry:
 		symmetries = ['A', 'Ba', 'Bb', 'Bc']
 	    elif 'C2a' == self.symmetry:
@@ -902,6 +681,7 @@ class AsymmetricRotor(Rotor):
 	    self.stateorder_valid = True
 	return self.stateorder_dict[symmetry]
 
+
     def wang(self, hmat, symmetry, Jmin, Jmax):
 	"""Wang transform matrix and return a dictionary with the individual (sub)matrices."""
 	matrixsize = ((Jmax + 1) * Jmax + Jmax + 1) - (Jmin *(Jmin-1) + Jmin)
@@ -928,17 +708,135 @@ class AsymmetricRotor(Rotor):
 	del Wmat
 	# sort out matrix blocks
         if 'W' == symmetry:
-            # use Wang submatrices E+/-,O+/-
+            # use Wang submatrices E+/-,O+/- + e/o label for Jeven/Jodd (this e/o for J specifies V group symmetries at the same time)
+            idx = {'Epe': [], 'Epo': [], 'Eme': [], 'Emo': [], 'Ope': [], 'Opo': [], 'Ome': [], 'Omo': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('Eme') # K even
+                        else: order.append('Ome') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Epe') # K even
+                        else: order.append('Ope') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Emo') # K even
+                        else: order.append('Omo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('Epo') # K even
+                        else: order.append('Opo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wa' == symmetry:
+            # use Wang submatrices E+/-,O+/- for only u_a!=0 and M=0 case
             idx = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
-                for K in range(-J,0): # K < 0 --> s = 1
-                    if 0 == K % 2: order.append('Em') # K even
-                    else: order.append('Op') # K odd
-                for K in range(0,J+1): # K >= 0 --> s = 0
-                    if 0 == K % 2: order.append('Ep') # K even
-                    else: order.append('Om') # K odd
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('Em') # K even
+                        else: order.append('Om') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Ep') # K even
+                        else: order.append('Op') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('Em') # K even
+                        else: order.append('Om') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('Ep') # K even
+                        else: order.append('Op') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wb' == symmetry:
+            # for only u_b !=0 and M=0
+            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
+            # 1. Om of even(odd) J and Ep of odd(even) J, 2. Op of even(odd)J and Em odd(even)J
+            # four blocks are remained.
+            idx = {'EmeOpo': [], 'OmeEpo': [], 'EpeOmo': [], 'OpeEmo': []} # rule of naming: K(e/o)s(p/m)J(e/o)K'(e/o)s'(p/m)J'(e/o)
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmeOpo') # K even
+                        else: order.append('OmeEpo') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpeOmo') # K even
+                        else: order.append('OpeEmo') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('OpeEmo') # K even
+                        else: order.append('EpeOmo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('OmeEpo') # K even
+                        else: order.append('EmeOpo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wc' == symmetry:
+            # for u_c !=0 and u_b = 0 and M=0
+            # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
+            # 1. Op of even(odd) J and Ep of odd(even) J, 2. Om of even(odd) J and Em of odd(even) J
+            idx = {'EpeOpo': [], 'EmeOmo': [], 'OpeEpo': [], 'OmeEmo': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmeOmo') # K even
+                        else: order.append('OmeEmo') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpeOpo') # K even
+                        else: order.append('OpeEpo') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('OmeEmo') # K even
+                        else: order.append('EmeOmo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('OpeEpo') # K even
+                        else: order.append('EpeOpo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wab' == symmetry:
+            # for only u_c != 0  and M=0
+            # combine the coupling cases of Wa and Wb
+            idx = {'EpOm': [], 'EmOp': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K > 0 --> s odd
+                        if 0 == K % 2: order.append('EmOp') # K even
+                        else: order.append('EpOm') # K odd
+                    for K in range(0, J+1): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EpOm') # K even
+                        else: order.append('EmOp') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K <= 0 --> s even
+                        if 0 == K % 2: order.append('EmOp') # K even
+                        else: order.append('EpOm') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s odd
+                        if 0 == K % 2: order.append('EpOm') # K even
+                        else: order.append('EmOp') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
                 i += 2*J+1
@@ -947,10 +845,10 @@ class AsymmetricRotor(Rotor):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
 	elif 'V' == symmetry:
 	    # full Fourgroup symmetry (field free Hamiltonian or M=0!!!)
-	    # I^r (not I^l?) representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
+	    # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
 	    # or, as used here, A, Ba, Bb, Bc
 	    # - in calculations for a single J this is the same
-	    # - in claculations for multiple J the correspondence flips with J (see Gordy+Cook Table 7.5)
+	    # - in claculations for multiple J the correspondence flips with J
 	    idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
 	    i = 0
 	    for J in range(Jmin, Jmax+1):
@@ -1087,37 +985,3 @@ class AsymmetricRotor(Rotor):
 # some simple tests
 if __name__ == "__main__":
     print
-    p = CalculationParameter
-    p.Jmax_calc = 40
-    p.Jmax_save = 12
-    p.M = [0]
-    p.rtype = 'A'
-    p.isomer = 0
-    p.rotcon = cmistark.convert.invcm2J(num.array([0.18919, 0.02503, 0.02210]))
-    p.quartic = cmistark.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
-    p.dipole = cmistark.convert.D2Cm([1.7, 0.0, 0.0])
-    p.watson = 'A'
-    p.symmetry = 'C2a'
-    iRotor = AsymmetricRotor
-    for M in p.M:
-        for field in cmistark.convert.kV_cm2V_m(num.linspace(0.,100.,101)):
-            line = str(cmistark.convert.V_m2kV_cm(field)) + " "
-            #print "\nM = %d, field strength = %.0f kV/cm" % (M, cmistark.convert.V_m2kV_cm(field))
-            top = iRotor(p, M, field)
-            top.energy(State(1, 0, 1, M, p.isomer))
-            for state in [State(0, 0, 0, M, p.isomer),
-                          State(1, 0, 1, M, p.isomer), State(2, 0, 2, M, p.isomer), State(3, 0, 3, M, p.isomer),
-                          State(4, 0, 4, M, p.isomer), State(5, 0, 5, M, p.isomer), State(2, 2, 0, M, p.isomer),
-                          State(3, 2, 1, M, p.isomer), State(6, 0, 6, M, p.isomer), State(4, 2, 2, M, p.isomer),
-                          State(7, 0, 7, M, p.isomer), State(5, 2, 3, M, p.isomer),
-                          State(6, 2, 4, M, p.isomer), State(8, 0, 8, M, p.isomer), State(7, 2, 5, M, p.isomer),
-                          State(9, 0, 9, M, p.isomer), State(8, 2, 6, M, p.isomer), State(10, 0, 10, M, p.isomer),
-                          State(9, 2, 7, M, p.isomer), State(11, 0, 11, M, p.isomer), State(4, 4, 0, M, p.isomer),
-                          State(10, 2, 8, M, p.isomer), State(5, 4, 1, M, p.isomer), State(12, 0, 12, M, p.isomer),
-                          ]:
-                if state.M() <= state.J() and state.J() <= p.Jmax_save:
-                    #print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-                    #    % (cmistark.convert.J2MHz(top.energy(state)), cmistark.convert.J2invcm(top.energy(state)),
-                    #       top.energy(state))
-                    line = line + str(cmistark.convert.J2invcm(top.energy(state))) + " "
-            print line  

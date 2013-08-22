@@ -26,10 +26,10 @@ import getopt, sys
 import math
 import numpy
 
-import jkext.const as const
-import jkext.convert as convert
+import cmistark.const as const
+import cmistark.convert as convert
 import cmistark.molecule as molecule
-from jkext.state import State
+from cmistark.state import State
 
 
 def create_population(mol, temperature, Jmax, nsswtype, nssweights):
