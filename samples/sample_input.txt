@@ -1,0 +1,8 @@
+As the program/job script does not require an input file,
+the example command line operation with the job script
+(cmistark_calculate_stark) for creating the attached
+output sample file (OCS.molecule) is provided as
+following:
+
+cmistark_calculate_energy --isomer=0 --Jmax_calc=10 \
+ --Jmax_save=2 --OCS --dc-fields=0:150:151
