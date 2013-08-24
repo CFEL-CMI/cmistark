@@ -417,6 +417,7 @@ class AsymmetricRotor(Rotor):
 	    i = 0
 	    for state in self.stateorder(symmetry):
 		if state.J() <= self.Jmax_save:
+                    #print "J,Ka,Kc,M, state.id()", state.J(), state.Ka(), state.Kc(), state.M(), state.id()
 		    self.levels[state.id()] = eval[i]
 		i += 1
 	# done - data is now valid
@@ -522,19 +523,16 @@ class AsymmetricRotor(Rotor):
     def stateorder(self, symmetry):
 	"""Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
 
-	See Zare, 1988, Chapter 6.
-
-	The symmetry of asymmetric rotor functions (in terms of eveness of Ka and Kc) is of course independent of the
-	representation used in the calculation.
+	See Zare, 1988, Chapter 6, and publication for CMIStark: http://arxiv.org/abs/1308.4076
 	"""
 	def Four_symmetry(J, Ka, Kc):
 	    """Determine Fourgroup symmetry of asymmetric top state
 
 	    see Zare, 1988, Eq 6.71"""
-	    if Ka%2 == 0 and Kc%2 == 0:   sym = 'A'   # ee
-	    elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ba'  # eo
-	    elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Bc'  # oe
-	    elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Bb'  # oo
+	    if Ka%2 == 0 and Kc%2 == 0:   sym = 'A'   # ee - A
+	    elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Ba'  # eo - Ba
+	    elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Bc'  # oe - Bc
+	    elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Bb'  # oo - Bb
 	    else: assert False
 	    return sym
 
@@ -544,20 +542,19 @@ class AsymmetricRotor(Rotor):
 
             see Zare, 1988, Table 6.4"""
             if J%2 == 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Epe'  # eee (K,s,J)
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Eme'  # eoe
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Ome'  # oee
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Ope'  # ooe
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Epe'  # e0e - eee (K,s,J) - (Ka,Kc,J)
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Eme'  # e1e - eoe
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Ome'  # o1e - oee
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Ope'  # o0e - ooe
                 else: assert False
             elif J%2 != 0:
-                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Emo'  # eeo
-                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Epo'  # eoo
-                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Opo'  # oeo
-                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Omo'  # ooo
+                if Ka%2 == 0 and Kc%2 == 0:   sym = 'Emo'  # e1o - eeo
+                elif Ka%2 == 0 and Kc%2 !=0:  sym = 'Epo'  # e0o - eoo
+                elif Ka%2 != 0 and Kc%2 ==0:  sym = 'Opo'  # o0o - oeo
+                elif Ka%2 != 0 and Kc%2 !=0:  sym = 'Omo'  # o1o - ooo
                 else: assert False
             else: assert False
             return sym
-
 	if False == self.stateorder_valid:
 	    self.stateorder_dict = {}
 	    M = self.M
@@ -641,6 +638,22 @@ class AsymmetricRotor(Rotor):
                 label['EmOp'] = label['Eme'] + label['Emo'] + label['Ope'] + label['Opo']
                 del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
                 del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wbc' == self.symmetry:
+                symmetries = ['EeOo','EoOe']
+                eigenvalues['EeOo'] = eigenvalues['Epe'] + eigenvalues['Eme'] + eigenvalues['Opo'] + eigenvalues['Omo']
+                eigenvalues['EoOe'] = eigenvalues['Epo'] + eigenvalues['Emo'] + eigenvalues['Ope'] + eigenvalues['Ome']
+                label['EeOo'] = label['Epe'] + label['Eme'] + label['Opo'] + label['Omo']
+                label['EoOe'] = label['Epo'] + label['Emo'] + label['Ope'] + label['Ome']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
+            elif 'Wac' == self.symmetry:
+                symmetries = ['EpOp','EmOm']
+                eigenvalues['EpOp'] = eigenvalues['Epe'] + eigenvalues['Epo'] + eigenvalues['Ope'] + eigenvalues['Opo']
+                eigenvalues['EmOm'] = eigenvalues['Eme'] + eigenvalues['Emo'] + eigenvalues['Ome'] + eigenvalues['Omo']
+                label['EpOp'] = label['Epe'] + label['Epo'] + label['Ope'] + label['Opo']
+                label['EmOm'] = label['Eme'] + label['Emo'] + label['Ome'] + label['Omo']
+                del label['Epe'], label['Ome'], label['Eme'], label['Ope'], label['Epo'], label['Omo'], label['Emo'], label['Opo']
+                del eigenvalues['Epe'], eigenvalues['Ome'], eigenvalues['Eme'], eigenvalues['Ope'], eigenvalues['Epo'], eigenvalues['Omo'], eigenvalues['Emo'], eigenvalues['Opo']
 	    elif 'V' == self.symmetry:
 		symmetries = ['A', 'Ba', 'Bb', 'Bc']
 	    elif 'C2a' == self.symmetry:
@@ -714,17 +727,17 @@ class AsymmetricRotor(Rotor):
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('Eme') # K even
                         else: order.append('Ome') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('Epe') # K even
                         else: order.append('Ope') # K odd
                 else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('Emo') # K even
                         else: order.append('Omo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('Epo') # K even
                         else: order.append('Opo') # K odd
                 for k in range(2*J+1):
@@ -740,17 +753,17 @@ class AsymmetricRotor(Rotor):
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('Em') # K even
                         else: order.append('Om') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('Ep') # K even
                         else: order.append('Op') # K odd
                 else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('Em') # K even
                         else: order.append('Om') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('Ep') # K even
                         else: order.append('Op') # K odd
                 for k in range(2*J+1):
@@ -769,17 +782,17 @@ class AsymmetricRotor(Rotor):
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('EmeOpo') # K even
                         else: order.append('OmeEpo') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('EpeOmo') # K even
                         else: order.append('OpeEmo') # K odd
                 else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('OpeEmo') # K even
                         else: order.append('EpeOmo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('OmeEpo') # K even
                         else: order.append('EmeOpo') # K odd
                 for k in range(2*J+1):
@@ -797,17 +810,17 @@ class AsymmetricRotor(Rotor):
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('EmeOmo') # K even
                         else: order.append('OmeEmo') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('EpeOpo') # K even
                         else: order.append('OpeEpo') # K odd
                 else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('OmeEmo') # K even
                         else: order.append('EmeOmo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('OpeEpo') # K even
                         else: order.append('EpeOpo') # K odd
                 for k in range(2*J+1):
@@ -817,26 +830,82 @@ class AsymmetricRotor(Rotor):
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
         elif 'Wab' == symmetry:
-            # for only u_c != 0  and M=0
+            # for only u_c = 0  and M=0
             # combine the coupling cases of Wa and Wb
             idx = {'EpOm': [], 'EmOp': []}
             i = 0
             for J in range(Jmin, Jmax+1):
                 order = []
                 if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K > 0 --> s odd
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('EmOp') # K even
                         else: order.append('EpOm') # K odd
-                    for K in range(0, J+1): # K <= 0 --> s even
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('EpOm') # K even
                         else: order.append('EmOp') # K odd
                 else: # J odd
-                    for K in range(-J, 0): # K <= 0 --> s even
+                    for K in range(-J, 0): # K < 0 --> s odd
                         if 0 == K % 2: order.append('EmOp') # K even
                         else: order.append('EpOm') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s odd
+                    for K in range(0, J+1): # K >= 0 --> s even
                         if 0 == K % 2: order.append('EpOm') # K even
                         else: order.append('EmOp') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wbc' == symmetry:
+            # for only u_a = 0  and M=0
+            # combine the coupling cases of Wb and Wc
+            # symmetry 1: (K even, E, and J even, e) and (K  odd, O, and J odd, o)
+            # symmetry 2: (K  odd, O, and J even, e) and (K even, E, and J odd, o)
+            idx = {'EeOo': [], 'EoOe': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K < 0 --> s odd
+                        if 0 == K % 2: order.append('EeOo') # K even
+                        else: order.append('EoOe') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s even
+                        if 0 == K % 2: order.append('EeOo') # K even
+                        else: order.append('EoOe') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K < 0 --> s odd
+                        if 0 == K % 2: order.append('EoOe') # K even
+                        else: order.append('EeOo') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s even
+                        if 0 == K % 2: order.append('EoOe') # K even
+                        else: order.append('EeOo') # K odd
+                for k in range(2*J+1):
+                    idx[order[k]].append(i+k)
+                i += 2*J+1
+            for sym in order:
+                if 0 < len(idx[sym]):
+                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+        elif 'Wac' == symmetry:
+            # for only u_b = 0  and M=0
+            # combine the coupling cases of Wa and Wc
+            idx = {'EpOp': [], 'EmOm': []}
+            i = 0
+            for J in range(Jmin, Jmax+1):
+                order = []
+                if 0 == J % 2: # J even
+                    for K in range(-J, 0): # K < 0 --> s odd
+                        if 0 == K % 2: order.append('EmOm') # K even
+                        else: order.append('EmOm') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s even
+                        if 0 == K % 2: order.append('EpOp') # K even
+                        else: order.append('EpOp') # K odd
+                else: # J odd
+                    for K in range(-J, 0): # K < 0 --> s odd
+                        if 0 == K % 2: order.append('EmOm') # K even
+                        else: order.append('EmOm') # K odd
+                    for K in range(0, J+1): # K >= 0 --> s even
+                        if 0 == K % 2: order.append('EpOp') # K even
+                        else: order.append('EpOp') # K odd
                 for k in range(2*J+1):
                     idx[order[k]].append(i+k)
                 i += 2*J+1
@@ -854,17 +923,17 @@ class AsymmetricRotor(Rotor):
 	    for J in range(Jmin, Jmax+1):
 		order = []
 		if 0 == J % 2: # J even
-		    for K in range(-J, 0): # K > 0 --> s odd
+		    for K in range(-J, 0): # K < 0 --> s odd
 			if 0 == K % 2: order.append('Ba') # K even
 			else: order.append('Bc') # K odd
-		    for K in range(0, J+1): # K <= 0 --> s even
+		    for K in range(0, J+1): # K >= 0 --> s even
 			if 0 == K % 2: order.append('A') # K even
 			else: order.append('Bb') # K odd
 		else: # J odd
-		    for K in range(-J, 0): # K <= 0 --> s even
+		    for K in range(-J, 0): # K < 0 --> s odd
 			if 0 == K % 2: order.append('A') # K even
 			else: order.append('Bb') # K odd
-		    for K in range(0, J+1): # K >= 0 --> s odd
+		    for K in range(0, J+1): # K >= 0 --> s even
 			if 0 == K % 2: order.append('Ba') # K even
 			else: order.append('Bc') # K odd
 		for k in range(2*J+1):
@@ -899,14 +968,14 @@ class AsymmetricRotor(Rotor):
 	    for J in range(Jmin, Jmax+1):
 		order = []
 		if 0 == J % 2: # J even
-		    for K in range(-J, 0): # K > 0 --> s odd
+		    for K in range(-J, 0): # K < 0 --> s odd
 			order.append('ac')
-		    for K in range(0, J+1): # K <= 0 --> s even
+		    for K in range(0, J+1): # K >= 0 --> s even
 			order.append('Ab')
 		else: # J odd
-		    for K in range(-J, 0): # K <= 0 --> s even
+		    for K in range(-J, 0): # K < 0 --> s odd
 			order.append('Ab')
-		    for K in range(0, J+1): # K >= 0 --> s odd
+		    for K in range(0, J+1): # K >= 0 --> s even
 			order.append('ac')
 		for k in range(2*J+1):
 		    idx[order[k]].append(i+k)
@@ -924,17 +993,17 @@ class AsymmetricRotor(Rotor):
 	    for J in range(Jmin, Jmax+1):
 		order = []
 		if 0 == J % 2: # J even
-		    for K in range(-J, 0): # K > 0 --> s odd
+		    for K in range(-J, 0): # K < 0 --> s odd
 			if 0 == K % 2: order.append('ab') # K even
 			else: order.append('Ac') # K odd
-		    for K in range(0, J+1): # K <= 0 --> s even
+		    for K in range(0, J+1): # K >= 0 --> s even
 			if 0 == K % 2: order.append('Ac') # K even
 			else: order.append('ab') # K odd
 		else: # J odd
-		    for K in range(-J, 0): # K <= 0 --> s even
+		    for K in range(-J, 0): # K < 0 --> s odd
 			if 0 == K % 2: order.append('Ac') # K even
 			else: order.append('ab') # K odd
-		    for K in range(0, J+1): # K >= 0 --> s odd
+		    for K in range(0, J+1): # K >= 0 --> s even
 			if 0 == K % 2: order.append('ab') # K even
 			else: order.append('Ac') # K odd
 		for k in range(2*J+1):

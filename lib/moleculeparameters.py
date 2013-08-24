@@ -19,17 +19,40 @@ from __future__ import division
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 __doc__ = """This modules implements the molecular parameters of all our candidates.
 
-The relevant parameters are
-- rotational constants
-- centrifugal distortion constants
-  - for a linear top: D
-  - for a symmetric top: D_J, D_{JK}, D_K
-  - for an asymmetric top
-    - in Watson's A reduction: \Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K
-- dipole moments
+The relevant parameters are:
+
+- param.rotcon: rotational constants
+  - linear top: B
+  - symmetric top: (A,B) for prolate, (B,C) for oblate
+  - asymmetric top: (A,B,C)
+- param.quartic: centrifugal distortion constants
+  - linear top: D
+  - symmetric top: (D_J, D_{JK}, D_K)
+  - asymmetric top
+    - in Watson's A reduction: (\Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K)
+- param.dipole: dipole moments
   - for linear and symmetric tops: \mu
-  - for an asymmetric top \mu_a, \mu_b, \mu_c
-- symmetry
+  - for an asymmetric top: (\mu_a, \mu_b, \mu_c)
+- param.type: type of rotors
+  - linear rotor: 'L'
+  - symmetric top: 'S'
+  - asymmetric top: 'A'
+- param.symmetry: symmetry in the feild for linear/asymmetric tops. For symmetric top,
+  prolate or oblate is specifie here
+  - linear rotor: 'N' (as no symmetry is implemented for linear top)
+  - symmetric top:
+    - prolate: 'p'
+    - oblate: 's'
+  - asymmetric top (for M != 0 cases, the program takes care the M = 0 case itself):
+    - only \mu_a != 0: 'C2a'
+    - only \mu_b != 0: 'C2b'
+    - only \mu_c != 0: 'C2c'
+    - other dipole directions: 'N'
+- param.watson: only for asymmetric top.
+  - Watson's A reduction: 'A'
+  - Watson's S reduction: 'S' (not implemented yet)
+
+All parameters need to be implemented properly for molecules of interest.
 """
 
 import numpy as num
@@ -41,6 +64,44 @@ import cmistark.starkeffect as starkeffect
 from cmistark.state import State
 from cmistark.moleculeproperty import Masses
 
+
+def asymmetric_top(param):
+    """Molecular parameters for an artificial asymmetric top
+
+    Implemented isomers are (modified) examples of
+     0 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b != 0
+     1 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c != 0
+     2 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_a = 0
+     3 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b = 0
+     4 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c = 0
+     5 - rot. const. from Fig7.2 in Gordy & Cook (1984), and no any u_i = 0
+    """
+    param.name = "asymmetric_top"
+    param.watson = 'A'
+    if param.isomer == 0:
+        param.symmetry = 'C2b'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([0., 1., 0.]))
+    elif param.isomer == 1:
+        param.symmetry = 'C2c'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([0., 0., 1.]))
+    elif param.isomer == 2:
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([0., 1., 1.]))
+    elif param.isomer == 3:
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([1., 0., 1.]))
+    elif param.isomer == 4:
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([1., 1., 0.]))
+    elif param.isomer == 5:
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([1., 1., 1.]))
 
 
 def three_aminophenol(param):

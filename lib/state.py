@@ -26,6 +26,8 @@ class State:
 
     Public data:
     - max  Upper bound of any individual quantum number - actually any qn must be strictly smaller than max
+
+    pindex: only when Ka or Kc < 0 (only exist in the case of symmetric top), pindex = 1, otherwise = 0
     """
 
     def __init__(self, J=0, Ka=0, Kc=0, M=0, isomer=0):
@@ -39,12 +41,12 @@ class State:
         self.__id = num.uint64(0)
         pindex = 0
         for i in range(self.__labels.size):
-            if self.__labels[i] < 0:
-                pindex += 1 * self.pmax**i
-            else:
-                pindex += 0 * self.pmax**i
             self.__id += num.uint64(abs(self.__labels[i]) * self.max**i)
-        self.__id = self.__id * self.pmax**5 + pindex
+        if self.__labels[1] < 0 or self.__labels[2] < 0:
+            pindex = 1
+        else:
+            pindex = 0
+        self.__id = self.__id * self.pmax**1 + pindex
 
     def J(self):
         return self.__labels[0]
@@ -66,17 +68,12 @@ class State:
         self.__id = num.uint64(id)
         self.__labels = num.zeros((5,), dtype=num.int64)
         pindex = num.zeros((5,), dtype=num.int64)
+        pindex[1] = id % self.pmax
+        pindex[2] = id % self.pmax
+        id //= self.pmax
         for i in range(5):
-            pindex[i] = id % self.pmax
-            id //= self.pmax
-        #print "pindex", pindex
-        for i in range(5):
-            #print "id=", id
-            #print "id % self.max=", id % self.max
             self.__labels[i] = (id % self.max) * ((-1)**pindex[i])
             id //= self.max
-            #print "after id //= self.max, id=", id
-        #print "self.__labels=", self.__labels
         return self
 
     def fromhdfname(self, hdfname):

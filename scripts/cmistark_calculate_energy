@@ -58,6 +58,7 @@ def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
+                                                   "asymmetric_top",
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
                                                    "4-aminobenzonitrile",
@@ -102,6 +103,8 @@ def main(args):
             param.dcfields = convert.kV_cm2V_m(num.linspace(float(min), float(max), int(steps)))
         elif o == "--isomer":
             param.isomer = int(a)
+        elif o == "--asymmetric_top":
+            pfunc = asymmetric_top
         elif o == "--2,6-difluoro-iodobenzene":
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):
