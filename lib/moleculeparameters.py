@@ -477,6 +477,18 @@ def sulfur_dioxide(param):
     param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
 
 
+def nitrogen_dioxide(param):
+    """ rot. const.: A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976).
+        dipole moment: J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963)
+    """
+    param.name = "nitrogen_dioxide"
+    param.watson = 'A'
+    param.symmetry = 'C2b'
+    param.rotcon = convert.Hz2J(num.array([239905.41e6, 13002.262e6, 12304.888e6]))
+    param.quartic = convert.Hz2J(num.array([9.033e3, -0.5903e6, 80.94e6, 9.303e2, 0.12e6]))
+    param.dipole = convert.D2Cm(num.array([0., 0.316, 0.]))
+
+
 def six_chloropyridazine_three_carbonitrile(param):
     """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
     param.name = "6-chloropyridazine-3-carbonitrile"
