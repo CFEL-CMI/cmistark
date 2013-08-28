@@ -79,7 +79,7 @@ def asymmetric_top(param):
     param.name = "asymmetric_top"
     param.watson = 'A'
     if param.isomer == 0:
-        param.symmetry = 'C2b' 
+        param.symmetry = 'C2b'
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
         param.dipole = convert.D2Cm(num.array([0., 1., 0.]))
     elif param.isomer == 1:
