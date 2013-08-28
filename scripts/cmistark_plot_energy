@@ -44,7 +44,7 @@ def usage():
                         more than one isomers defined in moleculeparameter.py
            --states=: specify states to plot, format: "000,1010"
            --dipole: plot the effective dipole moments
-           --energy-unit=: MHz, invcm, J
+           --energy-unit=: GHz, MHz, invcm, J
           """
 
 
@@ -94,7 +94,7 @@ def main(args):
             userstates = a    # uses m if given, uses all possible m otherwise
         elif o == "--energy-unit":
             energyunit = a
-            if (energyunit!="MHz" and energyunit!="invcm" and energyunit!="J"):
+            if (energyunit!="MHz" and energyunit!="GHz" and energyunit!="invcm" and energyunit!="J"):
                 assert False, "unknown energy unit"
         elif o == "--dipole": # plot dipolemoments
             plotdips = True
@@ -121,6 +121,8 @@ def main(args):
         plt.xlabel('E(kV/cm)')
         if (energyunit=="MHz"):
             plt.ylabel('Energy(MHz)')
+        elif(energyunit=="GHz"):
+            plt.ylabel('Energy(GHz)')
         elif (energyunit=="invcm"):
             plt.ylabel('Energy(cm-1)')
         elif (energyunit=="J"):
@@ -145,6 +147,8 @@ def main(args):
                     # convert energy
                     if (energyunit=="MHz"):
                         energies = J2MHz(energies)
+                    elif (energyunit=="GHz"):
+                        energies = J2MHz(energies)/1000.
                     elif (energyunit=="invcm"):
                         energies = J2invcm(energies)
                     plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
@@ -161,6 +165,8 @@ def main(args):
                     # convert energy
                     if energyunit == "MHz":
                         energies = J2MHz(energies)
+                    elif energyunit == "GHz":
+                        energies = J2MHz(energies)/1000.
                     elif energyunit == "invcm":
                         energies = J2invcm(energies)
                     plt.figure(1)
