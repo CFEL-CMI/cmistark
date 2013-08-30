@@ -68,7 +68,9 @@ def main(args):
     Kamax= None
     isomer = [0]
     userstates = None
-    energyunit = "MHz" # energy unit, can also be "J" and "invcm"
+    energyunit = "MHz" # energy unit
+    energyconversion = J2Hz
+    energyunitlabel = "MHz"
     legend = False
     plotdips = False
     verbose = False
@@ -101,11 +103,11 @@ def main(args):
             if (energyunit != "MHz" and energyunit != "GHz" and energyunit != "invcm" and energyunit != "J"):
                 assert False, "unknown energy unit"
             # set conversion function and unit-string for plot axes
-            if (energyunit=="MHz"):
-                energiyconversion = lambda x: x
+            if (energyunit=="J"):
+                energyconversion = lambda x: x
                 energyunitlabel = "J"
             elif (energyunit=="MHz"):
-                energiyconversion = J2MHz
+                energyconversion = J2MHz
                 energyunitlabel = "MHz"
             elif (energyunit=="GHz"):
                 energyconversion = lambda x: J2MHz(x)/1000.
