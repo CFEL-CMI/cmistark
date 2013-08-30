@@ -18,9 +18,9 @@
 # <http://www.gnu.org/licenses/>.
 from __future__ import division
 
-"""Calculate adiabatic energy curves and store them in HDF5 file
+"""Calculate adiabatic energy curves and store them in a HDF5 file
 
-Copyright (C) 2008,2009,2011,2012 Jochen Küpper
+Copyright (C) 2008,2009,2011,2012,2013 Jochen Küpper
 
 This is a simple driver around the functionality in the import modules of the cmistark Python extension. It allows user
 interaction and defines the actual molecular properties used in the calculations. The constants should not be changed -
@@ -68,7 +68,6 @@ def main(args):
                                                    "iodomethane",
                                                    "OCS",
                                                    "water", "H2O", "D2O", "HDO",
-                                                   "sulfur_dioxide",
                                                    ])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -131,8 +130,6 @@ def main(args):
             elif o == "--HDO":
                 param.isomer = 2
             pfunc = water
-        elif o == "--sulfur_dioxide":
-            pfunc = sulfur_dioxide
         else:
             assert False, "unhandled commandline option"
     # finalize initialization

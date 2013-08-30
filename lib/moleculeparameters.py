@@ -137,6 +137,7 @@ def three_aminophenol(param):
         param.rotcon = convert.Hz2J(num.array([3752.3419e6, 1833.1737e6, 1232.6659e6]))
         param.dipole = convert.D2Cm(num.array([0.5705, 0.4771, 0.]))
 
+
 def indole(param):
     """Molecular parameters for indole
 
@@ -156,7 +157,6 @@ def indole(param):
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
         param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-
 
 
 def indole_water1(param):
@@ -180,6 +180,7 @@ def indole_water1(param):
         param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
         param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
         param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+
 
 def water(param):
     """Molecular parameters for H2O, D2O, HDO
@@ -218,7 +219,6 @@ def water(param):
         param.rotcon = convert.Hz2J(num.array([701931.50e6, 272912.60e6, 192055.25e6]))
         param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
-
 
 
 def OCS(param):
@@ -281,7 +281,6 @@ def iodomethane(param):
 	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
 
-
 def difluoro_iodobenzene(param):
     # parameters from simple ab initio calculations (Jochen Küpper, 2010)
     param.name = "2,6-difluoro-iodobenzene"
@@ -293,7 +292,6 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-
 def aminobenzonitrile(param):
     # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
     param.name = "4-aminobenzonitrile"
@@ -303,7 +301,6 @@ def aminobenzonitrile(param):
     param.rotcon = convert.Hz2J(num.array([5.5793e9, 0.99026e9, 0.84139e9]))
     param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
     param.dipole = convert.D2Cm(num.array([6.41, 0., 0.]))
-
 
 
 def benzonitrile(param):
@@ -327,19 +324,3 @@ def iodobenzene(param):
     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
-
-
-def sulfur_dioxide(param):
-    # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
-    param.name = "sulfur_dioxide"
-    param.watson = 'A'
-    param.symmetry = 'C2b'
-    # A=2.026cm^-1, B=0.3442 cm^-1, C=0.2935 cm^-1.
-    # Alternative papers: J. Chem. Phys. 19, 502 (1951), or  J. Chem. Phys. 22, 904 (1954). or
-    # F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
-    param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6]))
-    # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
-    param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
-    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
-
-
