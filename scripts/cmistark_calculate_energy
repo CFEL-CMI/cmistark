@@ -74,7 +74,7 @@ def main(args):
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
                                                    "sulfur_dioxide",
-                                                   "nitrogen_dioxide",
+                                                   "nitrogen_dioxide", "NO2"
                                                    "3-fluorophenol",
                                                    "6-chloropyridazine-3-carbonitrile"
                                                    ])
@@ -155,7 +155,7 @@ def main(args):
             pfunc = water
         elif o == "--sulfur_dioxide":
             pfunc = sulfur_dioxide
-        elif o == "--nitrogen_dioxide":
+        elif o in ("--nitrogen_dioxide", "--NO2"):
             pfunc = nitrogen_dioxide
         elif o == "--6-chloropyridazine-3-carbonitrile":
             pfunc = six_chloropyridazine_three_carbonitrile
