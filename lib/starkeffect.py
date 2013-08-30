@@ -69,7 +69,8 @@ class CalculationParameter(object):
     rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
-
+    # internal
+    debug = None
 
 
 class Rotor(object):
@@ -101,6 +102,7 @@ class Rotor(object):
         self.levelssym = {}
         self.valid = False
         self.stateorder_valid = False
+        self.debug = param.debug
 
 
     def field_DC(self):
@@ -412,6 +414,7 @@ class AsymmetricRotor(Rotor):
         self.levelssym = {}
 	blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
 	for symmetry in blocks.keys():
+            if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
 	    eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
 	    eval = num.sort(eval)
 	    i = 0
@@ -574,7 +577,7 @@ class AsymmetricRotor(Rotor):
                         label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
 		    if Kc > 0:
 			Ka = Ka+1
-                        if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry: 
+                        if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                             label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
                         else:
 			    label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
@@ -714,9 +717,9 @@ class AsymmetricRotor(Rotor):
 	    dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
 	else:
 	    dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
-        #self.print_mat(hmat, "Original Hamiltonian")
+        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian")
 	hmat = dot(dot(Wmat, hmat), Wmat)
-	#self.print_mat(hmat, "Wang transformed Hamiltonian")
+	if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian")
 	# delete Wang matrix (it's not used anymore)
 	del Wmat
 	# sort out matrix blocks
