@@ -73,7 +73,7 @@ def main(args):
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
-                                                   "sulfur_dioxide",
+                                                   "sulfur_dioxide", "SO2",
                                                    "nitrogen_dioxide", "NO2"
                                                    "nitrous_oxide",
                                                    "3-fluorophenol",
@@ -154,7 +154,7 @@ def main(args):
             elif o == "--HDO":
                 param.isomer = 2
             pfunc = water
-        elif o == "--sulfur_dioxide":
+        elif o in ("--sulfur_dioxide", "--SO2"):
             pfunc = sulfur_dioxide
         elif o in ("--nitrogen_dioxide", "--NO2"):
             pfunc = nitrogen_dioxide
