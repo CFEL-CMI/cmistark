@@ -45,6 +45,7 @@ def usage():
            --states=: specify states to plot, format: "000,1010"
            --dipole: plot the effective dipole moments
            --energy-unit=: GHz, MHz, invcm, J
+           --nss-forbidden
           """
 
 
@@ -54,6 +55,7 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "Kamax=", "states=",
                                                    "energy-unit=", "GHz",
                                                    "dipole", "isomer=",
+                                                   "nss-forbidden=",
                                                    "legend", "verbose="])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -71,6 +73,7 @@ def main(args):
     energyunit = "MHz" # energy unit
     energyconversion = J2Hz
     energyunitlabel = "MHz"
+    forbidden_nssw = None
     legend = False
     plotdips = False
     verbose = False
@@ -115,6 +118,8 @@ def main(args):
             elif (energyunit=="invcm"):
                 energyconversion = J2invcm
                 energyunitlabel = "cm$^-1$"
+        elif o == "--nss-forbidden": # plot dipolemoments
+            nss_forbidden = a
         elif o == "--dipole": # plot dipolemoments
             plotdips = True
         elif o == "--verbose":
@@ -170,7 +175,7 @@ def main(args):
         else:
             # loop over state
             for state in mol.starkeffect_states():
-                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer:
+                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
                     fields, energies = mol.starkeffect(state)
                     fields, mueff = mol.mueff(state)
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
