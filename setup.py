@@ -15,8 +15,8 @@ long_description = """CMI Python extensions for Stark effect calculations
 Python extensions for Stark effect calculations of molecules.
 Developed by the Controlled Molecule Imaging Group at CFEL
 
-Original authors:   Jochen Küpper <jochen.kuepper@cfel.de>
-Current maintainer: Yuan-Pin Chang <yuan.pin.chang@cfel.de>
+Original author:     Jochen Küpper <jochen.kuepper@cfel.de>
+Current maintainers: Yuan-Pin Chang <yuan.pin.chang@cfel.de> and Jochen Küpper <jochen.kuepper@cfel.de>
 """
 
 
