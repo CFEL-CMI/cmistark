@@ -52,7 +52,8 @@ def main(args):
     # ToDo: add options already used in energie plotting to eff. dipole mom. plotting
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "Kamax=", "states=",
-                                                   "energy-unit=", "dipole", "isomer=",
+                                                   "energy-unit=", "GHz",
+                                                   "dipole", "isomer=",
                                                    "legend", "verbose="])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -92,10 +93,26 @@ def main(args):
                 isomer.append(int(i))
         elif o == "--states": # quantum states to plot, format "000,1010"
             userstates = a    # uses m if given, uses all possible m otherwise
-        elif o == "--energy-unit":
-            energyunit = a
-            if (energyunit!="MHz" and energyunit!="GHz" and energyunit!="invcm" and energyunit!="J"):
+        elif o in ("--energy-unit", "--GHz" ):
+            if o == "--energy-unit":
+                energyunit = a
+            elif o == "--GHz":
+                energyunit = "GHz"
+            if (energyunit != "MHz" and energyunit != "GHz" and energyunit != "invcm" and energyunit != "J"):
                 assert False, "unknown energy unit"
+            # set conversion function and unit-string for plot axes
+            if (energyunit=="MHz"):
+                energiyconversion = lambda x: x
+                energyunitlabel = "J"
+            elif (energyunit=="MHz"):
+                energiyconversion = J2MHz
+                energyunitlabel = "MHz"
+            elif (energyunit=="GHz"):
+                energyconversion = lambda x: J2MHz(x)/1000.
+                energyunitlabel = "GHz"
+            elif (energyunit=="invcm"):
+                energyconversion = J2invcm
+                energyunitlabel = "cm$^-1$"
         elif o == "--dipole": # plot dipolemoments
             plotdips = True
         elif o == "--verbose":
@@ -118,15 +135,8 @@ def main(args):
         if colorindex > len(colors):
             colorindex = 0
         color = colors[colorindex]
-        plt.xlabel('E(kV/cm)')
-        if (energyunit=="MHz"):
-            plt.ylabel('Energy(MHz)')
-        elif(energyunit=="GHz"):
-            plt.ylabel('Energy(GHz)')
-        elif (energyunit=="invcm"):
-            plt.ylabel('Energy(cm-1)')
-        elif (energyunit=="J"):
-            plt.ylabel('Energy(J)')
+        plt.xlabel('$\epsilon$ (kV/cm)')
+        plt.ylabel('W (' + energyunitlabel + ')')
         # plot energie
         # use user given states, if available
         if None != userstates:
@@ -136,23 +146,19 @@ def main(args):
                 # if a certain m is desired only take this one
                 if (len(userstate)>3):
                     mValues = [int(userstate[3])]
-                for m in mValues:
-                    if colorindex > len(colors)-1: colorindex = 0
-                    color = colors[colorindex]
-                    colorindex += 1
-                    state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, isomer)
-                    if (verbose):
-                        print "state to plot: " + state.name()
-                    fields, energies = mol.starkeffect(state)
-                    # convert energy
-                    if (energyunit=="MHz"):
-                        energies = J2MHz(energies)
-                    elif (energyunit=="GHz"):
-                        energies = J2MHz(energies)/1000.
-                    elif (energyunit=="invcm"):
-                        energies = J2invcm(energies)
-                    plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
-                    print "state, color: " + state.name() + " " + color
+                for iso in isomer:
+                    for m in mValues:
+                        if colorindex > len(colors)-1: colorindex = 0
+                        color = colors[colorindex]
+                        colorindex += 1
+                        state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, iso)
+                        if (verbose):
+                            print "state to plot: " + state.name()
+                        fields, energies = mol.starkeffect(state)
+                        # convert energy
+                        energies = energyconversion(energies)
+                        plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                        print "state, color: " + state.name() + " " + color
         # plot all states in given J-range
         else:
             # loop over state
@@ -163,12 +169,7 @@ def main(args):
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
                     # print fields, energies, mueff
                     # convert energy
-                    if energyunit == "MHz":
-                        energies = J2MHz(energies)
-                    elif energyunit == "GHz":
-                        energies = J2MHz(energies)/1000.
-                    elif energyunit == "invcm":
-                        energies = J2invcm(energies)
+                    energies = energyconversion(energies)
                     plt.figure(1)
                     plt.plot(V_m2kV_cm(fields), energies, color)
                     if plotdips == True:
