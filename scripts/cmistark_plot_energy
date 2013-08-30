@@ -71,9 +71,9 @@ def main(args):
     isomer = [0]
     userstates = None
     energyunit = "MHz" # energy unit
-    energyconversion = J2Hz
+    energyconversion = J2MHz
     energyunitlabel = "MHz"
-    forbidden_nssw = None
+    nss_forbidden = None
     legend = False
     plotdips = False
     verbose = False
@@ -124,6 +124,8 @@ def main(args):
             plotdips = True
         elif o == "--verbose":
             verbose = True
+        elif o == "--legend":
+            legend = True
         else:
             assert False, "unhandled commandline option"
     if None == Mmax:
@@ -131,7 +133,7 @@ def main(args):
     if None == Kamax:
         Kamax = Jmax
 
-    colors = ['blue', 'red', 'green','yellow','cyan','magenta','black']
+    colors = ['blue', 'red', 'green', 'black', 'purple', 'cyan', 'magenta', 'brown']
     colorindex = 0
 
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
@@ -175,7 +177,11 @@ def main(args):
         else:
             # loop over state
             for state in mol.starkeffect_states():
-                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
+                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
+                   and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
+                    if colorindex > len(colors)-1: colorindex = 0
+                    color = colors[colorindex]
+                    colorindex += 1
                     fields, energies = mol.starkeffect(state)
                     fields, mueff = mol.mueff(state)
                     assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
@@ -183,10 +189,11 @@ def main(args):
                     # convert energy
                     energies = energyconversion(energies)
                     plt.figure(1)
-                    plt.plot(V_m2kV_cm(fields), energies, color)
+                    plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                     if plotdips == True:
                         plt.figure(2)
                         plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+    if legend: plt.legend()
     plt.show()
 
 
