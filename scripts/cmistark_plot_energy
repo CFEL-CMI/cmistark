@@ -159,8 +159,13 @@ def main(args):
                         fields, energies = mol.starkeffect(state)
                         # convert energy
                         energies = energyconversion(energies)
+                        plt.figure(1)
                         plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                         print "state, color: " + state.name() + " " + color
+                        if plotdips == True:
+                            fields, mueff = mol.mueff(state)
+                            plt.figure(2)
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
         # plot all states in given J-range
         else:
             # loop over state

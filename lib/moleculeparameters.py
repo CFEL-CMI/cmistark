@@ -478,8 +478,10 @@ def sulfur_dioxide(param):
 
 
 def nitrogen_dioxide(param):
-    """ rot. const.: A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976).
-        dipole moment: J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963)
+    """Molecular parameters for NO2
+
+    rot. const.: A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976).
+    dipole moment: J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963)
     """
     param.name = "nitrogen_dioxide"
     param.watson = 'A'
@@ -487,6 +489,20 @@ def nitrogen_dioxide(param):
     param.rotcon = convert.Hz2J(num.array([239905.41e6, 13002.262e6, 12304.888e6]))
     param.quartic = convert.Hz2J(num.array([9.033e3, -0.5903e6, 80.94e6, 9.303e2, 0.12e6]))
     param.dipole = convert.D2Cm(num.array([0., 0.316, 0.]))
+
+
+def nitrous_oxide(param):
+    """Molecular parameters for N2O
+
+    rot. const.: B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, J. Mol. Spectrosc. 62, 125 (1976).
+    dipole moment: L.H. Scharpen, J.S. Muenter, and V.W. Laurie, J. Chem. Phys. 53, 2513 (1970).
+    """
+    param.name = "nitrous_oxide"
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([12561.6348e6]))
+    param.dipole = convert.D2Cm(num.array([0.160830]))
+    param.quartic  = convert.Hz2J(num.array([5.2808e6]))
 
 
 def six_chloropyridazine_three_carbonitrile(param):
