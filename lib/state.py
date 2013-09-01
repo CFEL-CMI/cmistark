@@ -22,31 +22,40 @@ import numpy as num
 
 
 class State:
-    """State label of molecule (currently only asymmetric top notation)
+    """State label of molecule
+
+    Currently only asymmetric top notation, but linear tops naturally fit and symmetric tops are placed in as described
+    below.
 
     Public data:
-    - max  Upper bound of any individual quantum number - actually any qn must be strictly smaller than max
+    - max  Upper bound of any individual quantum number - actually any |qn| must be strictly smaller than max
 
-    pindex: only when Ka or Kc < 0 (only exist in the case of symmetric top), pindex = 1, otherwise = 0
+    For symmetric tops only one K quantum number exists, which is placed in (the natural choice of) Ka or Kc depending
+    on the case.
     """
 
     def __init__(self, J=0, Ka=0, Kc=0, M=0, isomer=0):
         self.max = 1000
-        self.pmax = 10
         self.__initialize(J, Ka, Kc, M, isomer)
 
     def __initialize(self, J=0, Ka=0, Kc=0, M=0, isomer=0):
-        assert ((J < self.max) and (Ka < self.max) and (Kc < self.max) and (M < self.max) and (isomer < self.max))
+        """Store all info and reata a unique ID for the state.
+
+        For symmetric tops, K is stored in the natural choice of Ka or Kc. The state depends on the sign of the product
+        of K*M, which is stored in the decimal places 15 and 16 (0-14 being used to encode J, Ka, Kc, M, isomer).
+        """
+        assert ((0 <= J < self.max) and (abs(Ka) < self.max) and (abs(Kc) < self.max) and (0 <= M < self.max)
+                and (0 <= isomer < self.max))
         self.__labels = num.array([J, Ka, Kc, M, isomer], dtype=num.int64)
         self.__id = num.uint64(0)
-        pindex = 0
+        self.__symtop_sign = 1
         for i in range(self.__labels.size):
             self.__id += num.uint64(abs(self.__labels[i]) * self.max**i)
-        if self.__labels[1] < 0 or self.__labels[2] < 0:
-            pindex = 1
-        else:
-            pindex = 0
-        self.__id = self.__id * self.pmax**1 + pindex
+        # handle negative sign of symmetric-top K*M
+        for i in (1,2):
+            if self.__labels[i] < 0:
+                self.__symtop_sign = -1
+                self.__id += num.uint64(self.max**5 * 10**(i-1))
 
     def J(self):
         return self.__labels[0]
@@ -67,13 +76,15 @@ class State:
         """Set quantum-numbers form id"""
         self.__id = num.uint64(id)
         self.__labels = num.zeros((5,), dtype=num.int64)
-        pindex = num.zeros((5,), dtype=num.int64)
-        pindex[1] = id % self.pmax
-        pindex[2] = id % self.pmax
-        id //= self.pmax
         for i in range(5):
-            self.__labels[i] = (id % self.max) * ((-1)**pindex[i])
+            self.__labels[i] = id % self.max
             id //= self.max
+        # handle negative sign of symmetric-top K*M
+        for i in (1,2):
+            if 1 == id % 10:
+                self.__symtop_sign = -1
+                self.__labels[i] *= -1
+            id //= 10
         return self
 
     def fromhdfname(self, hdfname):
@@ -100,9 +111,7 @@ class State:
         in order to provide subgrouping for faster transversal of the HDF5 directory.
         """
         name = "_%d/_%d/_%d/_%d/_%d" % self.totuple()
-        #print "hdfname - before replace:", name
         name.replace("-","n")
-        #print "hdfname - after replace:", name.replace("-","n")
         return name.replace("-","n")
 
     def toarray(self):
