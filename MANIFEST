@@ -20,7 +20,6 @@ lib/state.py
 lib/util.py
 samples/OCS.molecule
 samples/sample_input.txt
-scripts/cmistark_brute-force-orientation
 scripts/cmistark_calculate_energy
 scripts/cmistark_plot_energy
 scripts/cmistark_print_energy
