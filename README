@@ -8,6 +8,10 @@ The program package is developed and maintained by the Controlled Molecule
 Imaging group (CMI) at the Center for Free-Electron Laser Science (CFEL),
 Hamburg, Germany.
 
+It is documented in
+  Computer Physics Communications
+  arXiv:1308.4076 [physics]
+
 
 * Prerequisities:
 
@@ -35,9 +39,9 @@ can be used to install the program.
 
 1. cmistark_calculate_energy
 
-Aprovide script file called cmistark_calculate_energy performs the calculation,
-and it uses commands typed on the command line. The descriptions of command-line
-options are provided as following:
+A (command line) script file called cmistark_calculate_energy is provided as a
+driver for the calculation of Stark curves. Its command-line options are the
+following:
 
 --help: help
 --<moleculename>: specify which molecule is used in the calculation.
