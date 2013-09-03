@@ -30,8 +30,7 @@ setup(name="cmistark",
       long_description    = long_description,
       package_dir         = {'cmistark': 'lib'},
       packages            = ['cmistark'],
-      scripts             = ['scripts/cmistark_brute-force-orientation',
-                             'scripts/cmistark_calculate_energy',
+      scripts             = ['scripts/cmistark_calculate_energy',
                              'scripts/cmistark_plot_energy',
                              'scripts/cmistark_print_energy']
       )
