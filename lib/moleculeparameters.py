@@ -52,7 +52,7 @@ The relevant parameters are:
   - Watson's A reduction: 'A'
   - Watson's S reduction: 'S' (not implemented yet)
 
-All parameters need to be implemented properly for molecules of interest.
+All relevant parameters for molecules of interest need to be properly implemented here.
 """
 
 import numpy as num

@@ -71,8 +71,17 @@ cmistark_plot_energy and cmistark_print_energy are provided to easily access
 these <moleculename>.molecule files. Their options and descriptions are provided
 below.
 
+2. how to add a new molecule
 
-2. cmistark_plot_energy
+Firstly, in the file called moleculeparameter.py (in lib folder), add all
+relevant molecular constants/parameters as a function. See the examples
+provided in this file.
+
+Next, in the script file cmistark_calculate_energy (in script folder),
+add an option for calling the above added function for the mew molecule.
+See the examples provided in this file.
+
+3. cmistark_plot_energy 
 
 The script file called cmistark_plot_energy can access existing Stark files
 (<moleculename>.molecule) and plot the stored curves.
@@ -91,7 +100,7 @@ example of using cmistark_plot_energy with options:
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
-3. cmistark_print energy
+4. cmistark_print energy
 
 The script file called cmistark_print_energy can access existing Stark files
 (<moleculename>.molecule) and print the stored curves on the screen.
@@ -105,6 +114,7 @@ options:
 
 example of using cmistark_print_energy with options:
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
+
 
 
 * State labels of stored Stark curves
@@ -130,7 +140,6 @@ of the product KM. We note that states with K>0 and M<0 also yield -|KM|. Thus,
 all curves of nonzero M states in the output file are also double degenerate.
 Finally, the state label for prolate tops is (J,K,0,M,isomer), or
 (J,0,K,M,isomer) for oblate tops.
-
 
 * Structure of <moleculename>.molecule
 
