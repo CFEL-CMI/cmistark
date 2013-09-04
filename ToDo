@@ -1,14 +1,29 @@
 JK Python Stark effect calculations
 ===================================
 - provide option to use sparse matrices (i.e., using scipy.sparse and scipy.sparse.linalg)
-- change scripts to use argparse and to include more help texts
+- simplify cmistark-calculate-energy by creating the whole spagetthi code to
+  define and test for molecule-name from ons single map (parametername ->
+  function with definition)
+- change scripts to use argparse and to include more help texts (is this done)
 - provide (standalone) tool for merging (HDF5) Stark files
+  (does starkeffect_merge work for our purposes?)
 - parallelize better by calculating individual Ms/fields separately and merging
   them afterwards (currenlty only parallelization in LAPACK/BLAS is exploited)
-
+- Create "interactive use" module, which can be imported for easy manipulation
+  and plotting in an interpreter (e.g., ipython), this could include
+  - direct access to figure and easy access functions to HDF5 file
+  - allow recalculating Stark curves and updating the HDF5 file
+  - plotting, selecting, removing individual curves or groups of curves from
+    plot
+  - graphical selection of one or a few curves, which will then show the
+    assignments/labels for the selected states
+    - simply displaying the label of one mouse-selected state would be a plus
+      already
 
 Local Variables:
 coding: utf-8
+mode: text
+mode: auto-fill
 fill-column: 80
 End:
 
