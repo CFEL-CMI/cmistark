@@ -63,7 +63,7 @@ def main(args):
                                                    "asymmetric_top",
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
-                                                   "4-aminobenzonitrile",
+                                                   "2-aminobenzonitrile", "3-aminobenzonitrile", "4-aminobenzonitrile",
                                                    "benzonitrile",
                                                    "glycine",
                                                    "indole", "indole-water", "indole-water2",
@@ -120,8 +120,12 @@ def main(args):
             pfunc = three_aminophenol
         elif o in "--3-fluorophenol":
             pfunc = three_fluorophenol
+        elif o == "--2-aminobenzonitrile":
+            pfunc = two_aminobenzonitrile
+        elif o == "--3-aminobenzonitrile":
+            pfunc = three_aminobenzonitrile
         elif o == "--4-aminobenzonitrile":
-            pfunc = aminobenzonitrile
+            pfunc = four_aminobenzonitrile
         elif o == "--benzonitrile":
             pfunc = benzonitrile
 	elif o == "--glycine":

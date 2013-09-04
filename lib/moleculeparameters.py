@@ -366,7 +366,29 @@ def diiodoethane(param):
         param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
 
 
-def aminobenzonitrile(param):
+def two_aminobenzonitrile(param):
+    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    param.name = "2-aminobenzonitrile"
+    param.type = 'A'
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3.0090e9, 1.5090e9, 1.0052e9]))
+    param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([3.6, 1.9, 0.]))
+
+
+def three_aminobenzonitrile(param):
+    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    param.name = "3-aminobenzonitrile"
+    param.type = 'A'
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3.3727e9, 1.2099e9, 0.8908e9]))
+    param.quartic = convert.Hz2J(num.array([0.0, 0.0, 0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([4.8, 1.2, 0.]))
+
+
+def four_aminobenzonitrile(param):
     # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
     param.name = "4-aminobenzonitrile"
     param.type = 'A'
