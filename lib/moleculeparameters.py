@@ -540,3 +540,28 @@ def six_chloropyridazine_three_carbonitrile(param):
     elif param.isomer == 1:
         param.rotcon = convert.Hz2J(num.array([5905.472e6, 717.422e6, 639.708e6]))
         param.dipole = convert.D2Cm(num.array([0, 0, 2.83]))
+
+
+def sulfur_monoxide(param):
+    """
+    rotcon, dipole: NIST (http://cccbdb.nist.gov/exp2.asp?casno=13827322)
+    quartic: Veseth, Lofthus, Molecular Physics 27, 2 511-519 (1974)
+    """
+    param.name = "sulfur_monoxide"
+    param.mass = Masses['S'] + Masses['O']
+    param.type = 'L'
+    param.rotcon = convert.Hz2J(num.array([21.60970e9]))
+    param.dipole = convert.D2Cm(num.array([1.550]))
+    param.quartic  = convert.Hz2J(num.array([33.577e3]))
+
+def carbon_monoxide(param):
+    """
+    rotcon, dipole: NIST (http://cccbdb.nist.gov)
+    quartic: Mina-Camilde et al. JCE 73 p.804 (1996) (http://web.ist.utl.pt/farinha/LQF/pdf_files/CO_ref4_JCE1986.pdf)
+    """
+    param.name = "carbon_monoxide"
+    param.mass = Masses['C'] + Masses['O']
+    param.type = 'L'
+    param.rotcon = convert.Hz2J(num.array([57.89834e9]))
+    param.dipole = convert.D2Cm(num.array([0.11]))
+    param.quartic  = convert.invcm2J(num.array([202.360e3]))

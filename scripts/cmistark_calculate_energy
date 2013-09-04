@@ -74,10 +74,12 @@ def main(args):
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
                                                    "sulfur_dioxide", "SO2",
-                                                   "nitrogen_dioxide", "NO2"
+                                                   "nitrogen_dioxide", "NO2",
                                                    "nitrous_oxide",
                                                    "3-fluorophenol",
-                                                   "6-chloropyridazine-3-carbonitrile"
+                                                   "6-chloropyridazine-3-carbonitrile",
+                                                   "sulfur_monoxide", "SO",
+                                                   "carbon_monoxide", "CO"
                                                    ])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -166,6 +168,10 @@ def main(args):
             pfunc = nitrous_oxide
         elif o == "--6-chloropyridazine-3-carbonitrile":
             pfunc = six_chloropyridazine_three_carbonitrile
+        elif o in ("--sulfur_monoxide", "--SO"):
+            pfunc = sulfur_monoxide
+        elif o in ("--carbon_monoxide", "--CO"):
+            pfunc = carbon_monoxide
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
