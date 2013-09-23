@@ -527,6 +527,27 @@ def nitrous_oxide(param):
     param.quartic  = convert.Hz2J(num.array([5.2808e6]))
 
 
+def MVK(param):
+    """Molecular parameters for MVK (Methyl Vinyl Ketone)
+    
+    trans:
+    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
+    dipole moment: P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965)
+    cis:
+    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
+    dipole moment: MP2 calculation results with 0.81 scaling factor from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
+    """
+    param.name = "MVK"
+    param.type = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #trans
+        param.rotcon = convert.Hz2J(num.array([8.94159e9, 4.2745443e9, 2.9453315e9]))
+        param.dipole = convert.D2Cm(num.array([2.53, 1.91, 0.]))
+    elif param.isomer == 1: #cis
+        param.rotcon = convert.Hz2J(num.array([10.240938e9, 3.9916351e9, 2.925648e9]))
+        param.dipole = convert.D2Cm(num.array([0.54, 2.59, 0.]))
+
+
 def six_chloropyridazine_three_carbonitrile(param):
     """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
     param.name = "6-chloropyridazine-3-carbonitrile"
