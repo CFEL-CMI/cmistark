@@ -70,6 +70,7 @@ def main(args):
                                                    "iodobenzene",
                                                    "iodomethane",
                                                    "diiodoethane",
+                                                   "MVK",
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
@@ -150,6 +151,8 @@ def main(args):
             pfunc = indole_water1
         elif o == "--indole-water2":
             pfunc = indole_water2
+        elif o == "--MVK":
+            pfunc = MVK
         elif o == "--phenylpyrrole":
             pfunc = phenylpyrrole
         elif o in ("--D2O", "--H2O", "--HDO", "--water"):
