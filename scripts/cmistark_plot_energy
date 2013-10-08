@@ -168,6 +168,7 @@ def main(args):
                         energies = energyconversion(energies)
                         plt.figure(1)
                         plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                        if legend: plt.legend()
                         print "state, color: " + state.name() + " " + color
                         if plotdips == True:
                             fields, mueff = mol.mueff(state)
@@ -190,10 +191,10 @@ def main(args):
                     energies = energyconversion(energies)
                     plt.figure(1)
                     plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                    if legend: plt.legend()
                     if plotdips == True:
                         plt.figure(2)
                         plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
-    if legend: plt.legend()
     plt.show()
 
 
