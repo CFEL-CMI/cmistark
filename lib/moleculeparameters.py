@@ -468,14 +468,13 @@ def phenylpyrrole(param):
 
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
-        Parameters come from Yuan Pin Chang ()
-        0 - cis
-        1 - trans
-        Parameters from
+        Parameters (rot con and quadratic) for isomer = 0 (cis) from
         Dutta et al, Pramana – J. Phys. 24 (1985) 499–502, "Microwave spectrum of cis 3-FP"
-        2 - cis
+        for isomer = 1 (trans) from
         Jaman et al, J.of Mol. Spec., 86, 269.274 (1981) "Microwave Spectrum of 3-FP" for
-        3 - trans
+        dipoles from Songhee Han (YPChang)
+        Isomer 11 (cis) and 12 (trans) from Songhee Han (YPChang)
+        Isomer 13 (cis) and 14 (trans) calculated by Yuan-Pin Chang, also the dipole moments
         """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
@@ -483,20 +482,25 @@ def three_fluorophenol(param):
     param.watson = 'S'
     param.symmetry = 'N'
     if param.isomer == 0:
-        param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
-        param.dipole = convert.D2Cm(num.array([0.6251, 0.5345, 0.0025]))
-    elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
-        param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
-    elif param.isomer == 2:
         param.rotcon = convert.Hz2J(num.array([3.78957e9, 1.79515e9, 1.21789e9]))
         param.quartic = convert.Hz2J(num.array([-3.68e3,4.42e3,11e3,0.2,-3.2]))
         param.dipole = convert.D2Cm(num.array([0.6251, 0.5345, 0.0025]))
-    elif param.isomer == 3:
+    elif param.isomer == 1:
         param.rotcon = convert.Hz2J(num.array([3.748487e9, 1.797713e9, 1.215048e9]))
         param.quartic = convert.Hz2J(num.array([0.2257e3,-10.977e3,-15.005e3,-0.2,7.2]))
         param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
-
+    elif param.isomer == 11:
+        param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
+        param.dipole = convert.D2Cm(num.array([0.6251, 0.5345, 0.0025]))
+    elif param.isomer == 12:
+        param.rotcon = convert.Hz2J(num.array([3.74222e9, 1.79016e9, 1.21090e9]))
+        param.dipole = convert.D2Cm(num.array([1.9206, 1.8098, 0.0001]))
+    elif param.isomer == 13:
+        param.rotcon = convert.Hz2J(num.array([3.76709624e9, 1.794471e9, 1.21547482e9]))
+        param.dipole = convert.D2Cm(num.array([0.276988, -0.781392, 0.0]))
+    elif param.isomer == 14:
+        param.rotcon = convert.Hz2J(num.array([3.76358267e9, 1.79886976e9, 1.21712413e9]))
+        param.dipole = convert.D2Cm(num.array([2.747456, -0.144641, 0.0]))
 
 def sulfur_dioxide(param):
     # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
