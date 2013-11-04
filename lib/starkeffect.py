@@ -1041,17 +1041,32 @@ class AsymmetricRotor(Rotor):
 	    for K in range(-J, J+1):
 		value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
 		hmat[self.index(J, K), self.index(J, K)] += value
-	    for K in range (-J, J-2+1):
+	    for K in range(-J, J-2+1):
 		value = ((-dJ * J*(J+1) - dK/2 * ((K+2)**2 + K**2))
 			* sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))))
 		hmat[self.index(J, K+2), self.index(J, K)] += value
 		hmat[self.index(J, K), self.index(J, K+2)] += value
 
 
-    def __watson_S(self):
+    def watson_S(self, hmat, Jmin, Jmax):
         """Add the centrifugal distortion matrix element terms in Watson's S reduction to hmat."""
-        raise NotImplementedError("Watson's S-reduction is not implemented (yet)")
-
+        matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
+        sqrt = num.sqrt
+        DJ, DJK, DK, dJ, dK = self.quartic.tolist()
+        for J in range(Jmin, Jmax+1):
+            for K in range(-J, J+1):
+                value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                hmat[self.index(J, K), self.index(J, K)] += value
+            for K in range(-J, J-2+1):
+                value = dJ * J*(J+1)
+                        * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
+                hmat[self.index(J, K+2), self.index(J, K)] += value
+                hmat[self.index(J, K), self.index(J, K+2)] += value
+            for K in range(-J, J-4+1):
+                value = dK * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))
+                        * (J*(J+1)-(K+2)*(K+3)) * (J*(J+1)-(K+3)*(K+4)))
+                hmat[self.index(J, K+4), self.index(J, K)] += value
+                hmat[self.index(J, K), self.index(J, K+4)] += value
 
 
 # some simple tests
