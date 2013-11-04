@@ -480,7 +480,7 @@ def three_fluorophenol(param):
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
     param.type = 'A'
-    param.watson = None
+    param.watson = 'S'
     param.symmetry = 'N'
     if param.isomer == 0:
         param.rotcon = convert.Hz2J(num.array([3.74912e9, 1.78523e9, 1.20936e9]))
