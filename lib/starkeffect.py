@@ -1058,8 +1058,7 @@ class AsymmetricRotor(Rotor):
                 value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
                 hmat[self.index(J, K), self.index(J, K)] += value
             for K in range(-J, J-2+1):
-                value = dJ * J*(J+1)
-                        * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
+                value = dJ * J*(J+1) * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
                 hmat[self.index(J, K+2), self.index(J, K)] += value
                 hmat[self.index(J, K), self.index(J, K+2)] += value
             for K in range(-J, J-4+1):
