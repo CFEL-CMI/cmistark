@@ -603,3 +603,18 @@ def carbon_monoxide(param):
     param.rotcon = convert.Hz2J(num.array([57.89834e9]))
     param.dipole = convert.D2Cm(num.array([0.11]))
     param.quartic  = convert.invcm2J(num.array([202.360e3]))
+
+def 5-cyanoindole(param):
+    """Molecular parameters for 5-cyanoindole
+    
+    Experimental values for rot constants from Oelterman et al, PCCP 14, 10266 (2012).
+    Dipole values calculated (aug-cc-pVTZ basis, see Daniel for details)
+    """
+
+    param.name = "5-cyanoindole"
+    param.mass = 9 * Masses['C'] + 2 * Masses['N'] + 6 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3370.4e6, 738.0e6, 605.93e6]))
+    param.dipole = convert.D2Cm(num.array([-6.44, -2.84, -0.33]))
+
