@@ -604,7 +604,7 @@ def carbon_monoxide(param):
     param.dipole = convert.D2Cm(num.array([0.11]))
     param.quartic  = convert.invcm2J(num.array([202.360e3]))
 
-def 5-cyanoindole(param):
+def five_cyanoindole(param):
     """Molecular parameters for 5-cyanoindole
     
     Experimental values for rot constants from Oelterman et al, PCCP 14, 10266 (2012).
