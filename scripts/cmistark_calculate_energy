@@ -80,7 +80,8 @@ def main(args):
                                                    "3-fluorophenol",
                                                    "6-chloropyridazine-3-carbonitrile",
                                                    "sulfur_monoxide", "SO",
-                                                   "carbon_monoxide", "CO"
+                                                   "carbon_monoxide", "CO",
+                                                   "uracil"
                                                    ])
     except getopt.GetoptError, err:
         # print help information and exit:
@@ -175,6 +176,8 @@ def main(args):
             pfunc = sulfur_monoxide
         elif o in ("--carbon_monoxide", "--CO"):
             pfunc = carbon_monoxide
+        elif o in ("--uracil"):
+            pfunc = uracil
         else:
             assert False, "unhandled commandline option"
     # finalize initialization

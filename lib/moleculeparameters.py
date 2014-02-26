@@ -618,3 +618,25 @@ def five_cyanoindole(param):
     param.rotcon = convert.Hz2J(num.array([3370.4e6, 738.0e6, 605.93e6]))
     param.dipole = convert.D2Cm(num.array([-6.44, -2.84, -0.33]))
 
+
+def uracil(param):
+    """
+    Dipole & Rot. constants:
+    R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, J. Am. Chem. Soc., 1988, 110, 2329
+    Dipole errors are estimated by 10%
+
+    Centr. dist. const:
+    By: Brunken, S.; McCarthy, M. C.; Thaddeus, P.; et al.
+    ASTRONOMY & ASTROPHYSICS  Volume: 459   Issue: 1   Pages: 317-320   Published: NOV 2006 
+
+    Good summary:
+    Puzzarini, Cristina; Barone, Vincenzo
+    PHYSICAL CHEMISTRY CHEMICAL PHYSICS  Volume: 13   Issue: 15   Pages: 7158-7166   Published: 2011 
+    """
+    param.name = "uracil"
+    param.mass = 4 * Masses['C'] + 4 * Masses['H'] + 2 * Masses['N'] + 2 * Masses['O']
+    param.type = 'A'
+    param.watson = 'S'
+    param.rotcon = convert.Hz2J(num.array([3883878.25e3, 2023732.67e3, 1330923.80e3]))
+    param.dipole = convert.D2Cm(num.array([1.61, 3.52, 0.0]))
+    param.quartic  = convert.Hz2J(num.array([0.06336e3, 0.1055e3, 0.4530e3, -0.02623e3, -0.00680e3]))

@@ -194,7 +194,7 @@ def main(args):
                     if legend: plt.legend()
                     if plotdips == True:
                         plt.figure(2)
-                        plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                        plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
     plt.show()
 
 
