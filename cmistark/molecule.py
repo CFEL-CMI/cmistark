@@ -43,10 +43,11 @@ class Molecule(jkext.molecule.Molecule):
         jkext.molecule.Molecule.__init__(self, atoms, name)
         try:
             if readonly:
-                self.__storage = tables.openFile(storage, mode='r+')
+                self.__storage = tables.openFile(storage, mode='r')
             else:
                 self.__storage = tables.openFile(storage, mode='a', title=name)
-            self.__storage.getNode("/")._v_title = name
+            #the following line requires the stark file writable, block it for readonly option
+            #self.__storage.getNode("/")._v_title = name
         except:
             self.__storage = None
 
