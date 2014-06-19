@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; fill-column: 120 -*-
 #
-# Copyright (C) 2008,2009,2012,2013 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2008,2009,2012,2013,2014 Jochen Küpper <jochen.kuepper@cfel.de>
 
 
 import os
@@ -28,10 +28,10 @@ setup(name="cmistark",
       url                 = "http://desy.cfel.de/cid/cmi",
       version             = "1.1-devel",
       long_description    = long_description,
-      package_dir         = {'cmistark': 'lib'},
       packages            = ['cmistark'],
       scripts             = ['scripts/cmistark_brute-force-orientation',
                              'scripts/cmistark_calculate_energy',
                              'scripts/cmistark_plot_energy',
-                             'scripts/cmistark_print_energy']
+                             'scripts/cmistark_print_energy'],
+      test_suite          = 'tests',
       )
