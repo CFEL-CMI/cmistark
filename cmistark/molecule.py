@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 __author__ = "Jochen Küpper <software@jochen-kuepper.de>"
 
 import numpy as num
@@ -119,12 +119,12 @@ class Molecule(jkext.molecule.Molecule):
                 calc = Rotor(param, M, field)
                 for state in calc.states():
                     id = state.id()
-                    if energies.has_key(id):
+                    if id in energies:
                         energies[id].append(calc.energy(state))
                     else:
                         energies[id] = [calc.energy(state),]
             # store calculated values for this M
-            for id in energies.keys():
+            for id in list(energies.keys()):
                 self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
             # flush HDF5 file after every M
             self.__storage.flush()
@@ -197,9 +197,9 @@ if __name__ == "__main__":
         for Kc in range(J, -1, -1):
             state = State(J, Ka, Kc, 0, 0)
             fields, energies = mol.starkeffect(state)
-            print state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6
+            print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
             if Kc > 0:
                 Ka += 1
                 state = State(J, Ka, Kc, 0, 0)
                 fields, energies = mol.starkeffect(state)
-                print state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6
+                print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
@@ -59,7 +59,7 @@ class CalculationParameter(object):
     watson = None
     symmetry = 'N'
     # quantum numbers
-    M = range(0, 2)
+    M = list(range(0, 2))
     Jmax_calc = 10
     Jmax_save = 6
     # fields
@@ -126,15 +126,15 @@ class Rotor(object):
 
     def print_mat(self, mat, text=""):
         """Print matrix for debuging purposes."""
-        print "\n", text
+        print("\n", text)
         rows, columns = mat.shape
         for i in range(rows):
             for j in range(columns):
                 if False == self.complex:
-                    print "%10.3g" % (mat[i,j]),
+                    print("%10.3g" % (mat[i,j]), end=' ')
                 else:
-                    print "%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ),
-            print
+                    print("%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ), end=' ')
+            print()
 
 
 
@@ -413,7 +413,7 @@ class AsymmetricRotor(Rotor):
 	self.levels = {}
         self.levelssym = {}
 	blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
-	for symmetry in blocks.keys():
+	for symmetry in list(blocks.keys()):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
 	    eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
 	    eval = num.sort(eval)
@@ -593,7 +593,7 @@ class AsymmetricRotor(Rotor):
                     else:
 		        blocks = self.hamiltonian(J, J, None, 'V')
 		# store sorted eigenenergies for respective J and block
-		for sym in blocks.keys():
+		for sym in list(blocks.keys()):
 		    if 0 < blocks[sym].size:
 			eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
 	    # sort assignments according to energy
@@ -1070,4 +1070,4 @@ class AsymmetricRotor(Rotor):
 
 # some simple tests
 if __name__ == "__main__":
-    print
+    print()
