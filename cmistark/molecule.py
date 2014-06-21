@@ -43,10 +43,10 @@ class Molecule(cmiext.molecule.Molecule):
         cmiext.molecule.Molecule.__init__(self, atoms, name)
         try:
             if readonly:
-                self.__storage = tables.openFile(storage, mode='r')
+                self.__storage = tables.open_file(storage, mode='r')
             else:
-                self.__storage = tables.openFile(storage, mode='a', title=name)
-                self.__storage.getNode("/")._v_title = name
+                self.__storage = tables.open_file(storage, mode='a', title=name)
+                self.__storage.get_node("/")._v_title = name
         except:
             self.__storage = None
 
@@ -74,21 +74,21 @@ class Molecule(cmiext.molecule.Molecule):
         Molecule's HDF5 storage file.
         """
         if energies == None and fields == None:
-            return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
-                cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
+            return cmiext.hdf5.read_vlarray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
+                cmiext.hdf5.read_vlarray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
         elif energies == None or fields == None:
             raise SyntaxError
         else:
             assert len(fields) == len(energies)
-            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
-            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
+            cmiext.hdf5.write_vlarray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
+            cmiext.hdf5.write_vlarray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
 
 
     def starkeffect_calculation(self, param):
         """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
         them in our storage file."""
         try:
-            self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
+            self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
         except:
             pass
 
