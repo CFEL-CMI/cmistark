@@ -46,13 +46,8 @@ class Molecule(jkext.molecule.Molecule):
                 self.__storage = tables.openFile(storage, mode='r')
             else:
                 self.__storage = tables.openFile(storage, mode='a', title=name)
-<<<<<<< HEAD
-            ## YP: the line below requires the stark file writable, block it for now for 
-            ## readonly option
-=======
-            #the following line requires the stark file writable, block it for readonly option
->>>>>>> 5fc48e9b457f7af8013d0e3a2ebcc8240ac9451d
-            #self.__storage.getNode("/")._v_title = name
+                self.__storage.getNode("/")._v_title = name
+            # the last line above requires the stark file writable, thus do not execute it for readonly option
         except:
             self.__storage = None
 
