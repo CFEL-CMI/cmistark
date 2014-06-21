@@ -58,11 +58,11 @@ All relevant parameters for molecules of interest need to be properly implemente
 import numpy as num
 import getopt, sys
 
-import jkext.convert as convert
+import cmiext.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
-from jkext.state import State
-from jkext.molecule import Masses
+from cmiext.state import State
+from cmiext.molecule import Masses
 
 
 def asymmetric_top(param):
