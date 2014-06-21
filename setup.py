@@ -5,7 +5,7 @@
 
 
 import os
-from distutils.core import setup
+from setuptools import setup
 
 extra_compile_args = []
 library_dirs = []
@@ -13,10 +13,11 @@ library_dirs = []
 long_description = """CMI Python extensions for Stark effect calculations
 
 Python extensions for Stark effect calculations of molecules.
-Developed by the Controlled Molecule Imaging Group at CFEL
+Developed by the Controlled Molecule Imaging Group at the Center for Free-Electron Laser Science, Hamburg, Germany.
 
-Original authors:   Jochen Küpper <jochen.kuepper@cfel.de>
+Original author:    Jochen Küpper <jochen.kuepper@cfel.de>
 Current maintainer: Yuan-Pin Chang <yuan.pin.chang@cfel.de>
+See the distribution files AUTHORS and THANKS for further contributions.
 """
 
 
@@ -25,7 +26,7 @@ setup(name="cmistark",
       author_email        = "jochen.kuepper@cfel.de",
       description         = "CMI Python Stark effect extensions",
       license             = "GPL",
-      url                 = "http://desy.cfel.de/cid/cmi",
+      url                 = "http://desy.cfel.de/cid/cmi/cmistark",
       version             = "1.1-devel",
       long_description    = long_description,
       packages            = ['cmistark'],
