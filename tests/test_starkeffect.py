@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; fill-column: 120 -*-
 #
-# This file is part of JK Python extensions
-# Copyright (C) 2008 Jochen Küpper <software@jochen-kuepper.de>
+# This file is part of CMIstark
+# Copyright (C) 2008 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,31 +15,29 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-
-from __future__ import division
-
 """Unit-tests of Stark effect calculations
 
-Copyright (C) 2008 Jochen Küpper"""
+Copyright (C) 2008,2014 Jochen Küpper <jochen.kuepper@cfel.de>"""
 
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import os
 import unittest
 
-import jkext as jk
-import jkext.convert as convert
-import jkstark.molecule as molecule
-import jkstark.starkeffect as starkeffect
-from jkext.state import State
+import cmiext
+import cmiext.convert as convert
+from cmiext.state import State
+
+import cmistark.molecule as molecule
+import cmistark.starkeffect as starkeffect
 
 
-class Test_StarkCalculation_benzonitrile(unittest.TestCase):
+class StarkCalculationBenzonitrile(unittest.TestCase):
     """Test the results of Stark effect calculations using the molecular parameters of benzonitrile"""
 
     def setUp(self):
-        self.storagename = "__jkext_test_starkeffect.hdf"
+        self.storagename = "__cmiext_test_starkeffect.hdf"
         if os.path.exists(self.storagename):
             raise EnvironmentError("Test storage file already exists, not overwriting")
         # create Molecule object and specify storage file
@@ -60,8 +58,10 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
         self.param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
         self.bn.starkeffect_calculation(self.param)
 
+
     def tearDown(self):
         os.remove(self.storagename)
+
 
     def test_fieldfree(self):
         # comparing to 0 is dangerous as assertAlmostEqual compares a specified number of digits after 0 i.e. 7
@@ -69,6 +69,7 @@ class Test_StarkCalculation_benzonitrile(unittest.TestCase):
         self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
                                     % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
+
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
