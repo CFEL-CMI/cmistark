@@ -131,9 +131,9 @@ class Rotor(object):
         for i in range(rows):
             for j in range(columns):
                 if False == self.complex:
-                    print("%10.3g" % (mat[i,j]), end=' ')
+                    print "%10.3g" % (mat[i,j]),
                 else:
-                    print("%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ), end=' ')
+                    print "%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ),
             print()
 
 
