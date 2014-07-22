@@ -45,16 +45,16 @@ def usage():
            --states=: specify states to plot, format: "000,1010"
            --dipole: plot the effective dipole moments
            --energy-unit=: GHz, MHz, invcm, J
+           --dipole-unit=: GHz, MHz, invcm, J, Debye
            --nss-forbidden
           """
-
+		  
 
 def main(args):
-    # ToDo: add options already used in energie plotting to eff. dipole mom. plotting
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "Kamax=", "states=",
                                                    "energy-unit=", "GHz",
-                                                   "dipole", "isomer=",
+                                                   "dipole", "isomer=", "dipole-unit=",
                                                    "nss-forbidden=",
                                                    "legend", "verbose="])
     except getopt.GetoptError, err:
@@ -71,6 +71,7 @@ def main(args):
     isomer = [0]
     userstates = None
     energyunit = "MHz" # energy unit
+    dipoleunit = "MHz"
     energyconversion = J2MHz
     energyunitlabel = "MHz"
     nss_forbidden = None
@@ -117,7 +118,9 @@ def main(args):
                 energyunitlabel = "GHz"
             elif (energyunit=="invcm"):
                 energyconversion = J2invcm
-                energyunitlabel = "cm$^-1$"
+                energyunitlabel = "cm$^{-1}$"
+        elif o == "--dipole-unit":
+            dipoleunit = a
         elif o == "--nss-forbidden": # plot dipolemoments
             nss_forbidden = a
         elif o == "--dipole": # plot dipolemoments
@@ -193,20 +196,30 @@ def main(args):
                     plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                     if legend: plt.legend()
                     if plotdips == True:
-                        plt.figure(2)
-                        # For MHz / kV/cm
-			plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
-			# For cm-1 / kV/cm take:
-			#plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)						
-
-#                        if energy-unit == "invcm":
-#                            # For cm-1 / kV/cm take:
-#                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
-#                        else:
-#                            # For MHz / kV/cm
-#                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                        plt.figure(2)						
+                        if dipoleunit == "invcm":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "MHz":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "GHz":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "J":
+                            plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "D":
+                            plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (D)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        else:
+                            print "Wrong dipole unit."
     plt.show()
-
 
 if __name__ == "__main__":
     main(sys.argv)
