@@ -48,7 +48,7 @@ def usage():
            --dipole-unit=: GHz, MHz, invcm, J, Debye
            --nss-forbidden
           """
-		  
+
 
 def main(args):
     try:
@@ -196,7 +196,7 @@ def main(args):
                     plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                     if legend: plt.legend()
                     if plotdips == True:
-                        plt.figure(2)						
+                        plt.figure(2)
                         if dipoleunit == "invcm":
                             plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
                             plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
