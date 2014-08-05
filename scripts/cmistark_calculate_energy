@@ -132,7 +132,7 @@ def main(args):
             pfunc = four_aminobenzonitrile
         elif o == "--benzonitrile":
             pfunc = benzonitrile
-	elif o == "--glycine":
+        elif o == "--glycine":
             pfunc = glycine
         elif o == "--iodobenzene":
             pfunc = iodobenzene
