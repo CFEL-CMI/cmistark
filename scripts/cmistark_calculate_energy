@@ -33,7 +33,7 @@ import numpy as num
 import getopt, sys
 import cmistark.moleculeparameters
 
-import jkext.convert as convert
+import cmiext.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
 from cmistark.moleculeparameters import *
