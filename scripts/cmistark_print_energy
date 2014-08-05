@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Print adiabatic energy curves from HDF5 file to commandline
 
@@ -33,7 +33,7 @@ from jkext.state import State
 
 def usage():
     # ToDo implement a useful usage description
-    print """
+    print("""
            --help:      help
            --Jmin:      specify the minimum value of J
            --Jmax:      specify the maximum value of J
@@ -42,15 +42,15 @@ def usage():
            --Kamax:     specify the maximum value of Ka
            --isomer:    specify which isomer is used, when <moleculename> has
                         more than one isomers defined in moleculeparameter.py
-"""
+""")
 
 
 def main(args):
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Kamax=", "Mmin=", "Mmax=", "isomer="])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -91,13 +91,13 @@ def main(args):
         # loop over state
         for state in mol.starkeffect_states():
             if  Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() == isomer:
-                print # empty line for visual separation
+                print() # empty line for visual separation
                 fields, energies = mol.starkeffect(state)
 		fields, mueff = mol.mueff(state)
 		assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
-		print "# state:", state.name()
+		print("# state:", state.name())
 		for i in range(len(fields)):
-		    print V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6
+		    print(V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6)
 
 
 if __name__ == "__main__":

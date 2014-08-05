@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Plot adiabatic energy curves from HDF5 files to matplotlib graph
 
@@ -34,7 +34,7 @@ from jkext.state import State
 
 def usage():
     # ToDo implement a useful usage description
-    print """
+    print("""
            --help: help
            --Jmin:      specify the minimum value of J
            --Jmax:      specify the maximum value of J
@@ -47,7 +47,7 @@ def usage():
            --energy-unit=: GHz, MHz, invcm, J
            --dipole-unit=: GHz, MHz, invcm, J, Debye
            --nss-forbidden
-          """
+          """)
 
 
 def main(args):
@@ -57,9 +57,9 @@ def main(args):
                                                    "dipole", "isomer=", "dipole-unit=",
                                                    "nss-forbidden=",
                                                    "legend", "verbose="])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -154,7 +154,7 @@ def main(args):
         if None != userstates:
             for userstate in userstates.split(","):
                 # if no m-value is specified, take all M=J values
-                mValues = range(0,int(userstate[0])+1,1)
+                mValues = list(range(0,int(userstate[0])+1,1))
                 # if a certain m is desired only take this one
                 if (len(userstate)>3):
                     mValues = [int(userstate[3])]
@@ -165,14 +165,14 @@ def main(args):
                         colorindex += 1
                         state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, iso)
                         if (verbose):
-                            print "state to plot: " + state.name()
+                            print("state to plot: " + state.name())
                         fields, energies = mol.starkeffect(state)
                         # convert energy
                         energies = energyconversion(energies)
                         plt.figure(1)
                         plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                         if legend: plt.legend()
-                        print "state, color: " + state.name() + " " + color
+                        print("state, color: " + state.name() + " " + color)
                         if plotdips == True:
                             fields, mueff = mol.mueff(state)
                             plt.figure(2)
@@ -218,7 +218,7 @@ def main(args):
                             plt.ylabel("$\mu_{eff}$ (D)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         else:
-                            print "Wrong dipole unit."
+                            print("Wrong dipole unit.")
     plt.show()
 
 if __name__ == "__main__":
