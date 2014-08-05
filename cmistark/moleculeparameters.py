@@ -286,23 +286,23 @@ def OCS(param):
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
     if 0 == param.isomer:
-	param.type = 'L'
-	param.symmetry = 'N'
-	param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3]))
+        param.type = 'L'
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3]))
     elif 1 == param.isomer:
-	param.type = 'S'
-	param.symmetry = 'p'
-	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
+        param.type = 'S'
+        param.symmetry = 'p'
+        param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
     elif 2 == param.isomer:
-	param.type = 'A'
-	param.symmetry = 'C2a'
-	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
+        param.type = 'A'
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
 
 
 def iodomethane(param):
@@ -318,18 +318,18 @@ def iodomethane(param):
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
     if 0 == param.isomer:
-	param.type = 'S'
+        param.type = 'S'
         param.symmetry = 'p'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
+        param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
         param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
-	param.dipole = convert.D2Cm(num.array([1.6406]))
+        param.dipole = convert.D2Cm(num.array([1.6406]))
     elif 1 == param.isomer:
-	param.type = 'A'
+        param.type = 'A'
         param.watson = 'A'
-	param.symmetry = 'C2a'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
-	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
-	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
+        param.symmetry = 'C2a'
+        param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
+        param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
+        param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
 
 def difluoro_iodobenzene(param):
@@ -546,7 +546,7 @@ def nitrous_oxide(param):
 
 def MVK(param):
     """Molecular parameters for MVK (Methyl Vinyl Ketone)
-    
+
     0 - cis:
     rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
     dipole moment: MP2 calculation results with 0.81 scaling factor from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
@@ -606,7 +606,7 @@ def carbon_monoxide(param):
 
 def five_cyanoindole(param):
     """Molecular parameters for 5-cyanoindole
-    
+
     Experimental values for rot constants from Oelterman et al, PCCP 14, 10266 (2012).
     Dipole values calculated (aug-cc-pVTZ basis, see Daniel for details)
     """
@@ -627,11 +627,11 @@ def uracil(param):
 
     Centr. dist. const:
     By: Brunken, S.; McCarthy, M. C.; Thaddeus, P.; et al.
-    ASTRONOMY & ASTROPHYSICS  Volume: 459   Issue: 1   Pages: 317-320   Published: NOV 2006 
+    ASTRONOMY & ASTROPHYSICS  Volume: 459   Issue: 1   Pages: 317-320   Published: NOV 2006
 
     Good summary:
     Puzzarini, Cristina; Barone, Vincenzo
-    PHYSICAL CHEMISTRY CHEMICAL PHYSICS  Volume: 13   Issue: 15   Pages: 7158-7166   Published: 2011 
+    PHYSICAL CHEMISTRY CHEMICAL PHYSICS  Volume: 13   Issue: 15   Pages: 7158-7166   Published: 2011
     """
     param.name = "uracil"
     param.mass = 4 * Masses['C'] + 4 * Masses['H'] + 2 * Masses['N'] + 2 * Masses['O']

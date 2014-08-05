@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Calculate brute force orientation for ensemble of asymmetric top molecules"""
 
@@ -55,7 +55,7 @@ def create_population(mol, temperature, Jmax, nsswtype, nssweights):
             Ka = 0
             for Kc in range(J, -1, -1):
                 state = State(J, Ka, Kc, M, 0)
-                print mol.starkeffect(state)
+                print(mol.starkeffect(state))
                 energy = mol.starkeffect(state)[1][0]
                 boltzmann = math.exp(-energy/(const.Boltzmann * temperature))
                 if 0 == state.M():
@@ -87,7 +87,7 @@ def read_population(name):
 
 def usage():
     # ToDo implement a useful usage description
-    print "See script for details"
+    print("See script for details")
 
 
 def main(args):
@@ -95,9 +95,9 @@ def main(args):
         opts, args = getopt.getopt(args[1:], "hJ:m:p:T:", ["help",
                                                            "field=", "Jmax=", "mu=", "nssw=", "nssw-type=",
                                                            "population=", "temperature="])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -120,7 +120,7 @@ def main(args):
         elif o in ("-m", "--mu",):
             mu = convert.D2Cm(float(a))
         elif o in ("--nssw",):
-            nssw = map(int, a.split(":"))
+            nssw = list(map(int, a.split(":")))
         elif o in ("--nssw-type",):
             if a == "None":
                 nsswtype = None
@@ -168,7 +168,7 @@ def main(args):
             cos_theta += w * mueff / mu
             weight += w
         cos_theta /= weight
-        print "%s: <cosθ> = %g" % (name, cos_theta)
+        print("%s: <cosθ> = %g" % (name, cos_theta))
 
 
 if __name__ == "__main__":

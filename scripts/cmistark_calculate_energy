@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Calculate adiabatic energy curves and store them in a HDF5 file
 
@@ -33,7 +33,7 @@ import numpy as num
 import getopt, sys
 import cmistark.moleculeparameters
 
-import jkext.convert as convert
+import cmiext.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
 from cmistark.moleculeparameters import *
@@ -41,7 +41,7 @@ from cmistark.moleculeparameters import *
 
 def usage():
     # ToDo implement a useful usage description -- use argparse instead of getopt to auto-create it
-    print """
+    print("""
            --help:      help
            --dc-fields: specify the range of the DC elecric field (in kV/cm):
                         start:end:step (example: --dc-fields=0:150:151)
@@ -52,7 +52,7 @@ def usage():
            --Mmax:      specify the maximum value of M included in the calculation
            --isomer:    specify which isomer is used, when <moleculename> have more than
                         one isomers defined in moleculeparameter.py
-"""
+""")
 
 def main(args):
     try:
@@ -83,9 +83,9 @@ def main(args):
                                                    "carbon_monoxide", "CO",
                                                    "uracil"
                                                    ])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -104,7 +104,7 @@ def main(args):
             usage()
             sys.exit()
         elif o == "--Mmax":
-            param.M = range(0, int(a)+1)
+            param.M = list(range(0, int(a)+1))
         elif o == "--Jmin":
             param.Jmin = int(a)
         elif o == "--Jmax_calc":
@@ -132,7 +132,7 @@ def main(args):
             pfunc = four_aminobenzonitrile
         elif o == "--benzonitrile":
             pfunc = benzonitrile
-	elif o == "--glycine":
+        elif o == "--glycine":
             pfunc = glycine
         elif o == "--iodobenzene":
             pfunc = iodobenzene
@@ -183,7 +183,7 @@ def main(args):
     # finalize initialization
     if None != pfunc:
         pfunc(param)
-    param.M = range(0, param.Jmax_save+1)
+    param.M = list(range(0, param.Jmax_save+1))
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)

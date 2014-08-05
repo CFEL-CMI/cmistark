@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Plot adiabatic energy curves from HDF5 files to matplotlib graph
 
@@ -28,13 +28,13 @@ import getopt, sys
 import matplotlib.pyplot as plt
 
 import cmistark.molecule as molecule
-from jkext.convert import *
-from jkext.state import State
+from cmiext.convert import *
+from cmiext.state import State
 
 
 def usage():
     # ToDo implement a useful usage description
-    print """
+    print("""
            --help: help
            --Jmin:      specify the minimum value of J
            --Jmax:      specify the maximum value of J
@@ -45,21 +45,21 @@ def usage():
            --states=: specify states to plot, format: "000,1010"
            --dipole: plot the effective dipole moments
            --energy-unit=: GHz, MHz, invcm, J
+           --dipole-unit=: GHz, MHz, invcm, J, Debye
            --nss-forbidden
-          """
+          """)
 
 
 def main(args):
-    # ToDo: add options already used in energie plotting to eff. dipole mom. plotting
     try:
         opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax=", "Mmin=", "Mmax=", "Kamax=", "states=",
                                                    "energy-unit=", "GHz",
-                                                   "dipole", "isomer=",
+                                                   "dipole", "isomer=", "dipole-unit=",
                                                    "nss-forbidden=",
                                                    "legend", "verbose="])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -71,6 +71,7 @@ def main(args):
     isomer = [0]
     userstates = None
     energyunit = "MHz" # energy unit
+    dipoleunit = "MHz"
     energyconversion = J2MHz
     energyunitlabel = "MHz"
     nss_forbidden = None
@@ -117,7 +118,9 @@ def main(args):
                 energyunitlabel = "GHz"
             elif (energyunit=="invcm"):
                 energyconversion = J2invcm
-                energyunitlabel = "cm$^-1$"
+                energyunitlabel = "cm$^{-1}$"
+        elif o == "--dipole-unit":
+            dipoleunit = a
         elif o == "--nss-forbidden": # plot dipolemoments
             nss_forbidden = a
         elif o == "--dipole": # plot dipolemoments
@@ -151,7 +154,7 @@ def main(args):
         if None != userstates:
             for userstate in userstates.split(","):
                 # if no m-value is specified, take all M=J values
-                mValues = range(0,int(userstate[0])+1,1)
+                mValues = list(range(0,int(userstate[0])+1,1))
                 # if a certain m is desired only take this one
                 if (len(userstate)>3):
                     mValues = [int(userstate[3])]
@@ -162,14 +165,14 @@ def main(args):
                         colorindex += 1
                         state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, iso)
                         if (verbose):
-                            print "state to plot: " + state.name()
+                            print("state to plot: " + state.name())
                         fields, energies = mol.starkeffect(state)
                         # convert energy
                         energies = energyconversion(energies)
                         plt.figure(1)
                         plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
                         if legend: plt.legend()
-                        print "state, color: " + state.name() + " " + color
+                        print("state, color: " + state.name() + " " + color)
                         if plotdips == True:
                             fields, mueff = mol.mueff(state)
                             plt.figure(2)
@@ -194,12 +197,29 @@ def main(args):
                     if legend: plt.legend()
                     if plotdips == True:
                         plt.figure(2)
-						# For MHz / kV/cm
-						plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
-						# For cm-1 / kV/cm take:
-						#plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
+                        if dipoleunit == "invcm":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "MHz":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "GHz":
+                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "J":
+                            plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        elif dipoleunit == "D":
+                            plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color)
+                            plt.ylabel("$\mu_{eff}$ (D)")
+                            plt.xlabel('$\epsilon$ (kV/cm)')
+                        else:
+                            print("Wrong dipole unit.")
     plt.show()
-
 
 if __name__ == "__main__":
     main(sys.argv)
