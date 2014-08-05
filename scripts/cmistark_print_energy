@@ -27,8 +27,8 @@ import numpy as num
 import getopt, sys
 
 import cmistark.molecule as molecule
-from jkext.convert import *
-from jkext.state import State
+from cmiext.convert import *
+from cmiext.state import State
 
 
 def usage():
