@@ -184,6 +184,8 @@ def indole(param):
     0  -  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
     1  -  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
           and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+    2  -  isomer 0 with tunnel-splitting levels sigma = 0, vib energies from Yuan-Pin Chang (2012).
+    3  -  isomer 0 with tunnel-splitting levels sigma = 1, vib energies from Yuan-Pin Chang (2012).
     """
     param.name = "indole"
     param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
@@ -196,7 +198,15 @@ def indole(param):
         param.rotcon = convert.Hz2J(num.array([3877.826e6, 1636.047e6, 1150.8997e6]))
         param.quartic = convert.Hz2J(num.array([0.0352e3, 0.042e3, 0.16e3, 0.1005e3, 0.128e3]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-
+    elif 2 == param.isomer:
+        param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
+        param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+        param.vibeng = convert.Cm2J(num.array([40.38, 116.92]))
+    elif 3 == param.isomer:
+        param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
+        param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
+        param.vibeng = convert.Cm2J(num.array([40.68, 111.29]))
+ 
 
 def indole_water1(param):
     """Molecular parameters for the indole-water complex

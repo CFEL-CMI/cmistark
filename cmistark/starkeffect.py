@@ -35,6 +35,7 @@ class CalculationParameter(object):
     General parameters:
     - isomer
     - rotcon (Joule), quartic (Joule), dipole (Coulomb meter)
+    - vibeng: energies of vib levels with can be coupled by electrostatic fields
     - mass: mass of molecule/isomer
     - type: specify the type of rotor
       - 'L': linear top
@@ -69,6 +70,7 @@ class CalculationParameter(object):
     rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
+    vibeng = num.zeros((2,), num.float64)    # Joule - vector of length 2 for beginning
     # internal
     debug = None
 
