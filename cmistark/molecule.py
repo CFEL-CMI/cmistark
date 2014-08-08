@@ -74,14 +74,14 @@ class Molecule(cmiext.molecule.Molecule):
         Molecule's HDF5 storage file.
         """
         if energies == None and fields == None:
-            return cmiext.hdf5.read_vlarray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
-                cmiext.hdf5.read_vlarray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
+            return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
+                cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
         elif energies == None or fields == None:
             raise SyntaxError
         else:
             assert len(fields) == len(energies)
-            cmiext.hdf5.write_vlarray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
-            cmiext.hdf5.write_vlarray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
+            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
+            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
 
 
     def starkeffect_calculation(self, param):
