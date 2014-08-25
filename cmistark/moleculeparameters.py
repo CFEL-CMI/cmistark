@@ -22,35 +22,51 @@ __doc__ = """This modules implements the molecular parameters of all investigate
 The relevant parameters are:
 
 - param.rotcon: rotational constants
-  - linear top: B
-  - symmetric top: (A,B) for prolate, (B,C) for oblate
-  - asymmetric top: (A,B,C)
+
+ - linear top: :math:`B`
+ - symmetric top: :math:`(A,B)` for prolate, :math:`(B,C)` for oblate
+ - asymmetric top: :math:`(A,B,C)`
+
 - param.quartic: centrifugal distortion constants
-  - linear top: D
-  - symmetric top: (D_J, D_{JK}, D_K)
+
+  - linear top: :math:`D`
+  - symmetric top: :math:`(D_{J},D_{JK},D_{K})`
   - asymmetric top
-    - in Watson's A reduction: (\Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K)
+
+    - in Watson's A reduction: :math:`(\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K})`
+    - in Watson's S reduction: :math:`(\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K})`
+
 - param.dipole: dipole moments
-  - for linear and symmetric tops: \mu
-  - for an asymmetric top: (\mu_a, \mu_b, \mu_c)
+
+  - for linear and symmetric tops: :math:`\mu`
+  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{a}`, :math:`\mu_{a}`)
+
 - param.type: type of rotors
-  - linear rotor: 'L'
-  - symmetric top: 'S'
-  - asymmetric top: 'A'
+
+  - linear rotor: *L*
+  - symmetric top: *S*
+  - asymmetric top: *A*
+
 - param.symmetry: symmetry in the feild for linear/asymmetric tops. For symmetric top,
   prolate or oblate is specifie here
-  - linear rotor: 'N' (as no symmetry is implemented for linear top)
+
+  - linear rotor: *N* (as no symmetry is implemented for linear top)
   - symmetric top:
-    - prolate: 'p'
-    - oblate: 's'
+
+    - prolate: *p*
+    - oblate: *s*
+
   - asymmetric top (for M != 0 cases, the program takes care the M = 0 case itself):
-    - only \mu_a != 0: 'C2a'
-    - only \mu_b != 0: 'C2b'
-    - only \mu_c != 0: 'C2c'
-    - other dipole directions: 'N'
+
+    - only :math:`\mu_a != 0`: *C2a*
+    - only :math:`\mu_b != 0`: *C2b*
+    - only :math:`\mu_c != 0`: *C2c*
+    - other dipole directions: *N*
+
 - param.watson: only for asymmetric top.
-  - Watson's A reduction: 'A'
-  - Watson's S reduction: 'S' (not implemented yet)
+
+  - Watson's A reduction: *A*
+  - Watson's S reduction: *S*
 
 All relevant parameters for molecules of interest need to be properly implemented here.
 """
@@ -69,12 +85,13 @@ def asymmetric_top(param):
     """Molecular parameters for an artificial asymmetric top
 
     Implemented isomers are (modified) examples of
-     0 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b != 0
-     1 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c != 0
-     2 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_a = 0
-     3 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b = 0
-     4 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c = 0
-     5 - rot. const. from Fig7.2 in Gordy & Cook (1984), and no any u_i = 0
+
+0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_b != 0`
+1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_c != 0`
+2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_a = 0`
+3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_b = 0`
+4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_c = 0`
+5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`u_i = 0`
     """
     param.name = "asymmetric_top"
     param.watson = 'A'
