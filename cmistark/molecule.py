@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012,2014 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import numpy.linalg
@@ -52,9 +52,13 @@ class Molecule(cmiext.molecule.Molecule):
 
 
     def mueff(self, state):
-        """Get the effective dipole moment \mu_eff as a function of the electric field strength.
+        """Effective dipole moment :math:`\mu_{\\text{eff}}` as a function of the electric field strength.
 
-        Return the effective dipole moment curve for the specified quantum |state|.
+        :return: effective dipole moment curve for the specified quantum ``state``.
+
+        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the mebers of the pair are
+                one-dimensional NumPy ndarrays.
+
         """
         fields, energies = self.starkeffect(state)
         assert len(fields) == len(energies)
@@ -68,10 +72,14 @@ class Molecule(cmiext.molecule.Molecule):
     def starkeffect(self, state, fields=None, energies=None):
         """Get or set the potential energies as a function of the electric field strength.
 
-        When |energies| and |fields| are None, return the Stark curve for the specified quantum state.
+        :param state: Eigenstate for which the Stark effect is calculated.
+        :param fields: Field strengths at which the eigenenergies are calculated (default: None).
+        :param energy: Corresponding eigensergies at the given field strengths (default: None).
 
-        When |energies| and |fields| are specified, save the Stark curve for the specified quantum state in the
+        When ``energies`` and ``fields`` are None, return the Stark curve for the specified quantum state. When
+        ``energies`` and ``fields`` are specified, save the Stark curve for the specified quantum state in the
         Molecule's HDF5 storage file.
+
         """
         if energies == None and fields == None:
             return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
@@ -203,3 +211,9 @@ if __name__ == "__main__":
                 state = State(J, Ka, Kc, 0, 0)
                 fields, energies = mol.starkeffect(state)
                 print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:
