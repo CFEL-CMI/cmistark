@@ -36,6 +36,7 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. note:: Documentation generated on |today|.
 
 
 
