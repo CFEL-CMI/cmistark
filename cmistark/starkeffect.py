@@ -94,6 +94,7 @@ class Rotor(object):
         self.rotcon = num.array(param.rotcon, num.float64)
         self.quartic = num.array(param.quartic, num.float64)
         self.dipole = num.array(param.dipole, num.float64)
+        self.vibeng = num.array(param.vibeng, num.float64)
         # field strengths
         self.dcfield = num.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
