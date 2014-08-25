@@ -1,21 +1,24 @@
-Installing CMIdiffract
+Installing CMIstark
 ======================
 
-Prerequisites and obtaining CMIdiffract
+Prerequisites and obtaining CMIstark
 ---------------------------------------
 
 Since CMIstark is written in Python, you need to install Python; CMIstark requires Python version
 3.4 or higher.
 
 In addition, you need various Python extension packages, this includes
+
 * NumPy
+* SciPy
 * Tables
+* Matplotlib
 
 The CMIstark source code is currently only avaiable at https://stash.desy.de, please contact Jochen
 Küpper <jochen.kuepper@cfel.de> for furhter details.
 
 
-Installing CMIdiffract
+Installing CMIstark
 ----------------------
 
 A normal installation is performed by simply running the command::
