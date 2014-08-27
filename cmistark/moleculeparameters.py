@@ -69,6 +69,8 @@ The relevant parameters are:
   - Watson's S reduction: *S*
 
 All relevant parameters for molecules of interest need to be properly implemented here.
+
+.. todo:: Watson S-red. is wrong, pelase fix
 """
 
 import numpy as num
@@ -126,7 +128,7 @@ def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
     Implemented isomers are
-     
+
 0.  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
 1.  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
 2.  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
@@ -259,19 +261,22 @@ def indole_water2(param):
 
 
 def water(param):
-    """Molecular parameters for H2O, D2O, HDO
+    """Molecular parameters for water isotopologues (:math:`\\text{H}_2\\text{O}`, :math:`\\text{D}_2\\text{O}`, :math:`\\text{HDO}`)
+
+    :param param: Calculation parameter object to be filled with appropriate content
+    :type param: starkeffect.CalculationParameter
 
     Implemented isomers are
 
-0.  H2O: experimental inertial parameters from F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-               and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-1.  D2O: experimental inertial parameters from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-               and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-2.  HDO: experimental inertial parameters from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
-          and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-    These values and references are also listed at http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+    0. H2O: experimental inertial parameters from [DeLucia1974]_ and experimental dipole moment from [Shostak1991]_
+    1. D2O: experimental inertial parameters from [Steenbeckeliers1973]_ and experimental dipole moment from [Clough1973]_
+    2. HDO: experimental inertial parameters from [DeLucia1971]_ and experimental dipole moment from [Shostak1991]_
 
-    Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
+    Default isomers are '0' for water/H2O, '1' for D2O, and '2' for HDO.
+
+    .. seealso:: These molecular parameters and references are also listed at
+        http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+
     """
     param.name = "water"
     param.watson = 'A'
