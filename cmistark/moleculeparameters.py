@@ -102,6 +102,12 @@ def asymmetric_top(param):
         param.symmetry = 'N'
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
         param.dipole = convert.D2Cm(num.array([1., 1., 1.]))
+    elif param.isomer == 6:
+        param.type = 'VA'
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
+
 
 
 
@@ -184,8 +190,6 @@ def indole(param):
     0  -  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
     1  -  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
           and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
-    2  -  isomer 0 with tunnel-splitting levels sigma = 0, vib energies from Yuan-Pin Chang (2012).
-    3  -  isomer 0 with tunnel-splitting levels sigma = 1, vib energies from Yuan-Pin Chang (2012).
     """
     param.name = "indole"
     param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
@@ -216,6 +220,8 @@ def indole_water1(param):
           and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
     1  -  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
           and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+    2  -  isomer 0 with tunnel-splitting levels sigma = 0, vib energies from Yuan-Pin Chang (2012).
+    3  -  isomer 0 with tunnel-splitting levels sigma = 1, vib energies from Yuan-Pin Chang (2012).
     """
     param.name = "indole-water"
     param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
@@ -229,6 +235,19 @@ def indole_water1(param):
         param.rotcon = convert.Hz2J(num.array([2064.3954e6, 945.09179e6, 649.21543e6]))
         param.quartic = convert.Hz2J(num.array([1.0708e3, -5.736e3, 14.13e3, 0.4551e3, 1.341e3]))
         param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+    elif 2 == param.isomer:
+        param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
+        param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
+        param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+        param.vibeng = convert.Cm2J(num.array([40.38, 116.92]))
+        param.vibcopstr = num.array([1.])
+    elif 3 == param.isomer:
+        param.rotcon = convert.Hz2J(num.array([2062.5e6, 945.1e6, 649.3e6]))
+        param.quartic = convert.Hz2J(num.array([0.0011e6, -0.006e6, 0.014e6, 0.0005e6, 0.001e6]))
+        param.dipole = convert.D2Cm(num.array([4.2, 1.2, 0.]))
+        param.vibeng = convert.Cm2J(num.array([40.68, 111.29]))
+        param.vibcopstr = num.array([1.])
+
 
 
 def indole_water2(param):

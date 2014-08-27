@@ -98,6 +98,8 @@ class Molecule(cmiext.molecule.Molecule):
             Rotor = cmistark.starkeffect.SymmetricRotor
         elif 'A' == param.type:
             Rotor = cmistark.starkeffect.AsymmetricRotor
+        elif 'VA' == param.type:
+            Rotor = cmistark.starkeffect.VibratingAsymmetricRotor
         else:
             raise NotImplementedError("unknown rotor type in Stark energy calculation.")
         # calculate and store energies
