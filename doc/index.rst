@@ -25,9 +25,9 @@ instance, available classes and methods, and their respective parameters and ret
    :maxdepth: 4
 
    cmistark
-   references
    developer-guide
    todolist
+   references
 
 
 Indices and tables
