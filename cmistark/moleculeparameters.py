@@ -88,12 +88,12 @@ def asymmetric_top(param):
 
     Implemented isomers are (modified) examples of
 
-0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b != 0`
-1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c != 0`
-2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_a = 0`
-3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b = 0`
-4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c = 0`
-5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`\mu_i = 0`
+    0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b != 0`
+    1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c != 0`
+    2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_a = 0`
+    3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b = 0`
+    4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c = 0`
+    5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`\mu_i = 0`
     """
     param.name = "asymmetric_top"
     param.watson = 'A'
@@ -129,12 +129,12 @@ def three_aminophenol(param):
 
     Implemented isomers are
 
-0.  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
-1.  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
-2.  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
-3.  trans conformer, calculated values of MP2/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-4.  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-5.  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+    0.  cis conformer, experimental values from [Filsinger2008]_
+    1.  trans conformer, exp values from [Filsinger2008]_
+    2.  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> from [Roesch2011]_
+    3.  trans conformer, calculated values of MP2/aug-cc-pVTZ method from [Roesch2011]_
+    4.  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from [Roesch2011]_
+    5.  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from [Roesch2011]_
     """
     param.name = "3-aminophenol"
     param.watson = 'A'
@@ -202,9 +202,8 @@ def indole(param):
 
     Implemented isomers are
 
-0.  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
-1.  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
-          and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+    0.  experimental values from [Kang2005]_
+    1.  experimental inertial constants from [Caminati1990]_ and dipole moment from [Kang2005]_ for dipole moment.
     """
     param.name = "indole"
     param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
@@ -224,10 +223,8 @@ def indole_water1(param):
 
     Implemented isomers are
 
-0.  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
-          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
-1.  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
-          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+    0.  experimental inertial parameters from [Korter1998]_ and experimental dipole moment from [Kang2005]_
+    1.  experimental inertial parameters from [Blanco2003]_ and experimental dipole moment from [Kang2005]_
     """
     param.name = "indole-water"
     param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
@@ -248,8 +245,7 @@ def indole_water2(param):
 
     Implemented isomers are
 
-0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
-          see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
+    0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by [Chang2011]_; see [Trippel2012]_
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
