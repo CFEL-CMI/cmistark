@@ -27,6 +27,7 @@ instance, available classes and methods, and their respective parameters and ret
    cmistark
    developer-guide
    todolist
+   references
 
 
 Indices and tables
@@ -36,7 +37,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. note:: Documentation generated on |today|.
 
 
 

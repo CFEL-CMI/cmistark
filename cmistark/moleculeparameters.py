@@ -69,6 +69,8 @@ The relevant parameters are:
   - Watson's S reduction: *S*
 
 All relevant parameters for molecules of interest need to be properly implemented here.
+
+.. todo:: Watson S-red. is wrong, pelase fix
 """
 
 import numpy as num
@@ -86,12 +88,12 @@ def asymmetric_top(param):
 
     Implemented isomers are (modified) examples of
 
-0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_b != 0`
-1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_c != 0`
-2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_a = 0`
-3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_b = 0`
-4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`u_c = 0`
-5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`u_i = 0`
+0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b != 0`
+1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c != 0`
+2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_a = 0`
+3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b = 0`
+4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c = 0`
+5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`\mu_i = 0`
     """
     param.name = "asymmetric_top"
     param.watson = 'A'
@@ -126,12 +128,13 @@ def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
     Implemented isomers are
-     0  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
-     1  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
-     2  -  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
-     3  -  trans conformer, calculated values of MP2/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-     4  -  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-     5  -  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+
+0.  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
+1.  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
+2.  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
+3.  trans conformer, calculated values of MP2/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+4.  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+5.  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
     """
     param.name = "3-aminophenol"
     param.watson = 'A'
@@ -198,8 +201,9 @@ def indole(param):
     """Molecular parameters for indole
 
     Implemented isomers are
-    0  -  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
-    1  -  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
+
+0.  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
+1.  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
           and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
     """
     param.name = "indole"
@@ -219,9 +223,10 @@ def indole_water1(param):
     """Molecular parameters for the indole-water complex
 
     Implemented isomers are
-    0  -  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
+
+0.  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
           and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
-    1  -  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
+1.  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
           and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
     """
     param.name = "indole-water"
@@ -242,7 +247,8 @@ def indole_water2(param):
     """Molecular parameters for indole-(water)_2
 
     Implemented isomers are
-    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
+
+0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
           see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
     """
     param.name = "indole-water2"
@@ -255,18 +261,22 @@ def indole_water2(param):
 
 
 def water(param):
-    """Molecular parameters for H2O, D2O, HDO
+    """Molecular parameters for water isotopologues (:math:`\\text{H}_2\\text{O}`, :math:`\\text{D}_2\\text{O}`, :math:`\\text{HDO}`)
+
+    :param param: Calculation parameter object to be filled with appropriate content
+    :type param: starkeffect.CalculationParameter
 
     Implemented isomers are
-    0  -  H2O: experimental inertial parameters from F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-               and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-    1  -  D2O: experimental inertial parameters from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-               and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-    2  -  HDO: experimental inertial parameters from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
-          and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-    These values and references are also listed at http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
 
-    Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
+    0. H2O: experimental inertial parameters from [DeLucia1974]_ and experimental dipole moment from [Shostak1991]_
+    1. D2O: experimental inertial parameters from [Steenbeckeliers1973]_ and experimental dipole moment from [Clough1973]_
+    2. HDO: experimental inertial parameters from [DeLucia1971]_ and experimental dipole moment from [Shostak1991]_
+
+    Default isomers are '0' for water/H2O, '1' for D2O, and '2' for HDO.
+
+    .. seealso:: These molecular parameters and references are also listed at
+        http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+
     """
     param.name = "water"
     param.watson = 'A'
@@ -296,9 +306,10 @@ def OCS(param):
     Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346–351 (1974).
 
     Implemented isomers are
-    0  - using above parameters with linear-rotor hamiltonian
-    1  - using above parameters with symmetric-rotor hamiltonian
-    2  - using above parameters with asymmetric-rotor hamiltonian
+
+0. using above parameters with linear-rotor hamiltonian
+1. using above parameters with symmetric-rotor hamiltonian
+2. using above parameters with asymmetric-rotor hamiltonian
     """
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
