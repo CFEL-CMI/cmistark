@@ -4,6 +4,7 @@ References
 .. [Blanco2003] Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
 .. [Caminati1990] W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
 .. [Chang2011] Yuan-Pin Chang (2011)
+.. [Chang2014] Yuan-Pin Chang et al, Comp. Phys. Comm. (2014), DOI:
 .. [Clough1973] Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
 .. [DeLucia1971] F.C. De Lucia, R.L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
 .. [DeLucia1974] F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)

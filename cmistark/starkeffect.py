@@ -29,29 +29,31 @@ from cmiext.state import State
 class CalculationParameter(object):
     """Container of parameters for calculation of Stark energies plus some more generic parameters of the molecule
 
-    Calculate energy for the specified |dcfields| (V/m) and rotor type; all calculations are performed in representation
-    Ir (x, y, z -> b, c, a).
+    Calculate energy for the specified ``dcfields`` (V/m) and rotor ``type``; all calculations are performed in
+    representation Ir (x, y, z -> b, c, a).
 
     General parameters:
-    - isomer
-    - rotcon (Joule), quartic (Joule), dipole (Coulomb meter)
-    - mass: mass of molecule/isomer
-    - type: specify the type of rotor
-      - 'L': linear top
-      - 'S': prolate symmetric top
-      - 'A': asymmetric top
+    :param isomer:
+    :param rotcon: (Joule), quartic (Joule), dipole (Coulomb meter)
+    :param mass: mass of molecule/isomer
+    :param type: specify the type of rotor
+    * 'L': linear top
+    * 'S': prolate symmetric top
+    * 'A': asymmetric top
 
     The following parameter are used for an asymmetric top:
-    - M, Jmin, Jmax_calc, Jmax_save
-    - watson, specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used.
-      - 'A' for Watson's A reduction
-      - 'S' for Watson's S reduction
-    - symmetry defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to disentangle
-      the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a', 'C2b',
-      'C2c', 'V' for full Fourgroup symmetry, for asym top.
-      'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asym top. This can only be correct for
-      zero-field calculations or M=0.
-      For a symmetric top, the options are 'p' and 'o'.
+    :param M:
+    Jmin, Jmax_calc, Jmax_save
+    :param watson: specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used.
+    * 'A' for Watson's A reduction
+    * 'S' for Watson's S reduction
+
+    :param symmetry: defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to
+      disentangle the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a',
+      'C2b', 'C2c', 'V' for full Fourgroup symmetry, for asym top. 'W': block diagonalization in terms of E/O^+/- (Wang
+      submatrices) for asym top. This can only be correct for zero-field calculations or M=0. For a symmetric top, the
+      options are 'p' and 'o'.
+
     """
     name = ' '
     isomer = 0
@@ -111,14 +113,14 @@ class Rotor(object):
 
 
     def energy(self, state):
-        """Return Stark energy for |state|."""
+        """Return Stark energy for ``state``."""
         if self.valid == False:
             self.recalculate()
         return self.levels[state.id()]
 
 
     def statesymmetry(self, state):
-        """Return symmetry for |state|."""
+        """Return symmetry for ``state``."""
         if self.valid == False:
             self.recalculate()
         return self.levelssym[state.id()]
@@ -222,9 +224,11 @@ class LinearRotor(Rotor):
 class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
-    This object will calculate rotational energies at the specified DC field strength for the given M-range, K-range and J-range.
-    Note that in the field, states corresponding to +|KM| and -|KM| become not degenerate. While always keeping M positive in this program,
-    we label states corresponding to -|KM| by using negative K values in the output hdf files.
+    This object will calculate rotational energies at the specified DC field strength for the given M-range, K-range and
+    :math:`J`-range. Note that in the field, states corresponding to :math:`+KM` and :math:`-KM` become not degenerate.
+    While always keeping :math:`M` positive in this program, we label states corresponding to :math:`-KM` by using
+    negative K values in the output hdf files.
+
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -525,9 +529,10 @@ class AsymmetricRotor(Rotor):
 
 
     def stateorder(self, symmetry):
-        """Return a list with all states for the given |symmetry| and the current calculation parameters (Jmin, Jmax).
+        """Return a list with all states for the given ``symmetry`` and the current calculation parameters (Jmin, Jmax).
 
-        See Zare, 1988, Chapter 6, and publication for CMIStark: http://arxiv.org/abs/1308.4076
+        See Zare, 1988, Chapter 6, and publication for CMIStark [Chang2014]_
+
         """
         def Four_symmetry(J, Ka, Kc):
             """Determine Fourgroup symmetry of asymmetric top state
