@@ -1,4 +1,4 @@
-CMIdiffract developer guide
+CMIstark developer guide
 ===========================
 
 Here are a few simple guidelines to please be obeyed when working on CMIdiffract

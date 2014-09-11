@@ -13,6 +13,7 @@ User documentation
    :maxdepth: 4
 
    installation
+   user-guide
 
 
 Developer documentation
