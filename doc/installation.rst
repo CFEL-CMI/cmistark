@@ -42,7 +42,10 @@ while you are developing code.
 Once you are satisfied with your changes you might consider to reinstall using one of first two
 options.
 
+.. todo:: Mention PYTHONUSERBASE variable and how to use it -- add link to Python docs.
 
+.. todo:: For the ``develeop`` install, please add link to its primary documentation in
+          Python/setuptools documentation.
 
 .. comment
    Local Variables:

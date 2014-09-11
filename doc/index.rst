@@ -14,6 +14,7 @@ User documentation
 
    installation
    user-guide
+   extending
 
 
 Developer documentation

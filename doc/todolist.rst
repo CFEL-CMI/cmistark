@@ -8,7 +8,6 @@ ToDo list
 
 
 
-
 .. comment
    Local Variables:
    coding: utf-8
