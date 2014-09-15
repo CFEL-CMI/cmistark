@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2012 Jochen KÃ¼pper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 
-__author__ = "Jochen KÃ¼pper <jochen.kuepper@cfel.de>"
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 __doc__ = """This modules implements the molecular parameters of all investigated molecules.
 
 The relevant parameters are:
@@ -299,7 +299,7 @@ def OCS(param):
     """Molecular parameters for OCS
 
     Paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
-    Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346â€“351 (1974).
+    Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346-351 (1974).
 
     Implemented isomers are
 
@@ -330,10 +330,10 @@ def OCS(param):
 
 
 def iodomethane(param):
-    """B, DJ, and DK constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53â€“65 (1987) and
-    Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401â€“404 (1989).
+    """B, DJ, and DK constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53-65 (1987) and
+    Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401-404 (1989).
 
-    A and DK constants from PietilÃ¤, Koivusaari, Alanko, & Anttila, Mol Phys 87, 523 (1996)
+    A and DK constants from Pietilä, Koivusaari, Alanko, & Anttila, Mol Phys 87, 523 (1996)
 
     Implemented isomers are
     0  - above constants using symmetric-top Hamiltonian
@@ -357,7 +357,7 @@ def iodomethane(param):
 
 
 def difluoro_iodobenzene(param):
-    # parameters from simple ab initio calculations (Jochen KÃ¼pper, 2010)
+    # parameters from simple ab initio calculations (Jochen Küpper, 2010)
     param.name = "2,6-difluoro-iodobenzene"
     param.type = 'A'
     param.watson = 'A'
@@ -424,7 +424,7 @@ def four_aminobenzonitrile(param):
 
 
 def benzonitrile(param):
-    # Wohlfart, Schnell, Grabow, KÃ¼pper, J. Mol. Spec. 247, 119-121 (2008)
+    # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
     param.name = "benzonitrile"
     param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
     param.type = 'A'
