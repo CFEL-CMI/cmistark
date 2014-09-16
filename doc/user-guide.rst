@@ -14,11 +14,18 @@ It is documented in
 
 .. todo:: Add links to (both, CPC and arXiv) full references in references.rst
           for the above documentation; the above lines should also contain the
-          (one) title. make sure it is obvious that it is two copies of the same
+          (one) title. Make sure it is obvious that it is two copies of the same
           paper.
 
 General usage
 -------------
+
+.. todo:: Please provide a full example. I.e., provide example command to
+          calculate, plot, and print the Stark curves of, let's say, water and
+          provide the example output (graphic and ASCII output) of the
+          plot/print into this documentation.
+
+
 
 cmistark_calculate_energy
 -------------------------
@@ -53,27 +60,8 @@ by using PyTables packages in Python. Two scripts in this program,
 access these ``<moleculename>.molecule`` files. Their options and descriptions
 are provided below.
 
-cmistark_plot_energy 
---------------------
 
-The script file called ``cmistark_plot_energy`` can access existing Stark files
-(``<moleculename>.molecule``) and plot the stored curves. Options::
-
-  --help: help
-  --energy-unit=: specify the unit of energy, options: MHz, invcm, J
-  --Jmin=, --Jmax=: specify min. or max. value of J
-  --Mmin=, --Mmax=: specify min. or max. value of M
-  --Kamax=: specify max. value of Ka
-  --states=: specify states to plot, format: "000,1010" [TM: This example is unclear, as the first number has 3 values, and the 2nd 4.  Should the first number have been 0000?]
-  --dipole: plot the effective dipole moments
-  --isomer=: specify which isomer to plot
-
-Example of using ``cmistark_plot_energy`` with options::
-
-    cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
-
-
-cmistark_print_energy [TM: It seems this script does the same thing as "cmistark_plot_energy ".  The example below even uses "cmistark_plot_energy" instead of "cmistark_print_energy".  Needs to be cleaned up.]
+cmistark_print_energy
 ---------------------
 
 The script file called ``cmistark_print_energy`` can access existing Stark files
@@ -87,8 +75,35 @@ The script file called ``cmistark_print_energy`` can access existing Stark files
 
 Example of using ``cmistark_print_energy`` with options::
 
-    cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
+    cmistark_print_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
+
+cmistark_plot_energy 
+--------------------
+
+The script file called ``cmistark_plot_energy`` can access existing Stark files
+(``<moleculename>.molecule``) and plot the stored curves. Options::
+
+  --help: help
+  --energy-unit=: specify the unit of energy, options: MHz, invcm, J
+  --Jmin=, --Jmax=: specify min. or max. value of J
+  --Mmin=, --Mmax=: specify min. or max. value of M
+  --Kamax=: specify max. value of Ka
+  --states=: specify states to plot, format: "000,1010"
+  --dipole: plot the effective dipole moments
+  --isomer=: specify which isomer to plot
+
+
+.. todo:: TM: This example is unclear, as the first number has 3 values, and
+          the 2nd 4. Should the first number have been 0000?
+
+          JK: It is correct, but unclear... Yuan-Pin, please add real
+          documentation on the actual meaning and possible values of the
+          parameters (for all scripts).
+
+Example of using ``cmistark_plot_energy`` with options::
+
+    cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
 
