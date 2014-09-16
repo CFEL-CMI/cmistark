@@ -31,10 +31,10 @@ following::
   --<moleculename>: specify which molecule is used in the calculation.
   --dc-fields=: specify the range of the DC electric field (in kV/cm) by the following way: start:end:step, example: --dc-fields=0:150:151.
   --Jmax_calc=: specify the maximum value of J included in the calculation.
-  --Jmax_save=: specify the maximum value of J of Stark curves saved in the output file.
+  --Jmax_save=: specify the maximum value of J of the Stark curves saved in the output file.
   --Jmin=:      specify the minimum value of J included in the calculation.
-  --Mmax=:      specify the maximum value of M included in the calculation.
-  --isomer=:    specify which isomer is used, when <moleculename> have more than one isomers defined in moleculeparameter.py
+  --Mmax=:      specify the maximum value of M included in the calculation. [TM: What is the default?  Jmax_calc?]
+  --isomer=:    specify which isomer is used, when <moleculename> has more than one isomer defined in moleculeparameter.py
 
 Example of using ``cmistark_calculate_energy`` with options::
 
@@ -46,9 +46,9 @@ results up to J=20 in an output file called ``3-aminophenol.molecule``. The
 Stark curve of each quantum state starts from 0 to 150kV/cm with a step of
 1kV/cm.
 
-The output file ``<moleculename>.molecule`` stores Stark curve of individual
-quantum states in terms of a data format called HDF5. Such file format can be
-read directly by using PyTables packages in Python. Two scripts in this program,
+The output file ``<moleculename>.molecule`` stores Stark curves of individual
+quantum states a data format called HDF5. Such a file format can be read directly
+by using PyTables packages in Python. Two scripts in this program,
 ``cmistark_plot_energy`` and ``cmistark_print_energy`` are provided to easily
 access these ``<moleculename>.molecule`` files. Their options and descriptions
 are provided below.
@@ -64,7 +64,7 @@ The script file called ``cmistark_plot_energy`` can access existing Stark files
   --Jmin=, --Jmax=: specify min. or max. value of J
   --Mmin=, --Mmax=: specify min. or max. value of M
   --Kamax=: specify max. value of Ka
-  --states=: specify states to plot, format: "000,1010"
+  --states=: specify states to plot, format: "000,1010" [TM: This example is unclear, as the first number has 3 values, and the 2nd 4.  Should the first number have been 0000?]
   --dipole: plot the effective dipole moments
   --isomer=: specify which isomer to plot
 
@@ -73,7 +73,7 @@ Example of using ``cmistark_plot_energy`` with options::
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
-cmistark_print energy
+cmistark_print_energy [TM: It seems this script does the same thing as "cmistark_plot_energy ".  The example below even uses "cmistark_plot_energy" instead of "cmistark_print_energy".  Needs to be cleaned up.]
 ---------------------
 
 The script file called ``cmistark_print_energy`` can access existing Stark files
