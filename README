@@ -51,7 +51,7 @@ following:
 --Jmax_save=: specify the maximum value of J of Stark curves saved in the output
               file.
 --Jmin=:      specify the minimum value of J included in the calculation.
---Mmax=:      specify the maximum value of M included in the calculation.
+--Mmax=:      specify the maximum value of M included in the calculation. [TM: Default value?]
 --isomer=:    specify which isomer is used, when <moleculename> have more than
               one isomers defined in moleculeparameter.py
 
@@ -65,7 +65,7 @@ results up to J=20 in an output file called 3-aminophenol.molecule. The Stark
 curve of each quantum state starts from 0 to 150kV/cm with a step of 1kV/cm.
 
 The output file <moleculename>.molecule stores Stark curve of individual quantum
-states in terms of a data format called HDF5. Such file format can be read
+states in a data format called HDF5. Such a file format can be read
 directly by using PyTables packages in Python. Two scripts in this program,
 cmistark_plot_energy and cmistark_print_energy are provided to easily access
 these <moleculename>.molecule files. Their options and descriptions are provided
@@ -92,7 +92,7 @@ options:
 --Jmin=, --Jmax=: specify min. or max. value of J
 --Mmin=, --Mmax=: specify min. or max. value of M
 --Kamax=: specify max. value of Ka
---states=: specify states to plot, format: "000,1010"
+--states=: specify states to plot, format: "000,1010" [TM: This example is unclear, as the first number has 3 values, and the 2nd 4.  Should the first number have been 0000?]
 --dipole: plot the effective dipole moments
 --isomer=: specify which isomer to plot
 
@@ -100,7 +100,7 @@ example of using cmistark_plot_energy with options:
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
-4. cmistark_print energy
+4. cmistark_print energy [TM: It seems this script does the same thing as "cmistark_plot_energy ".  The example below even uses "cmistark_plot_energy" instead of "cmistark_print_energy".  Needs to be cleaned up.]
 
 The script file called cmistark_print_energy can access existing Stark files
 (<moleculename>.molecule) and print the stored curves on the screen.
@@ -164,10 +164,10 @@ conditions and states, is provided in the package for convenience.
 
 * Descriptions of source code files:
 
-Three files in lib folder provide all functions used to calculate and then
-write/read Stark curves. Above script files perform the calculations by calling
-these functions. The basic descriptions of each file in lib folder is provided
-as following:
+Three files in the lib folder provide all functions used to calculate and then
+write/read Stark curves. The above script files perform the calculations by calling
+these functions. The basic descriptions of each file in lib folder
+as follows:
 
 - molecule.py: perform Stark effect calculation by calling functions from
                starkeffect.py and store results in an output file
@@ -177,8 +177,8 @@ as following:
 - starkeffect.py: contain all functions, equations and algorithms required for
                   calculating Stark effect.
 
-(Only for stand-alone version) The descriptions of rest of files in lib
-folder are also provided as following:
+(Only for stand-alone version) The descriptions of the rest of the files in the lib
+folder are as follows:
 
 - codata.py: store most scientific constants
 - const.py: call required math. and phys. constants from codata.py
