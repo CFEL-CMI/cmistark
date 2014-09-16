@@ -7,7 +7,7 @@ Prerequisites and obtaining CMIstark
 Since CMIstark is written in Python, you need to install Python; CMIstark requires Python version
 3.4 or higher.
 
-In addition, you need various Python extension packages, this includes
+In addition, you need various Python extension packages, these include
 
 * NumPy
 * SciPy
@@ -35,11 +35,11 @@ A similar setup can be achieved using::
 
   python setup.py develop --user
 
-which, however, setups up the installation in such a way that changes to your source directory are
-automaticall and immediately visible through the installed version. This avoids repeated re-installs
-while you are developing code.
+which, however, sets up the installation in such a way that changes to your source directory are
+automatically and immediately visible through the installed version. This avoids repeated
+re-installs while you are developing code.
 
-Once you are satisfied with your changes you might consider to reinstall using one of first two
+Once you are satisfied with your changes you might consider reinstalling using one of the above two
 options.
 
 .. todo:: Mention PYTHONUSERBASE variable and how to use it -- add link to Python docs.
