@@ -36,12 +36,12 @@ Version control (git) details
 
   * never touch the branch ``master`` -- this is to be done by the maintainers.
 
-    * the ``master`` branch is only for releases,, which for CMIstark are rare and surely only after
+    * the ``master`` branch is only for releases, which for CMIstark are rare and surely only after
       discussion with me. There should never be any development done on ``master``, nor any release
       preparations. The latter is done on ``release/``, then the release is put onto ``master``, and
       possibly necessary fixes are done on ``hotfix/``!
 
-  * Do not repeatedly branch feature branches into ``develop`` â€“ instead merge ``develop`` into your
+  * Do not repeatedly branch feature branches into ``develop`` instead merge ``develop`` into your
     ``feature/`` branch.
   * General documentation work should always be made on ``develop`` (only)!
 
