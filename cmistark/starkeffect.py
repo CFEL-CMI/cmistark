@@ -73,7 +73,7 @@ class CalculationParameter(object):
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
     vibeng = num.zeros((2,), num.float64)    # Joule - vector of length 2 for beginning
     vibcopstr = num.zeros((1,), num.float64) # arb. unit. should be normalized.
-    viblvlnum = lens(vibeng)
+    viblvlnum = len(vibeng)
     # internal
     debug = None
 
@@ -99,7 +99,7 @@ class Rotor(object):
         self.dipole = num.array(param.dipole, num.float64)
         self.vibeng = num.array(param.vibeng, num.float64)
         self.vibcopstr = num.array(param.vibcopstr, num.float64)
-        self.viblvlnum = lens(self.vibeng)
+        self.viblvlnum = len(self.vibeng)
         # field strengths
         self.dcfield = num.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
@@ -122,7 +122,8 @@ class Rotor(object):
         """Return Stark energy for |state|."""
         if self.valid == False:
             self.recalculate()
-        return self.levels[state.id()]
+# debug
+#        return self.levels[state.id()]
 
 
     def statesymmetry(self, state):
@@ -380,6 +381,9 @@ class AsymmetricRotor(Rotor):
             elif not self.dipole_components[0] and not self.dipole_components[1]:
             # Wang submatrices coupling case for only u_c != 0
                 self.symmetry = 'Wc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
+                self.symmetry = 'N'
             elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
             # Wang submatrices coupling case for only u_c = 0
                 self.symmetry = 'Wab'
@@ -389,9 +393,6 @@ class AsymmetricRotor(Rotor):
             elif self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
             # Wang submatrices coupling case for ile u_b = 0
                 self.symmetry = 'Wac'
-            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
-            # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
-                self.symmetry = 'N'
             pass
 
 
@@ -421,11 +422,13 @@ class AsymmetricRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
         self.levelssym = {}
+        self.debug = 1 # debug
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             eval = num.sort(eval)
+            print(eval) # debug
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -1076,7 +1079,7 @@ class AsymmetricRotor(Rotor):
                 hmat[self.index(J, K+4), self.index(J, K)] += value
                 hmat[self.index(J, K), self.index(J, K+4)] += value
 
-class VibraingAsymmetricRotor(Rotor):
+class VibratingAsymmetricRotor(Rotor):
     """Representation of a vibrating asymmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies of different vibrational levels at the specified 
@@ -1115,6 +1118,9 @@ class VibraingAsymmetricRotor(Rotor):
             elif not self.dipole_components[0] and not self.dipole_components[1]:
             # Wang submatrices coupling case for only u_c != 0
                 self.symmetry = 'Wc'
+            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
+                self.symmetry = 'N'
             elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
             # Wang submatrices coupling case for only u_c = 0
                 self.symmetry = 'Wab'
@@ -1124,9 +1130,6 @@ class VibraingAsymmetricRotor(Rotor):
             elif self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
             # Wang submatrices coupling case for ile u_b = 0
                 self.symmetry = 'Wac'
-            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
-            # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
-                self.symmetry = 'N'
             pass
 
 
@@ -1148,7 +1151,8 @@ class VibraingAsymmetricRotor(Rotor):
     def index(self, J, K, V):
         # this requires a correct "global" value of self.Jmin_matrixsize and self.Jmax_matrixsize, 
         # which is set in hamiltonian. Therefore, we must be called only through hamiltonian
-        blockstart = J*(J-1) + J + (self.Jmax_matrixsize - self.Jmin_matrixsize)*V
+        blockstart = J*(J-1) + J - self.Jmin_matrixsize + self.Jmax_matrixsize * V
+        #print("debug blockstart + K + J, K, J, V", blockstart + K + J, K, J, V)
         return blockstart + K + J
 
 
@@ -1156,11 +1160,15 @@ class VibraingAsymmetricRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
         self.levelssym = {}
+        #self.debug = 1 # debug
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
+        #print(blocks) # debug
+
         for symmetry in list(blocks.keys()):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             eval = num.sort(eval)
+            print(eval)
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -1175,21 +1183,23 @@ class VibraingAsymmetricRotor(Rotor):
         self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
         self.Jmax_matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize # this is used by index
         matrixsize = self.Jmax_matrixsize * self.viblvlnum # for all vib levels
+        print("debug matrixsize, Jmin, Jmax", matrixsize, Jmin, Jmax) #debug
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rigid-rotor terms
         self.rigid(hmat, Jmin, Jmax, self.viblvlnum)
         # add appropriate field-free centrifugal distortion terms
         if self.watson == 'A':
-            self.watson_A(hmat, Jmin, Jmax)
+            self.watson_A(hmat, Jmin, Jmax, self.viblvlnum)
         elif self.watson == 'S':
-            self.watson_S(hmat, Jmin, Jmax)
+            self.watson_S(hmat, Jmin, Jmax, self.viblvlnum)
         else:
             assert self.watson == None
         # fill matrix with appropriate Stark terms for nonzero fields
+# debug
 #        if None != dcfield and self.tiny < abs(dcfield):
 #            self.stark_DC(hmat, Jmin, Jmax, dcfield)
-        blocks = self.wang(hmat, symmetry, Jmin, Jmax)
+        blocks = self.wang(hmat, symmetry, Jmin, Jmax, self.viblvlnum)
         del hmat
         return blocks
 
@@ -1201,15 +1211,15 @@ class VibraingAsymmetricRotor(Rotor):
         """
         sqrt = num.sqrt
         A, B, C = self.rotcon.tolist()
-        for V in range(0,Vmax+1):
+        for V in range(0,Vmax):
             for J in range(Jmin, Jmax+1):
                 for K in range(-J, J+1):
                     hmat[self.index(J, K, V), self.index(J, K, V)] += (B+C)/2 * (J*(J+1) - K**2) + A * K**2
                     hmat[self.index(J, K, V), self.index(J, K, V)] += self.vibeng[V]
                 for K in range (-J, J-2+1):
                     value = (B-C)/4 * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
-                    hmat[self.index(J, K+2), self.index(J, K)] += value + self.vibeng[V]
-                    hmat[self.index(J, K), self.index(J, K+2)] += value + self.vibeng[V]
+                    hmat[self.index(J, K+2, V), self.index(J, K, V)] += value
+                    hmat[self.index(J, K, V), self.index(J, K+2, V)] += value
 
 
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
@@ -1330,9 +1340,9 @@ class VibraingAsymmetricRotor(Rotor):
                 # get block diagonal hamiltonian (make sure you calculate this in 'V'!)
                 if 0 == J:
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
-                        blocks = {'Epe': num.zeros((1, 1), self.hmat_type)}
+                        blocks = {'Epe': num.zeros((self.viblvlnum, self.viblvlnum), self.hmat_type)}
                     else:
-                        blocks = {'A': num.zeros((1, 1), self.hmat_type)}
+                        blocks = {'A': num.zeros((self.viblvlnum, self.viblvlnum), self.hmat_type)}
                 else:
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                         blocks = self.hamiltonian(J, J, None, 'W')
@@ -1438,6 +1448,8 @@ class VibraingAsymmetricRotor(Rotor):
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.symmetry, ))
             for sym in symmetries:
+                print("debug eigenvalues[sym]", eigenvalues[sym], sym) #debug
+                print("debug label[sym]", num.array(label[sym]), sym) #debug
                 idx = num.argsort(eigenvalues[sym])
                 self.stateorder_dict[sym] = num.array(label[sym])[idx]
             self.stateorder_valid = True
@@ -1452,14 +1464,14 @@ class VibraingAsymmetricRotor(Rotor):
         Wmat = num.zeros(hmat.shape, self.hmat_type)
         value = 1/num.sqrt(2.)
         
-        for Va, Vb in enumerate(range(0, Vmax+1)):
+        for Va, Vb in enumerate(range(0, Vmax)):
             for J in range(Jmin, Jmax+1):
                 for K in range(-J, 0):
                     Wmat[self.index(J,  K, Va), self.index(J,  K, Vb)] = -value
                     Wmat[self.index(J, -K, Va), self.index(J,  K, Vb)] = value
                     Wmat[self.index(J,  K, Va), self.index(J, -K, Vb)] = value
                     Wmat[self.index(J, -K, Va), self.index(J, -K, Vb)] = value
-                Wmat[self.index(J, 0), self.index(J, 0)] = 1.
+                Wmat[self.index(J, 0, Va), self.index(J, 0, Vb)] = 1.
         # transform Hamiltonian matrix
         if self.complex:
             dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
@@ -1470,11 +1482,12 @@ class VibraingAsymmetricRotor(Rotor):
         if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian")
         # delete Wang matrix (it's not used anymore)
         del Wmat
+        print("symmetry", symmetry) # debug
         # sort out matrix blocks
         if 'W' == symmetry:
             # use Wang submatrices E+/-,O+/- + e/o label for Jeven/Jodd (this e/o for J specifies V group symmetries at the same time)
             idx = {'Epe': [], 'Epo': [], 'Eme': [], 'Emo': [], 'Ope': [], 'Opo': [], 'Ome': [], 'Omo': []}
-            for V in range(0,Vmax+1):
+            for V in range(0,Vmax):
                 i = V * matrixsize
                 for J in range(Jmin, Jmax+1):
                     order = []
@@ -1501,7 +1514,7 @@ class VibraingAsymmetricRotor(Rotor):
         elif 'Wa' == symmetry:
             # use Wang submatrices E+/-,O+/- for only u_a!=0 and M=0 case
             idx = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
-            for V in range(0,Vmax+1):
+            for V in range(0,Vmax):
                 i = V * matrixsize
                 for J in range(Jmin, Jmax+1):
                     order = []
@@ -1531,26 +1544,27 @@ class VibraingAsymmetricRotor(Rotor):
             # 1. Om of even(odd) J and Ep of odd(even) J, 2. Op of even(odd)J and Em odd(even)J
             # four blocks are remained.
             idx = {'EmeOpo': [], 'OmeEpo': [], 'EpeOmo': [], 'OpeEmo': []} # rule of naming: K(e/o)s(p/m)J(e/o)K'(e/o)s'(p/m)J'(e/o)
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmeOpo') # K even
-                        else: order.append('OmeEpo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpeOmo') # K even
-                        else: order.append('OpeEmo') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('OpeEmo') # K even
-                        else: order.append('EpeOmo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('OmeEpo') # K even
-                        else: order.append('EmeOpo') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = V * matrixsize
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmeOpo') # K even
+                            else: order.append('OmeEpo') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpeOmo') # K even
+                            else: order.append('OpeEmo') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('OpeEmo') # K even
+                            else: order.append('EpeOmo') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('OmeEpo') # K even
+                            else: order.append('EmeOpo') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1559,26 +1573,27 @@ class VibraingAsymmetricRotor(Rotor):
             # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
             # 1. Op of even(odd) J and Ep of odd(even) J, 2. Om of even(odd) J and Em of odd(even) J
             idx = {'EpeOpo': [], 'EmeOmo': [], 'OpeEpo': [], 'OmeEmo': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmeOmo') # K even
-                        else: order.append('OmeEmo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpeOpo') # K even
-                        else: order.append('OpeEpo') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('OmeEmo') # K even
-                        else: order.append('EmeOmo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('OpeEpo') # K even
-                        else: order.append('EpeOpo') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = V * matrixsize
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmeOmo') # K even
+                            else: order.append('OmeEmo') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpeOpo') # K even
+                            else: order.append('OpeEpo') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('OmeEmo') # K even
+                            else: order.append('EmeOmo') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('OpeEpo') # K even
+                            else: order.append('EpeOpo') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1586,26 +1601,27 @@ class VibraingAsymmetricRotor(Rotor):
             # for only u_c = 0  and M=0
             # combine the coupling cases of Wa and Wb
             idx = {'EpOm': [], 'EmOp': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmOp') # K even
-                        else: order.append('EpOm') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpOm') # K even
-                        else: order.append('EmOp') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmOp') # K even
-                        else: order.append('EpOm') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpOm') # K even
-                        else: order.append('EmOp') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = V * matrixsize
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmOp') # K even
+                            else: order.append('EpOm') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpOm') # K even
+                            else: order.append('EmOp') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmOp') # K even
+                            else: order.append('EpOm') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpOm') # K even
+                            else: order.append('EmOp') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1615,26 +1631,27 @@ class VibraingAsymmetricRotor(Rotor):
             # symmetry 1: (K even, E, and J even, e) and (K  odd, O, and J odd, o)
             # symmetry 2: (K  odd, O, and J even, e) and (K even, E, and J odd, o)
             idx = {'EeOo': [], 'EoOe': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EeOo') # K even
-                        else: order.append('EoOe') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EeOo') # K even
-                        else: order.append('EoOe') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EoOe') # K even
-                        else: order.append('EeOo') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EoOe') # K even
-                        else: order.append('EeOo') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = V * matrixsize
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EeOo') # K even
+                            else: order.append('EoOe') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EeOo') # K even
+                            else: order.append('EoOe') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EoOe') # K even
+                            else: order.append('EeOo') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EoOe') # K even
+                            else: order.append('EeOo') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1642,26 +1659,27 @@ class VibraingAsymmetricRotor(Rotor):
             # for only u_b = 0  and M=0
             # combine the coupling cases of Wa and Wc
             idx = {'EpOp': [], 'EmOm': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmOm') # K even
-                        else: order.append('EmOm') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpOp') # K even
-                        else: order.append('EpOp') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('EmOm') # K even
-                        else: order.append('EmOm') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('EpOp') # K even
-                        else: order.append('EpOp') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = V * matrixsize
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmOm') # K even
+                            else: order.append('EmOm') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpOp') # K even
+                            else: order.append('EpOp') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('EmOm') # K even
+                            else: order.append('EmOm') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('EpOp') # K even
+                            else: order.append('EpOp') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1672,7 +1690,7 @@ class VibraingAsymmetricRotor(Rotor):
             # - in calculations for a single J this is the same
             # - in claculations for multiple J the correspondence flips with J
             idx = {'A': [], 'Ba': [], 'Bb': [], 'Bc': []}
-            for V in range(0,Vmax+1):
+            for V in range(0,Vmax):
                 i = V * matrixsize
                 for J in range(Jmin, Jmax+1):
                     order = []
@@ -1718,22 +1736,23 @@ class VibraingAsymmetricRotor(Rotor):
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices 'Ab' (contains 'A' and 'Bb')
             # and 'ac' (contains 'Ba' and 'Bc').
             idx = {'Ab': [], 'ac': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        order.append('ac')
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        order.append('Ab')
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        order.append('Ab')
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        order.append('ac')
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = matrixsize * V
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            order.append('ac')
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            order.append('Ab')
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            order.append('Ab')
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            order.append('ac')
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1743,26 +1762,27 @@ class VibraingAsymmetricRotor(Rotor):
             # I^r representation, Wang transformed Hamiltonian factorizes into two submatrices 'Ac' (contains 'A' and
             # 'Bc') and 'ab' (contains 'Ba' and 'Bb').
             idx = {'Ac': [], 'ab': []}
-            i = 0
-            for J in range(Jmin, Jmax+1):
-                order = []
-                if 0 == J % 2: # J even
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('ab') # K even
-                        else: order.append('Ac') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                else: # J odd
-                    for K in range(-J, 0): # K < 0 --> s odd
-                        if 0 == K % 2: order.append('Ac') # K even
-                        else: order.append('ab') # K odd
-                    for K in range(0, J+1): # K >= 0 --> s even
-                        if 0 == K % 2: order.append('ab') # K even
-                        else: order.append('Ac') # K odd
-                for k in range(2*J+1):
-                    idx[order[k]].append(i+k)
-                i += 2*J+1
+            for V in range(0,Vmax):
+                i = matrixsize * V
+                for J in range(Jmin, Jmax+1):
+                    order = []
+                    if 0 == J % 2: # J even
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('ab') # K even
+                            else: order.append('Ac') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('Ac') # K even
+                            else: order.append('ab') # K odd
+                    else: # J odd
+                        for K in range(-J, 0): # K < 0 --> s odd
+                            if 0 == K % 2: order.append('Ac') # K even
+                            else: order.append('ab') # K odd
+                        for K in range(0, J+1): # K >= 0 --> s even
+                            if 0 == K % 2: order.append('ab') # K even
+                            else: order.append('Ac') # K odd
+                    for k in range(2*J+1):
+                        idx[order[k]].append(i+k)
+                    i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1783,40 +1803,42 @@ class VibraingAsymmetricRotor(Rotor):
         return blocks
 
 
-    def watson_A(self, hmat, Jmin, Jmax):
+    def watson_A(self, hmat, Jmin, Jmax, Vmax):
         """Add the centrifugal distortion matrix element terms in Watson's A reduction to hmat."""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
         sqrt = num.sqrt
         DJ, DJK, DK, dJ, dK = self.quartic.tolist()
-        for J in range(Jmin, Jmax+1):
-            for K in range(-J, J+1):
-                value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
-                hmat[self.index(J, K), self.index(J, K)] += value
-            for K in range(-J, J-2+1):
-                value = ((-dJ * J*(J+1) - dK/2 * ((K+2)**2 + K**2))
-                        * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))))
-                hmat[self.index(J, K+2), self.index(J, K)] += value
-                hmat[self.index(J, K), self.index(J, K+2)] += value
+        for V in range(0,Vmax):
+            for J in range(Jmin, Jmax+1):
+                for K in range(-J, J+1):
+                    value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                    hmat[self.index(J, K, V), self.index(J, K, V)] += value
+                for K in range(-J, J-2+1):
+                    value = ((-dJ * J*(J+1) - dK/2 * ((K+2)**2 + K**2))
+                            * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))))
+                    hmat[self.index(J, K+2, V), self.index(J, K, V)] += value
+                    hmat[self.index(J, K, V), self.index(J, K+2, V)] += value
 
 
-    def watson_S(self, hmat, Jmin, Jmax):
+    def watson_S(self, hmat, Jmin, Jmax, Vmax):
         """Add the centrifugal distortion matrix element terms in Watson's S reduction to hmat."""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
         sqrt = num.sqrt
         DJ, DJK, DK, dJ, dK = self.quartic.tolist()
-        for J in range(Jmin, Jmax+1):
-            for K in range(-J, J+1):
-                value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
-                hmat[self.index(J, K), self.index(J, K)] += value
-            for K in range(-J, J-2+1):
-                value = dJ * J*(J+1) * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
-                hmat[self.index(J, K+2), self.index(J, K)] += value
-                hmat[self.index(J, K), self.index(J, K+2)] += value
-            for K in range(-J, J-4+1):
-                value = dK * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))
-                        * (J*(J+1)-(K+2)*(K+3)) * (J*(J+1)-(K+3)*(K+4)))
-                hmat[self.index(J, K+4), self.index(J, K)] += value
-                hmat[self.index(J, K), self.index(J, K+4)] += value
+        for V in range(0,Vmax):
+            for J in range(Jmin, Jmax+1):
+                for K in range(-J, J+1):
+                    value = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
+                    hmat[self.index(J, K, V), self.index(J, K, V)] += value
+                for K in range(-J, J-2+1):
+                    value = dJ * J*(J+1) * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2)))
+                    hmat[self.index(J, K+2, V), self.index(J, K, V)] += value
+                    hmat[self.index(J, K, V), self.index(J, K+2, V)] += value
+                for K in range(-J, J-4+1):
+                    value = dK * sqrt((J*(J+1) - K*(K+1)) * (J*(J+1) - (K+1)*(K+2))
+                            * (J*(J+1)-(K+2)*(K+3)) * (J*(J+1)-(K+3)*(K+4)))
+                    hmat[self.index(J, K+4, V), self.index(J, K, V)] += value
+                    hmat[self.index(J, K, V), self.index(J, K+4, V)] += value
 
 
 
@@ -1824,3 +1846,40 @@ class VibraingAsymmetricRotor(Rotor):
 # some simple tests
 if __name__ == "__main__":
     print()
+
+    p = CalculationParameter
+    p.Jmax_calc = 1
+    p.Jmax_save = 0
+    p.M = [0]
+    p.type = 'VA'
+    p.isomer = 0
+    p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+    p.quartic = cmiext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
+    p.dipole = cmiext.convert.D2Cm([1.0, 0.0, 0.0])
+    p.vibeng = num.array([0.0, 2.e-23])
+    p.watson = 'A'
+    p.symmetry = 'C2c'
+    iRotor = VibratingAsymmetricRotor
+    for M in p.M:
+        for field in cmiext.convert.kV_cm2V_m(num.linspace(0.,0.,1)):
+            line = str(cmiext.convert.V_m2kV_cm(field)) + " "
+            #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
+            top = iRotor(p, M, field)
+            top.energy(State(0, 0, 0, M, p.isomer))
+#            for state in [State(1, 0, 1, M, p.isomer),
+#                          State(1, 0, 1, M, p.isomer), State(2, 0, 2, M, p.isomer), State(3, 0, 3, M, p.isomer),
+#                          State(4, 0, 4, M, p.isomer), State(5, 0, 5, M, p.isomer), State(2, 2, 0, M, p.isomer),
+#                          State(3, 2, 1, M, p.isomer), State(6, 0, 6, M, p.isomer), State(4, 2, 2, M, p.isomer),
+#                          State(7, 0, 7, M, p.isomer), State(5, 2, 3, M, p.isomer),
+#                          State(6, 2, 4, M, p.isomer), State(8, 0, 8, M, p.isomer), State(7, 2, 5, M, p.isomer),
+#                          State(9, 0, 9, M, p.isomer), State(8, 2, 6, M, p.isomer), State(10, 0, 10, M, p.isomer),
+#                          State(9, 2, 7, M, p.isomer), State(11, 0, 11, M, p.isomer), State(4, 4, 0, M, p.isomer),
+#                          State(10, 2, 8, M, p.isomer), State(5, 4, 1, M, p.isomer), State(12, 0, 12, M, p.isomer),
+#                          ]:
+#                if state.M() <= state.J() and state.J() <= p.Jmax_save:
+#                    #print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
+#                    #    % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
+#                    #       top.energy(state))
+#                    line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
+#            print line
+

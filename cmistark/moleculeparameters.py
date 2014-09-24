@@ -205,11 +205,11 @@ def indole(param):
     elif 2 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-        param.vibeng = convert.Cm2J(num.array([40.38, 116.92]))
+        param.vibeng = convert.invcm2J(num.array([40.38, 116.92]))
     elif 3 == param.isomer:
         param.rotcon = convert.Hz2J(num.array([3877.9e6, 1636.1e6, 1150.9e6]))
         param.dipole = convert.D2Cm(num.array([1.376, 1.400, 0.]))
-        param.vibeng = convert.Cm2J(num.array([40.68, 111.29]))
+        param.vibeng = convert.invcm2J(num.array([40.68, 111.29]))
  
 
 def indole_water1(param):
