@@ -1167,13 +1167,13 @@ class VibratingAsymmetricRotor(Rotor):
         Vmin = 0 # assume the first vib level is v=0
         Vmax = self.viblvlnum - 1 # assume the second vib level is v=1
         blocks = self.hamiltonian(self.Jmin, self.Jmax, Vmin, Vmax, self.dcfield, self.symmetry)
-        #print(blocks) # debug
+        #print("debug recalculate hmat", blocks) # debug
 
         for symmetry in list(blocks.keys()):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             eval = num.sort(eval)
-            print(eval)
+            #print(eval)
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -1206,7 +1206,7 @@ class VibratingAsymmetricRotor(Rotor):
 # debug
 #        if None != dcfield and self.tiny < abs(dcfield):
 #            self.stark_DC(hmat, Jmin, Jmax, dcfield)
-        #print("debug hamiltonian blocks", hmat) #debug
+        print("debug hamiltonian blocks before Wang", hmat) #debug
         blocks = self.wang(hmat, symmetry, Jmin, Jmax, Vmin, Vmax)
         del hmat
         return blocks
@@ -1742,12 +1742,13 @@ class VibratingAsymmetricRotor(Rotor):
             # E- / A and Ba) and O (contains O+ and O- / Bb and Bc).
             # In this case E and O corresponds to columns with K even and odd, respectively.
             idx = {'Aa': [], 'bc': []}
-            if 0 == Jmin % 2: # Jmin even
-                order = ['Aa', 'bc']
-            else: # J odd
-                order = ['bc', 'Aa']
-            for i in range(matrixsize*(Vmax+1-Vmin)):
-                idx[order[i%2]].append(i)
+            for V in range(Vmin,Vmax+1):
+                if 0 == Jmin % 2: # Jmin even
+                    order = ['Aa', 'bc']
+                else: # J odd
+                    order = ['bc', 'Aa']
+                for i in range(0, matrixsize):
+                    idx[order[i%2]].append(i+matrixsize*(V-Vmin))
             for sym in order:
                 if 0 < len(idx[sym]):
                     blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
@@ -1871,7 +1872,7 @@ if __name__ == "__main__":
     p = CalculationParameter
     p.Jmax_calc = 2
     p.Jmax_save = 2
-    p.M = [0]
+    p.M = [2]
     p.type = 'VA'
     p.isomer = 0
     p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
