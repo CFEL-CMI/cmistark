@@ -23,7 +23,7 @@ import scipy.linalg.blas
 
 import cmiext.convert
 from cmiext.state import State
-#from state import RVState
+from state import RVState
 
 
 
@@ -1203,9 +1203,8 @@ class VibratingAsymmetricRotor(Rotor):
         else:
             assert self.watson == None
         # fill matrix with appropriate Stark terms for nonzero fields
-# debug
-#        if None != dcfield and self.tiny < abs(dcfield):
-#            self.stark_DC(hmat, Jmin, Jmax, dcfield)
+        if None != dcfield and self.tiny < abs(dcfield):
+            self.stark_DC(hmat, Jmin, Jmax, Vmin, Vmax, dcfield)
         print("debug hamiltonian blocks before Wang", hmat) #debug
         blocks = self.wang(hmat, symmetry, Jmin, Jmax, Vmin, Vmax)
         del hmat
@@ -1231,61 +1230,64 @@ class VibratingAsymmetricRotor(Rotor):
                     hmat[self.index(J, K, V), self.index(J, K+2, V)] += value
 
 
-    def stark_DC(self, hmat, Jmin, Jmax, dcfield):
+    def stark_DC(self, hmat, Jmin, Jmax, Vmin, Vmax, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = num.sqrt
         M = self.M
         muA, muB, muC = self.dipole
         if self.dipole_components[0]:
             # matrix elements involving µ_a
-            for J in range(Jmin, Jmax):
+            for V in range(Vmin, Vmax+1):
+                for J in range(Jmin, Jmax):
+                    for K in range(-J, J+1):
+                        if 0 != M and 0 != K: # then also 0 != J
+                            hmat[self.index(J, K, V), self.index(J, K, V)] += -muA * dcfield * M * K / (J*(J+1))
+                        value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
+                                  / ((J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K, V), self.index(J, K, V)] += value
+                        hmat[self.index(J, K, V), self.index(J+1, K, V)] += value
+                # final diagonal elements
+                J = Jmax
                 for K in range(-J, J+1):
-                    if 0 != M and 0 != K: # then also 0 != J
-                        hmat[self.index(J, K), self.index(J, K)] += -muA * dcfield * M * K / (J*(J+1))
-                    value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
-                              / ((J+1) * sqrt((2*J+1) * (2*J+3))))
-                    hmat[self.index(J+1, K), self.index(J, K)] += value
-                    hmat[self.index(J, K), self.index(J+1, K)] += value
-            # final diagonal elements
-            J = Jmax
-            for K in range(-J, J+1):
-                hmat[self.index(J, K), self.index(J, K)] += -1. * M * K / (J*(J+1)) * muA * dcfield
+                    hmat[self.index(J, K, V), self.index(J, K, V)] += -1. * M * K / (J*(J+1)) * muA * dcfield
         if self.dipole_components[1]:
             # matrix elements involving µ_b
-            for J in range(Jmin, Jmax):
-                for K in range(-J, J+1):
-                    if 0 != J:
-                        value = -1 * M * muB * dcfield * (sqrt((J-K) * (J+K+1) ) ) / (2*J*(J+1))
-                        hmat[self.index(J, K+1), self.index(J, K)] += value
-                        hmat[self.index(J, K), self.index(J, K+1)] += value
-                    # J+1, K+1 / J-1, K-1 case
-                    value = (muB * dcfield * sqrt(((J+K+1) * (J+K+2)) * ((J+1)**2 - M**2))
-                            / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                    hmat[self.index(J+1, K+1), self.index(J, K)] += value
-                    hmat[self.index(J, K), self.index(J+1, K+1)] += value
-                    # J+1, K-1 / J-1, K+1 case
-                    value = (-1 * muB * dcfield * sqrt(((J-K+1) * (J-K+2)) * ((J+1)**2 - M**2))
-                              / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                    hmat[self.index(J+1, K-1), self.index(J, K)] += value
-                    hmat[self.index(J, K), self.index(J+1, K-1)] += value
+            for V in range(Vmin, Vmax+1):
+                for J in range(Jmin, Jmax):
+                    for K in range(-J, J+1):
+                        if 0 != J:
+                            value = -1 * M * muB * dcfield * (sqrt((J-K) * (J+K+1) ) ) / (2*J*(J+1))
+                            hmat[self.index(J, K+1, V), self.index(J, K, V)] += value
+                            hmat[self.index(J, K, V), self.index(J, K+1, V)] += value
+                        # J+1, K+1 / J-1, K-1 case
+                        value = (muB * dcfield * sqrt(((J+K+1) * (J+K+2)) * ((J+1)**2 - M**2))
+                                / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K+1, V), self.index(J, K, V)] += value
+                        hmat[self.index(J, K, V), self.index(J+1, K+1, V)] += value
+                        # J+1, K-1 / J-1, K+1 case
+                        value = (-1 * muB * dcfield * sqrt(((J-K+1) * (J-K+2)) * ((J+1)**2 - M**2))
+                                  / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K-1, V), self.index(J, K, V)] += value
+                        hmat[self.index(J, K, V), self.index(J+1, K-1, V)] += value
         if  self.dipole_components[2]:
             # matrix elements involving µ_c
-            for J in range(Jmin, Jmax):
-                for K in range(-J, J+1):
-                    if 0 != J:
-                        value = 1j* M * muC * dcfield * sqrt((J-K) * (J+K+1)) / (2*J*(J+1))
-                        hmat[self.index(J, K+1), self.index(J, K)] += value
-                        hmat[self.index(J, K), self.index(J, K+1)] += -value #YP: change from value to -value, this - appears as i exists.
-                    # J+1, K+1 / J-1, K-1 case
-                    value = (-1j * muC * dcfield * sqrt((J+K+1) * (J+K+2)) * sqrt((J+1)**2 - M**2)
-                              / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                    hmat[self.index(J+1, K+1), self.index(J, K)] += value
-                    hmat[self.index(J, K), self.index(J+1, K+1)] += value
-                    # J+1, K-1 / J-1, K+1 case
-                    value = (-1j  * muC * dcfield * sqrt((J-K+1) * (J-K+2)) * sqrt((J+1)**2 - M**2)
-                              / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                    hmat[self.index(J+1, K-1), self.index(J, K)] += value
-                    hmat[self.index(J, K), self.index(J+1, K-1)] += value
+            for V in range(Vmin, Vmax+1):
+                for J in range(Jmin, Jmax):
+                    for K in range(-J, J+1):
+                        if 0 != J:
+                            value = 1j* M * muC * dcfield * sqrt((J-K) * (J+K+1)) / (2*J*(J+1))
+                            hmat[self.index(J, K+1, V), self.index(J, K, V)] += value
+                            hmat[self.index(J, K, V), self.index(J, K+1, V)] += -value #YP: change from value to -value, this - appears as i exists.
+                        # J+1, K+1 / J-1, K-1 case
+                        value = (-1j * muC * dcfield * sqrt((J+K+1) * (J+K+2)) * sqrt((J+1)**2 - M**2)
+                                  / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K+1, V), self.index(J, K, V)] += value
+                        hmat[self.index(J, K, V), self.index(J+1, K+1, V)] += value
+                        # J+1, K-1 / J-1, K+1 case
+                        value = (-1j  * muC * dcfield * sqrt((J-K+1) * (J-K+2)) * sqrt((J+1)**2 - M**2)
+                                  / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K-1, V), self.index(J, K, V)] += value
+                        hmat[self.index(J, K, V), self.index(J+1, K-1, V)] += value
 
 
     def stateorder(self, symmetry):
@@ -1327,8 +1329,8 @@ class VibratingAsymmetricRotor(Rotor):
             self.stateorder_dict = {}
             M = self.M
             iso = self.isomer
-            Vmax = self.viblvlnum - 1
-            Vmin = 0
+            Vmax = self.viblvlnum - 1 # assume the lowest vib level is v=0
+            Vmin = 0 # assume the lowest vib level is v=0
             if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                 eigenvalues = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
                 label = {'Epe': [], 'Eme': [], 'Ope': [], 'Ome': [], 'Epo': [], 'Emo': [], 'Opo': [], 'Omo': []}
@@ -1871,8 +1873,8 @@ if __name__ == "__main__":
 
     p = CalculationParameter
     p.Jmax_calc = 2
-    p.Jmax_save = 2
-    p.M = [2]
+    p.Jmax_save = 0
+    p.M = [0]
     p.type = 'VA'
     p.isomer = 0
     p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
@@ -1883,7 +1885,7 @@ if __name__ == "__main__":
     p.symmetry = 'C2a'
     iRotor = VibratingAsymmetricRotor
     for M in p.M:
-        for field in cmiext.convert.kV_cm2V_m(num.linspace(0.,0.,1)):
+        for field in cmiext.convert.kV_cm2V_m(num.linspace(0.,10.,2)):
             line = str(cmiext.convert.V_m2kV_cm(field)) + " "
             #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
