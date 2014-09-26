@@ -23,7 +23,7 @@ import scipy.linalg.blas
 
 import cmiext.convert
 from cmiext.state import State
-from state import RVState
+from cmiext.state import RVState
 
 
 
@@ -73,7 +73,7 @@ class CalculationParameter(object):
     quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
     vibeng = num.zeros((2,), num.float64)    # Joule - vector of length 2 for beginning
-    vibcopstr = num.zeros((1,), num.float64) # arb. unit. should be normalized.
+    vibcopstr = num.zeros((2,), num.float64) # arb. unit. The values for the same levels (diagonal elements) should be normalized to 1.
     viblvlnum = len(vibeng)
     # internal
     debug = None
@@ -1163,7 +1163,7 @@ class VibratingAsymmetricRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
         self.levelssym = {}
-        #self.debug = 1 # debug
+        self.debug = 1 # debug
         Vmin = 0 # assume the first vib level is v=0
         Vmax = self.viblvlnum - 1 # assume the second vib level is v=1
         blocks = self.hamiltonian(self.Jmin, self.Jmax, Vmin, Vmax, self.dcfield, self.symmetry)
@@ -1177,7 +1177,7 @@ class VibratingAsymmetricRotor(Rotor):
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
-                    print("J,Ka,Kc,M,V,state.id(),eval[i]", state.J(), state.Ka(), state.Kc(), state.M(), state.V(), state.id(), eval[i])
+                    print("J,Ka,Kc,M,V,eval[i]", state.J(), state.Ka(), state.Kc(), state.M(), state.V(), eval[i])
                     self.levels[state.id()] = eval[i]
                 i += 1
         # done - data is now valid
@@ -1205,7 +1205,7 @@ class VibratingAsymmetricRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, Vmin, Vmax, dcfield)
-        print("debug hamiltonian blocks before Wang", hmat) #debug
+        #print("debug hamiltonian blocks before Wang", hmat) #debug
         blocks = self.wang(hmat, symmetry, Jmin, Jmax, Vmin, Vmax)
         del hmat
         return blocks
@@ -1237,19 +1237,19 @@ class VibratingAsymmetricRotor(Rotor):
         muA, muB, muC = self.dipole
         if self.dipole_components[0]:
             # matrix elements involving µ_a
-            for V in range(Vmin, Vmax+1):
+            for Va, Vb in enumerate(range(Vmin, Vmax+1)):
                 for J in range(Jmin, Jmax):
                     for K in range(-J, J+1):
                         if 0 != M and 0 != K: # then also 0 != J
-                            hmat[self.index(J, K, V), self.index(J, K, V)] += -muA * dcfield * M * K / (J*(J+1))
+                            hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -muA * dcfield * M * K / (J*(J+1)) * self.vibcopstr[Va-Vmin,Vb-Vmin]
                         value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
                                   / ((J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K, V), self.index(J, K, V)] += value
-                        hmat[self.index(J, K, V), self.index(J+1, K, V)] += value
+                        hmat[self.index(J+1, K, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
                 # final diagonal elements
                 J = Jmax
                 for K in range(-J, J+1):
-                    hmat[self.index(J, K, V), self.index(J, K, V)] += -1. * M * K / (J*(J+1)) * muA * dcfield
+                    hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -1. * M * K / (J*(J+1)) * muA * dcfield * self.vibcopstr[Va-Vmin,Vb-Vmin]
         if self.dipole_components[1]:
             # matrix elements involving µ_b
             for V in range(Vmin, Vmax+1):
@@ -1257,18 +1257,18 @@ class VibratingAsymmetricRotor(Rotor):
                     for K in range(-J, J+1):
                         if 0 != J:
                             value = -1 * M * muB * dcfield * (sqrt((J-K) * (J+K+1) ) ) / (2*J*(J+1))
-                            hmat[self.index(J, K+1, V), self.index(J, K, V)] += value
-                            hmat[self.index(J, K, V), self.index(J, K+1, V)] += value
+                            hmat[self.index(J, K+1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                            hmat[self.index(J, K, Va), self.index(J, K+1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
                         # J+1, K+1 / J-1, K-1 case
                         value = (muB * dcfield * sqrt(((J+K+1) * (J+K+2)) * ((J+1)**2 - M**2))
                                 / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K+1, V), self.index(J, K, V)] += value
-                        hmat[self.index(J, K, V), self.index(J+1, K+1, V)] += value
+                        hmat[self.index(J+1, K+1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K+1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
                         # J+1, K-1 / J-1, K+1 case
                         value = (-1 * muB * dcfield * sqrt(((J-K+1) * (J-K+2)) * ((J+1)**2 - M**2))
                                   / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K-1, V), self.index(J, K, V)] += value
-                        hmat[self.index(J, K, V), self.index(J+1, K-1, V)] += value
+                        hmat[self.index(J+1, K-1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K-1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
         if  self.dipole_components[2]:
             # matrix elements involving µ_c
             for V in range(Vmin, Vmax+1):
@@ -1276,18 +1276,18 @@ class VibratingAsymmetricRotor(Rotor):
                     for K in range(-J, J+1):
                         if 0 != J:
                             value = 1j* M * muC * dcfield * sqrt((J-K) * (J+K+1)) / (2*J*(J+1))
-                            hmat[self.index(J, K+1, V), self.index(J, K, V)] += value
-                            hmat[self.index(J, K, V), self.index(J, K+1, V)] += -value #YP: change from value to -value, this - appears as i exists.
+                            hmat[self.index(J, K+1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                            hmat[self.index(J, K, Va), self.index(J, K+1, Vb)] += -value * self.vibcopstr[Va-Vmin,Vb-Vmin]
                         # J+1, K+1 / J-1, K-1 case
                         value = (-1j * muC * dcfield * sqrt((J+K+1) * (J+K+2)) * sqrt((J+1)**2 - M**2)
                                   / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K+1, V), self.index(J, K, V)] += value
-                        hmat[self.index(J, K, V), self.index(J+1, K+1, V)] += value
+                        hmat[self.index(J+1, K+1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K+1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
                         # J+1, K-1 / J-1, K+1 case
                         value = (-1j  * muC * dcfield * sqrt((J-K+1) * (J-K+2)) * sqrt((J+1)**2 - M**2)
                                   / (2*(J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K-1, V), self.index(J, K, V)] += value
-                        hmat[self.index(J, K, V), self.index(J+1, K-1, V)] += value
+                        hmat[self.index(J+1, K-1, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K-1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
 
 
     def stateorder(self, symmetry):
@@ -1872,20 +1872,21 @@ if __name__ == "__main__":
     print()
 
     p = CalculationParameter
-    p.Jmax_calc = 2
-    p.Jmax_save = 0
+    p.Jmax_calc = 4
+    p.Jmax_save = 1
     p.M = [0]
     p.type = 'VA'
     p.isomer = 0
     p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
     p.quartic = cmiext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
     p.dipole = cmiext.convert.D2Cm([1.0, 0.0, 0.0])
-    p.vibeng = num.array([0.0, 2.e-23])
+    p.vibeng = num.array([0.0, 1.e-23])
+    p.vibcopstr = num.array([[1., 0.],[0., 0.]])
     p.watson = 'A'
     p.symmetry = 'C2a'
     iRotor = VibratingAsymmetricRotor
     for M in p.M:
-        for field in cmiext.convert.kV_cm2V_m(num.linspace(0.,10.,2)):
+        for field in cmiext.convert.kV_cm2V_m(num.linspace(100.,100.,1)):
             line = str(cmiext.convert.V_m2kV_cm(field)) + " "
             #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
