@@ -60,7 +60,7 @@ def main(args):
                                                    "dc-fields=", "isomer=",
                                                    "oblate_symmetric_top",
                                                    "prolate_symmetric_top",
-                                                   "asymmetric_top",
+                                                   "asymmetric_top", "vibrating_asymmetric_top",
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
                                                    "2-aminobenzonitrile", "3-aminobenzonitrile", "4-aminobenzonitrile",
@@ -118,6 +118,8 @@ def main(args):
             param.isomer = int(a)
         elif o == "--asymmetric_top":
             pfunc = asymmetric_top
+        elif o == "--vibrating_asymmetric_top":
+            pfunc = vibrating_asymmetric_top
         elif o == "--2,6-difluoro-iodobenzene":
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):

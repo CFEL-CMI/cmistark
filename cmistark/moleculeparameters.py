@@ -109,6 +109,21 @@ def asymmetric_top(param):
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 
+def vibrating_asymmetric_top(param):
+    """Molecular parameters for an artificial vibrating asymmetric top
+
+    Implemented isomers are (modified) examples of
+     0 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b != 0
+    """
+    param.name = "vibrating_asymmetric_top"
+    param.type = 'VA'
+    param.watson = 'A'
+    if param.isomer == 0:
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
+        param.vibeng = convert.invcm2J(num.array([0.0, 0.1]))
+        param.vibcopstr = num.array([[1.,0.],[0.,0.]])
 
 
 def three_aminophenol(param):

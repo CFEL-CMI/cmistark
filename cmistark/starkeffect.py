@@ -123,8 +123,7 @@ class Rotor(object):
         """Return Stark energy for |state|."""
         if self.valid == False:
             self.recalculate()
-# debug
-#        return self.levels[state.id()]
+        return self.levels[state.id()]
 
 
     def statesymmetry(self, state):
@@ -423,7 +422,7 @@ class AsymmetricRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
         self.levelssym = {}
-        self.debug = 1 # debug
+        #self.debug = 1 # debug
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
@@ -1139,8 +1138,9 @@ class VibratingAsymmetricRotor(Rotor):
         list = []
         M = self.M
         iso = self.isomer
-        Vmax = self.viblvlnum
-        for V in range(0, Vmax):
+        Vmin = 0
+        Vmax = self.viblvlnum - 1
+        for V in range(Vmin, Vmax+1):
             for J in range(self.Jmin, self.Jmax_save+1):
                 Ka = 0
                 for Kc in range(J, -1, -1):
@@ -1163,7 +1163,7 @@ class VibratingAsymmetricRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         self.levels = {}
         self.levelssym = {}
-        self.debug = 1 # debug
+        #self.debug = 1 # debug
         Vmin = 0 # assume the first vib level is v=0
         Vmax = self.viblvlnum - 1 # assume the second vib level is v=1
         blocks = self.hamiltonian(self.Jmin, self.Jmax, Vmin, Vmax, self.dcfield, self.symmetry)
@@ -1173,11 +1173,11 @@ class VibratingAsymmetricRotor(Rotor):
             if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             eval = num.sort(eval)
-            #print(eval)
+            #print(eval) # debug
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
-                    print("J,Ka,Kc,M,V,eval[i]", state.J(), state.Ka(), state.Kc(), state.M(), state.V(), eval[i])
+#                    print("J,Ka,Kc,M,V,eval[i]", state.J(), state.Ka(), state.Kc(), state.M(), state.V(), eval[i]) # debug
                     self.levels[state.id()] = eval[i]
                 i += 1
         # done - data is now valid
@@ -1890,8 +1890,8 @@ if __name__ == "__main__":
             line = str(cmiext.convert.V_m2kV_cm(field)) + " "
             #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
-            top.energy(State(0, 0, 0, M, p.isomer))
-#            for state in [State(1, 0, 1, M, p.isomer),
+            top.energy(RVState(0, 0, 0, M, 0, p.isomer))
+            for state in [RVState(0, 0, 0, M, 0, p.isomer),
 #                          State(1, 0, 1, M, p.isomer), State(2, 0, 2, M, p.isomer), State(3, 0, 3, M, p.isomer),
 #                          State(4, 0, 4, M, p.isomer), State(5, 0, 5, M, p.isomer), State(2, 2, 0, M, p.isomer),
 #                          State(3, 2, 1, M, p.isomer), State(6, 0, 6, M, p.isomer), State(4, 2, 2, M, p.isomer),
@@ -1900,11 +1900,9 @@ if __name__ == "__main__":
 #                          State(9, 0, 9, M, p.isomer), State(8, 2, 6, M, p.isomer), State(10, 0, 10, M, p.isomer),
 #                          State(9, 2, 7, M, p.isomer), State(11, 0, 11, M, p.isomer), State(4, 4, 0, M, p.isomer),
 #                          State(10, 2, 8, M, p.isomer), State(5, 4, 1, M, p.isomer), State(12, 0, 12, M, p.isomer),
-#                          ]:
-#                if state.M() <= state.J() and state.J() <= p.Jmax_save:
-#                    #print state.name(), top.statesymmetry(state), "%12.3f MHz %8.3f cm-1 %10.3g J" \
-#                    #    % (jkext.convert.J2MHz(top.energy(state)), jkext.convert.J2invcm(top.energy(state)),
-#                    #       top.energy(state))
+                          ]:
+                if state.M() <= state.J() and state.J() <= p.Jmax_save:
+                    print(state.name(), state.id(), top.energy(state))
 #                    line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
 #            print line
 

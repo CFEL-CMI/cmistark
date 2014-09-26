@@ -23,7 +23,7 @@ import numpy.linalg
 import tables
 
 import cmiext.hdf5, cmiext.molecule, cmiext.util
-from cmiext.state import State
+from cmiext.state import State, RVState
 
 import cmistark.starkeffect
 
@@ -127,7 +127,10 @@ class Molecule(cmiext.molecule.Molecule):
                         energies[id] = [calc.energy(state),]
             # store calculated values for this M
             for id in list(energies.keys()):
-                self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
+                if param.type == 'VA':
+                    self.starkeffect_merge(RVState().fromid(id), param.dcfields, energies[id])
+                else:
+                    self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
             # flush HDF5 file after every M
             self.__storage.flush()
 
@@ -159,6 +162,22 @@ class Molecule(cmiext.molecule.Molecule):
                                          + '/' + groupM._v_name + '/' + groupIso._v_name)
                             if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:
                                 list.append(State().fromhdfname(statename))
+        return list
+
+
+    def starkeffect_rvstates(self):
+        """Get a list of rovib states for which we know the Stark effect."""
+        list = []
+        for groupJ in self.__storage.listNodes(self.__storage.root, classname='Group'):
+            for groupKa in self.__storage.listNodes(groupJ, classname='Group'):
+                for groupKc in self.__storage.listNodes(groupKa, classname='Group'):
+                    for groupM in self.__storage.listNodes(groupKc, classname='Group'):
+                        for groupV in self.__storage.listNodes(groupM, classname='Group'):
+                            for groupIso in self.__storage.listNodes(groupV, classname='Group'):
+                                statename = (groupJ._v_name + '/' + groupKa._v_name + '/' + groupKc._v_name
+                                             + '/' + groupM._v_name + '/' + groupV._v_name + '/' + groupIso._v_name)
+                                if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:
+                                    list.append(RVState().fromhdfname(statename))
         return list
 
 

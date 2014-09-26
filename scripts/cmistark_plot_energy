@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 import cmistark.molecule as molecule
 from cmiext.convert import *
-from cmiext.state import State
+from cmiext.state import State, RVState
 
 
 def usage():
@@ -47,6 +47,7 @@ def usage():
            --energy-unit=: GHz, MHz, invcm, J
            --dipole-unit=: GHz, MHz, invcm, J, Debye
            --nss-forbidden
+           --vib-rotor: for vibrating rotors, (as a different state label class is used)
           """)
 
 
@@ -56,7 +57,7 @@ def main(args):
                                                    "energy-unit=", "GHz",
                                                    "dipole", "isomer=", "dipole-unit=",
                                                    "nss-forbidden=",
-                                                   "legend", "verbose="])
+                                                   "legend", "verbose=", "vib-rotor"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err)) # will print something like "option -a not recognized"
@@ -129,6 +130,8 @@ def main(args):
             verbose = True
         elif o == "--legend":
             legend = True
+        elif o == "--vib-rotor":
+            vibrotor = True
         else:
             assert False, "unhandled commandline option"
     if None == Mmax:
@@ -180,45 +183,87 @@ def main(args):
         # plot all states in given J-range
         else:
             # loop over state
-            for state in mol.starkeffect_states():
-                if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
-                   and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
-                    if colorindex > len(colors)-1: colorindex = 0
-                    color = colors[colorindex]
-                    colorindex += 1
-                    fields, energies = mol.starkeffect(state)
-                    fields, mueff = mol.mueff(state)
-                    assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
-                    # print fields, energies, mueff
-                    # convert energy
-                    energies = energyconversion(energies)
-                    plt.figure(1)
-                    plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
-                    if legend: plt.legend()
-                    if plotdips == True:
-                        plt.figure(2)
-                        if dipoleunit == "invcm":
-                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
-                            plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
-                            plt.xlabel('$\epsilon$ (kV/cm)')
-                        elif dipoleunit == "MHz":
-                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
-                            plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
-                            plt.xlabel('$\epsilon$ (kV/cm)')
-                        elif dipoleunit == "GHz":
-                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color)
-                            plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
-                            plt.xlabel('$\epsilon$ (kV/cm)')
-                        elif dipoleunit == "J":
-                            plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color)
-                            plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
-                            plt.xlabel('$\epsilon$ (kV/cm)')
-                        elif dipoleunit == "D":
-                            plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color)
-                            plt.ylabel("$\mu_{eff}$ (D)")
-                            plt.xlabel('$\epsilon$ (kV/cm)')
-                        else:
-                            print("Wrong dipole unit.")
+            if vibrotor:
+                for state in mol.starkeffect_rvstates():
+                    if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
+                       and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
+                        if colorindex > len(colors)-1: colorindex = 0
+                        color = colors[colorindex]
+                        colorindex += 1
+                        fields, energies = mol.starkeffect(state)
+                        fields, mueff = mol.mueff(state)
+                        assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                        # print fields, energies, mueff
+                        # convert energy
+                        energies = energyconversion(energies)
+                        plt.figure(1)
+                        plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                        if legend: plt.legend()
+                        if plotdips == True:
+                            plt.figure(2)
+                            if dipoleunit == "invcm":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "MHz":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "GHz":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "J":
+                                plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "D":
+                                plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (D)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            else:
+                                print("Wrong dipole unit.")
+            else:
+                for state in mol.starkeffect_states():
+                    if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
+                       and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
+                        if colorindex > len(colors)-1: colorindex = 0
+                        color = colors[colorindex]
+                        colorindex += 1
+                        fields, energies = mol.starkeffect(state)
+                        fields, mueff = mol.mueff(state)
+                        assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                        # print fields, energies, mueff
+                        # convert energy
+                        energies = energyconversion(energies)
+                        plt.figure(1)
+                        plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                        if legend: plt.legend()
+                        if plotdips == True:
+                            plt.figure(2)
+                            if dipoleunit == "invcm":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "MHz":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "GHz":
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "J":
+                                plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            elif dipoleunit == "D":
+                                plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color)
+                                plt.ylabel("$\mu_{eff}$ (D)")
+                                plt.xlabel('$\epsilon$ (kV/cm)')
+                            else:
+                                print("Wrong dipole unit.")
+
     plt.show()
 
 if __name__ == "__main__":
