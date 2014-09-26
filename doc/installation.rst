@@ -42,7 +42,41 @@ re-installs while you are developing code.
 Once you are satisfied with your changes you might consider reinstalling using one of the above two
 options.
 
-.. todo:: Mention PYTHONUSERBASE variable and how to use it -- add link to Python docs.
+Installing CMIstark: in user-specified path 
+-------------------------------------------
+
+Use PYTHONUSERBASE to specify the installation path::
+
+  setenv PYTHONUSERBASE $HOME/.python
+  python setup.py install --user
+
+In the above example of installation (in tcsh shell), the module will be installed in the following path::
+
+  $HOME/.python/lib/python/site-packages
+
+and the scripts will be installed in the following path::
+
+  $HOME/.python/bin
+
+To import modules and call scripts of such user-specific installation, the following environment 
+declarifications are required::
+
+  setenv PATH /opt/local/bin:$HOME/.python/bin:$PATH
+  setenv PYTHONUSERBASE $HOME/.python
+
+The above example is provided for the tcsh shell. You can also then use ``site`` module of python
+in python command prompt to make sure the environment is properly set up. For example::
+
+  >>> import site
+  >>> site.USER_BASE
+  '$HOME/.python'
+
+Also type "which ``name of script file``" to find the real path of the script called. It should
+be in "$HOME/.python/bin".
+
+For further details, see https://docs.python.org/3/install/index.html#inst-alt-install-user and
+https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE  
+
 
 .. todo:: For the ``develeop`` install, please add link to its primary documentation in
           Python/setuptools documentation.
