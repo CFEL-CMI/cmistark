@@ -1082,6 +1082,12 @@ class AsymmetricRotor(Rotor):
 class VibratingAsymmetricRotor(Rotor):
     """Representation of a vibrating asymmetric top for energy level calculation purposes.
 
+    In this prototype class, we assume that dipole moment is approximated to the product 
+    
+    of direct cosine (for rotation) and amplitude as function of vib. coordinate (for vib),
+
+    so that symmetries of rot. and vib. levels are treated individually.
+
     This object will calculate rotational energies of different vibrational levels at the specified 
 
     DC field strength for the given M-value and J-range.
@@ -1237,24 +1243,23 @@ class VibratingAsymmetricRotor(Rotor):
         muA, muB, muC = self.dipole
         if self.dipole_components[0]:
             # matrix elements involving µ_a
-            for Va in range(Vmin, Vmax+1):
-                for Vb in range(Vmin, Vmax+1):
-                    #print("debug stark_DC, Va, Vb, Vmin", Va, Vb, Vmin)
-                    for J in range(Jmin, Jmax):
-                        for K in range(-J, J+1):
-                            if 0 != M and 0 != K: # then also 0 != J
-                                hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -muA * dcfield * M * K / (J*(J+1)) * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                            value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
-                                      / ((J+1) * sqrt((2*J+1) * (2*J+3))))
-                            hmat[self.index(J+1, K, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                            hmat[self.index(J, K, Va), self.index(J+1, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                    # final diagonal elements
-                    J = Jmax
+            for (Va,Vb) in [(Va,Vb) for Va in range(Vmin,Vmax+1) for Vb in range(Vmin,Vmax+1)]:
+                #print("debug stark_DC, Va, Vb, Vmin", Va, Vb, Vmin)
+                for J in range(Jmin, Jmax):
                     for K in range(-J, J+1):
-                        hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -1. * M * K / (J*(J+1)) * muA * dcfield * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        if 0 != M and 0 != K: # then also 0 != J
+                            hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -muA * dcfield * M * K / (J*(J+1)) * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
+                                  / ((J+1) * sqrt((2*J+1) * (2*J+3))))
+                        hmat[self.index(J+1, K, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J+1, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                # final diagonal elements
+                J = Jmax
+                for K in range(-J, J+1):
+                    hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -1. * M * K / (J*(J+1)) * muA * dcfield * self.vibcopstr[Va-Vmin,Vb-Vmin]
         if self.dipole_components[1]:
             # matrix elements involving µ_b
-            for V in range(Vmin, Vmax+1):
+            for (Va,Vb) in [(Va,Vb) for Va in range(Vmin,Vmax+1) for Vb in range(Vmin,Vmax+1)]:
                 for J in range(Jmin, Jmax):
                     for K in range(-J, J+1):
                         if 0 != J:
@@ -1273,7 +1278,7 @@ class VibratingAsymmetricRotor(Rotor):
                         hmat[self.index(J, K, Va), self.index(J+1, K-1, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
         if  self.dipole_components[2]:
             # matrix elements involving µ_c
-            for V in range(Vmin, Vmax+1):
+            for (Va,Vb) in [(Va,Vb) for Va in range(Vmin,Vmax+1) for Vb in range(Vmin,Vmax+1)]:
                 for J in range(Jmin, Jmax):
                     for K in range(-J, J+1):
                         if 0 != J:
