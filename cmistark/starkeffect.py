@@ -1237,19 +1237,21 @@ class VibratingAsymmetricRotor(Rotor):
         muA, muB, muC = self.dipole
         if self.dipole_components[0]:
             # matrix elements involving µ_a
-            for Va, Vb in enumerate(range(Vmin, Vmax+1)):
-                for J in range(Jmin, Jmax):
+            for Va in range(Vmin, Vmax+1):
+                for Vb in range(Vmin, Vmax+1):
+                    #print("debug stark_DC, Va, Vb, Vmin", Va, Vb, Vmin)
+                    for J in range(Jmin, Jmax):
+                        for K in range(-J, J+1):
+                            if 0 != M and 0 != K: # then also 0 != J
+                                hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -muA * dcfield * M * K / (J*(J+1)) * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                            value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
+                                      / ((J+1) * sqrt((2*J+1) * (2*J+3))))
+                            hmat[self.index(J+1, K, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                            hmat[self.index(J, K, Va), self.index(J+1, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                    # final diagonal elements
+                    J = Jmax
                     for K in range(-J, J+1):
-                        if 0 != M and 0 != K: # then also 0 != J
-                            hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -muA * dcfield * M * K / (J*(J+1)) * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                        value = (-muA * dcfield * sqrt((J+1)**2 - K**2) * sqrt((J+1)**2 - M**2)
-                                  / ((J+1) * sqrt((2*J+1) * (2*J+3))))
-                        hmat[self.index(J+1, K, Va), self.index(J, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                        hmat[self.index(J, K, Va), self.index(J+1, K, Vb)] += value * self.vibcopstr[Va-Vmin,Vb-Vmin]
-                # final diagonal elements
-                J = Jmax
-                for K in range(-J, J+1):
-                    hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -1. * M * K / (J*(J+1)) * muA * dcfield * self.vibcopstr[Va-Vmin,Vb-Vmin]
+                        hmat[self.index(J, K, Va), self.index(J, K, Vb)] += -1. * M * K / (J*(J+1)) * muA * dcfield * self.vibcopstr[Va-Vmin,Vb-Vmin]
         if self.dipole_components[1]:
             # matrix elements involving µ_b
             for V in range(Vmin, Vmax+1):
@@ -1873,15 +1875,15 @@ if __name__ == "__main__":
 
     p = CalculationParameter
     p.Jmax_calc = 4
-    p.Jmax_save = 1
+    p.Jmax_save = 0
     p.M = [0]
     p.type = 'VA'
     p.isomer = 0
     p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
     p.quartic = cmiext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
     p.dipole = cmiext.convert.D2Cm([1.0, 0.0, 0.0])
-    p.vibeng = num.array([0.0, 1.e-23])
-    p.vibcopstr = num.array([[1., 0.],[0., 0.]])
+    p.vibeng = num.array([0.0, 5.e-22])
+    p.vibcopstr = num.array([[1., 1.],[1., 1.]])
     p.watson = 'A'
     p.symmetry = 'C2a'
     iRotor = VibratingAsymmetricRotor
@@ -1891,7 +1893,7 @@ if __name__ == "__main__":
             #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
             top.energy(RVState(0, 0, 0, M, 0, p.isomer))
-            for state in [RVState(0, 0, 0, M, 0, p.isomer),
+            for state in [RVState(0, 0, 0, M, 0, p.isomer), RVState(0, 0, 0, M, 1, p.isomer),
 #                          State(1, 0, 1, M, p.isomer), State(2, 0, 2, M, p.isomer), State(3, 0, 3, M, p.isomer),
 #                          State(4, 0, 4, M, p.isomer), State(5, 0, 5, M, p.isomer), State(2, 2, 0, M, p.isomer),
 #                          State(3, 2, 1, M, p.isomer), State(6, 0, 6, M, p.isomer), State(4, 2, 2, M, p.isomer),
@@ -1902,7 +1904,7 @@ if __name__ == "__main__":
 #                          State(10, 2, 8, M, p.isomer), State(5, 4, 1, M, p.isomer), State(12, 0, 12, M, p.isomer),
                           ]:
                 if state.M() <= state.J() and state.J() <= p.Jmax_save:
-                    print(state.name(), state.id(), top.energy(state))
+                    print(state.name(), top.energy(state))
 #                    line = line + str(jkext.convert.J2invcm(top.energy(state))) + " "
 #            print line
 
