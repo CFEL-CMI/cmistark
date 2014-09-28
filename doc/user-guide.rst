@@ -9,21 +9,30 @@ Imaging group (CMI) at the Center for Free-Electron Laser Science (CFEL),
 Hamburg, Germany.
 
 It is documented in
-  Computer Physics Communications
-  arXiv:1308.4076 [physics]
+  Computer Physics Communications [Chang2014]_
+  arXiv:1308.4076 [physics] (eprint of the above CPC paper) [Chang2014arxiv]_
 
-.. todo:: Add links to (both, CPC and arXiv) full references in references.rst
-          for the above documentation; the above lines should also contain the
-          (one) title. Make sure it is obvious that it is two copies of the same
-          paper.
 
 General usage
 -------------
 
-.. todo:: Please provide a full example. I.e., provide example command to
-          calculate, plot, and print the Stark curves of, let's say, water and
-          provide the example output (graphic and ASCII output) of the
-          plot/print into this documentation.
+The following provides examples of the general usage.
+
+Calculate the Stark energies of water::
+
+    cmistark_calculate_energy --isomer=0 --Jmax_calc=10 --Jmax_save=2 --water --dc-fields=0:150:16
+
+After the calculation finishes, it yields a Stark energy file ``water.molecule``.
+
+Plot the Stark energy file ``water.molecule``::
+
+    cmistark_plot_energy --Jmax=0 water.molecule
+
+A plot of the Stark energy of J=0 state for water will be created.
+
+Print the Stark energy from the file ``water.molecule``::
+
+    cmistark_print_energy --Jmax=0 water.molecule
 
 
 

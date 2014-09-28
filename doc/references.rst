@@ -4,7 +4,8 @@ References
 .. [Blanco2003] Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
 .. [Caminati1990] W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
 .. [Chang2011] Yuan-Pin Chang (2011)
-.. [Chang2014] Yuan-Pin Chang et al, Comp. Phys. Comm. (2014), DOI:
+.. [Chang2014] Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, Comp. Phys. Comm., 185, 339 (2014), DOI: `10.1016/j.cpc.2013.09.001 <http://dx.doi.org/10.1016/j.cpc.2013.09.001>`_
+.. [Chang2014arxiv] Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, arXiv: `1308.4076 [physics] <http://arxiv.org/abs/1308.4076>`_
 .. [Clough1973] Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
 .. [DeLucia1971] F.C. De Lucia, R.L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
 .. [DeLucia1974] F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
