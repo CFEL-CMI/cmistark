@@ -9,8 +9,9 @@ Imaging group (CMI) at the Center for Free-Electron Laser Science (CFEL),
 Hamburg, Germany.
 
 It is documented in
-  Computer Physics Communications [Chang2014]_
-  arXiv:1308.4076 [physics] (eprint of the above CPC paper) [Chang2014arxiv]_
+
+* Computer Physics Communications [Chang2014]_
+* arXiv:1308.4076 [physics] (eprint of the above CPC paper) [Chang2014arxiv]_
 
 
 General usage
@@ -34,6 +35,26 @@ Print the Stark energy from the file ``water.molecule``::
 
     cmistark_print_energy --Jmax=0 water.molecule
 
+And the print result is::
+
+    # state: 0 0 0 0 0
+    0.0 0.0 0.0
+    10.0 -26.1645127287 5.23264284222
+    20.0 -104.652856844 10.4642471557
+    30.0 -235.449455843 15.6937755522
+    40.0 -418.528367889 20.9201929214
+    50.0 -653.853314271 26.1424675625
+    60.0 -941.377719139 31.3595723071
+    70.0 -1281.04476041 36.57048563
+    80.0 -1672.78743174 41.7741927455
+    90.0 -2116.52861532 46.9696866871
+    100.0 -2612.18116548 52.1559693657
+    110.0 -3159.64800264 57.332052607
+    120.0 -3758.82221762 62.496959162
+    130.0 -4409.58718588 67.6497236918
+    140.0 -5111.81669146 72.7893937211
+    150.0 -5865.3750603 72.7893937211
+    Closing remaining open files:water.molecule...done
 
 
 cmistark_calculate_energy
@@ -98,17 +119,10 @@ The script file called ``cmistark_plot_energy`` can access existing Stark files
   --Jmin=, --Jmax=: specify min. or max. value of J
   --Mmin=, --Mmax=: specify min. or max. value of M
   --Kamax=: specify max. value of Ka
-  --states=: specify states to plot, format: "000,1010"
+  --states=: specify states to plot, format: J K_a K_c or J K_a K_c M, when M is not specified, 
+             all M levels of the J state are plotted. Example: "000,1010"
   --dipole: plot the effective dipole moments
   --isomer=: specify which isomer to plot
-
-
-.. todo:: TM: This example is unclear, as the first number has 3 values, and
-          the 2nd 4. Should the first number have been 0000?
-
-          JK: It is correct, but unclear... Yuan-Pin, please add real
-          documentation on the actual meaning and possible values of the
-          parameters (for all scripts).
 
 Example of using ``cmistark_plot_energy`` with options::
 
