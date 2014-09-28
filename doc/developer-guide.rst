@@ -94,7 +94,8 @@ structures::
     /_J/_Ka/_Kc/_M/_isomer/dcstarkenergy
 
 
-.. todo:: provide/describe relation to ``State``-labels
+The state label (:math:`J`, :math:`K_a`, :math:`K_c`, :math:`M`, isomer)
+is manifested as a dictionary strcuture here for storing state-specific information.
 
 The following example source code of Python shows how to read the curve for the
 00000 state from ``<moleculename>.molecule`` by using PyTables::

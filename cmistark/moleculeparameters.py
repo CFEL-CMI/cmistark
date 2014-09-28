@@ -270,8 +270,7 @@ def water(param):
 
     Default isomers are '0' for water/H2O, '1' for D2O, and '2' for HDO.
 
-    .. seealso:: These molecular parameters and references are also listed at
-        http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
+    .. seealso:: These molecular parameters and references are also listed at `NIST Spectral Database <http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html>`_
 
     """
     param.name = "water"
@@ -298,14 +297,14 @@ def water(param):
 def OCS(param):
     """Molecular parameters for OCS
 
-    Paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
-    Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346-351 (1974).
+    Paramters from `NIST Spectral Database <http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html>`_ and
+    [Reinartz1974]_.
 
     Implemented isomers are
 
-0. using above parameters with linear-rotor hamiltonian
-1. using above parameters with symmetric-rotor hamiltonian
-2. using above parameters with asymmetric-rotor hamiltonian
+    0. using above parameters with linear-rotor hamiltonian
+    1. using above parameters with symmetric-rotor hamiltonian
+    2. using above parameters with asymmetric-rotor hamiltonian
     """
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
@@ -330,10 +329,9 @@ def OCS(param):
 
 
 def iodomethane(param):
-    """B, DJ, and DK constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53-65 (1987) and
-    Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401-404 (1989).
+    """B, DJ, and DK constants from [Wlodarczak1987]_ and [Gadhi1989]_.
 
-    A and DK constants from Pietilä, Koivusaari, Alanko, & Anttila, Mol Phys 87, 523 (1996)
+    A and DK constants from [Pietila1996]_.
 
     Implemented isomers are
     0  - above constants using symmetric-top Hamiltonian
@@ -357,7 +355,8 @@ def iodomethane(param):
 
 
 def difluoro_iodobenzene(param):
-    # parameters from simple ab initio calculations (Jochen Küpper, 2010)
+    """ parameters from simple ab initio calculations [Kuepper2010]_
+    """
     param.name = "2,6-difluoro-iodobenzene"
     param.type = 'A'
     param.watson = 'A'
@@ -373,7 +372,7 @@ def diiodoethane(param):
     1  -  gauge-conformation (C2 symmetry)
 
     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study", J. Phys. Chem. A, 109, 10451-10458 (2005)
+    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
 
     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
     """
@@ -391,7 +390,8 @@ def diiodoethane(param):
 
 
 def two_aminobenzonitrile(param):
-    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    """ [Miller2009]_
+    """
     param.name = "2-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -402,7 +402,8 @@ def two_aminobenzonitrile(param):
 
 
 def three_aminobenzonitrile(param):
-    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    """ [Miller2009]_
+    """
     param.name = "3-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -413,7 +414,8 @@ def three_aminobenzonitrile(param):
 
 
 def four_aminobenzonitrile(param):
-    # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
+    """ [Borst2001]_
+    """
     param.name = "4-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -424,7 +426,8 @@ def four_aminobenzonitrile(param):
 
 
 def benzonitrile(param):
-    # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
+    """ [Wohlfart2008]_
+    """
     param.name = "benzonitrile"
     param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
     param.type = 'A'
@@ -471,7 +474,8 @@ def glycine(param):
 
 
 def iodobenzene(param):
-    # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
+    """ [Dorosh2007]
+    """
     param.name = "iodobenzene"
     param.watson = 'A'
     param.symmetry = 'C2a'
@@ -482,7 +486,8 @@ def iodobenzene(param):
 
 
 def phenylpyrrole(param):
-    # A. J. Fleisher
+    """ A. J. Fleisher
+    """
     param.name = "phenylpyrrole"
     param.watson = 'A'
     param.symmetry = 'C2a'
@@ -493,11 +498,10 @@ def phenylpyrrole(param):
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
         Parameters (rot con and quadratic) for isomer = 0 (cis) from
-        Dutta et al, Pramana â€“ J. Phys. 24 (1985) 499â€“502, "Microwave spectrum of cis 3-FP"
+        [Dutta1985]_
         for isomer = 1 (trans) from
-        Jaman et al, J.of Mol. Spec., 86, 269.274 (1981) "Microwave Spectrum of 3-FP" for
-        dipoles from Songhee Han (YPChang)
-        Isomer 11 (cis) and 12 (trans) from Songhee Han (YPChang)
+        [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
+        Isomer 11 (cis) and 12 (trans) from [Songhee2011]_ (YPChang)
         Isomer 13 (cis) and 14 (trans) calculated by Yuan-Pin Chang, also the dipole moments
         """
     param.name = "three_fluorophenol"
