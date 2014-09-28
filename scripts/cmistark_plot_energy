@@ -79,6 +79,7 @@ def main(args):
     legend = False
     plotdips = False
     verbose = False
+    vibrotor = False
     # scan commandline
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -183,7 +184,7 @@ def main(args):
         # plot all states in given J-range
         else:
             # loop over state
-            if vibrotor:
+            if vibrotor != True:
                 for state in mol.starkeffect_rvstates():
                     if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
                        and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):
