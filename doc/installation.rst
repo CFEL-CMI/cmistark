@@ -42,6 +42,8 @@ re-installs while you are developing code.
 Once you are satisfied with your changes you might consider reinstalling using one of the above two
 options.
 
+Fur further details of ``develop`` install, see https://pythonhosted.org/setuptools/setuptools.html#development-mode
+
 Installing CMIstark: in user-specified path 
 -------------------------------------------
 
@@ -76,10 +78,6 @@ be in "$HOME/.python/bin".
 
 For further details, see https://docs.python.org/3/install/index.html#inst-alt-install-user and
 https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE  
-
-
-.. todo:: For the ``develeop`` install, please add link to its primary documentation in
-          Python/setuptools documentation.
 
 .. comment
    Local Variables:

@@ -34,7 +34,7 @@ The relevant parameters are:
   - asymmetric top
 
     - in Watson's A reduction: :math:`(\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K})`
-    - in Watson's S reduction: :math:`(\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K})`
+    - in Watson's S reduction: :math:`(D_{J}, D_{JK}, D_{K}, d_{1}, d_{2})`
 
 - param.dipole: dipole moments
 
@@ -56,7 +56,7 @@ The relevant parameters are:
     - prolate: *p*
     - oblate: *s*
 
-  - asymmetric top (for M != 0 cases, the program takes care the M = 0 case itself):
+  - asymmetric top (for :math:`M != 0` cases, the program takes care the :math:`M = 0` case itself):
 
     - only :math:`\mu_a != 0`: *C2a*
     - only :math:`\mu_b != 0`: *C2b*
@@ -70,7 +70,6 @@ The relevant parameters are:
 
 All relevant parameters for molecules of interest need to be properly implemented here.
 
-.. todo:: Watson S-red. is wrong, pelase fix
 """
 
 import numpy as num
