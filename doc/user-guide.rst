@@ -19,6 +19,13 @@ General usage
 
 The following provides examples of the general usage.
 
+.. todo:: Yuan-Pin, you misunderstood my earlier todos. You should first write
+          about the general usagem adn then provide a specific example command
+          at the end of the section of each tool. Put together, these shall give
+          a working example. At every stage, you should provide info on the
+          actual output. It will surely be very useful to even provide the
+          output graphics of ``plot``.
+
 Calculate the Stark energies of water::
 
     cmistark_calculate_energy --isomer=0 --Jmax_calc=10 --Jmax_save=2 --water --dc-fields=0:150:16
@@ -84,8 +91,8 @@ Stark curve of each quantum state starts from 0 to 150kV/cm with a step of
 1kV/cm.
 
 The output file ``<moleculename>.molecule`` stores Stark curves of individual
-quantum states a data format called HDF5. Such a file format can be read directly
-by using PyTables packages in Python. Two scripts in this program,
+quantum states a data format called HDF5. Such a file format can be read
+directly by using PyTables packages in Python. Two scripts in this program,
 ``cmistark_plot_energy`` and ``cmistark_print_energy`` are provided to easily
 access these ``<moleculename>.molecule`` files. Their options and descriptions
 are provided below.
@@ -95,7 +102,8 @@ cmistark_print_energy
 ---------------------
 
 The script file called ``cmistark_print_energy`` can access existing Stark files
-(``<moleculename>.molecule``) and print the stored curves on the screen. Options::
+(``<moleculename>.molecule``) and print the stored curves on the screen.
+Options::
 
   --help: help
   --Jmin=, --Jmax=: specify min. or max. value of J
