@@ -23,9 +23,9 @@ The relevant parameters are:
 
 - param.rotcon: rotational constants
 
- - linear top: :math:`B`
- - symmetric top: :math:`(A,B)` for prolate, :math:`(B,C)` for oblate
- - asymmetric top: :math:`(A,B,C)`
+  - linear top: :math:`B`
+  - symmetric top: :math:`(A,B)` for prolate, :math:`(B,C)` for oblate
+  - asymmetric top: :math:`(A,B,C)`
 
 - param.quartic: centrifugal distortion constants
 
@@ -160,7 +160,13 @@ def three_aminophenol(param):
 
 
 def oblate_symmetric_top(param):
-    """Molecular parameters for an artificial oblate top"""
+    """Molecular parameters for an artificial oblate top
+
+    Implemented isomers are
+
+    0. rotor type is set to 'S' - symmetric top, and symmetry is set to 'o' - oblate
+    1. rotor type is set to 'A' - asymmetric top, and symmetry is set to 'C2c' - only u_c != 0
+    """
     param.name = "oblate_symmetric_top"
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     if 0 == param.isomer:
@@ -270,7 +276,7 @@ def water(param):
 
     Default isomers are '0' for water/H2O, '1' for D2O, and '2' for HDO.
 
-    .. seealso:: These molecular parameters and references are also listed at `NIST Spectral Database <http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html>`_
+    .. seealso:: These molecular parameters and references are also listed at NIST Spectral Database - H2O [NISTspecDB_H2O]_
 
     """
     param.name = "water"
@@ -297,8 +303,7 @@ def water(param):
 def OCS(param):
     """Molecular parameters for OCS
 
-    Paramters from `NIST Spectral Database <http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html>`_ and
-    [Reinartz1974]_.
+    Paramters from NIST Spectral Database - OCS [NISTspecDB_OCS]_ and [Reinartz1974]_.
 
     Implemented isomers are
 
@@ -334,8 +339,8 @@ def iodomethane(param):
     A and DK constants from [Pietila1996]_.
 
     Implemented isomers are
-    0  - above constants using symmetric-top Hamiltonian
-    1  - above constants using asymmetric-top Hamiltonian
+    0. above constants using symmetric-top Hamiltonian
+    1. above constants using asymmetric-top Hamiltonian
     """
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
@@ -355,7 +360,7 @@ def iodomethane(param):
 
 
 def difluoro_iodobenzene(param):
-    """ parameters from simple ab initio calculations [Kuepper2010]_
+    """ parameters from simple ab initio calculations [Kuepper2010]_.
     """
     param.name = "2,6-difluoro-iodobenzene"
     param.type = 'A'
@@ -367,14 +372,16 @@ def difluoro_iodobenzene(param):
 
 
 def diiodoethane(param):
-    """Molecular parameters for diiodo-ethane, implemented isomers are
-    0  -  anti-conformation (C2h symmetry)
-    1  -  gauge-conformation (C2 symmetry)
+    """Molecular parameters for diiodo-ethane. 
+
+    Implemented isomers are
+    0.  anti-conformation (C2h symmetry)
+    1.  gauge-conformation (C2 symmetry)
 
     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
 
-    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
+    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
     """
     param.name = "diiodoethane"
     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
@@ -390,7 +397,7 @@ def diiodoethane(param):
 
 
 def two_aminobenzonitrile(param):
-    """ [Miller2009]_
+    """ See [Miller2009]_
     """
     param.name = "2-aminobenzonitrile"
     param.type = 'A'
@@ -402,7 +409,7 @@ def two_aminobenzonitrile(param):
 
 
 def three_aminobenzonitrile(param):
-    """ [Miller2009]_
+    """ See [Miller2009]_
     """
     param.name = "3-aminobenzonitrile"
     param.type = 'A'
@@ -414,7 +421,7 @@ def three_aminobenzonitrile(param):
 
 
 def four_aminobenzonitrile(param):
-    """ [Borst2001]_
+    """ See [Borst2001]_
     """
     param.name = "4-aminobenzonitrile"
     param.type = 'A'
@@ -426,7 +433,7 @@ def four_aminobenzonitrile(param):
 
 
 def benzonitrile(param):
-    """ [Wohlfart2008]_
+    """ See [Wohlfart2008]_
     """
     param.name = "benzonitrile"
     param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
@@ -442,12 +449,12 @@ def glycine(param):
     """Molecular parameters for TEST glycine
 
         Implemented isomers are
-        0  -  Paper
-        1  -  Paper
-        2  -  Anthony Meijer
-        3  -  Anthony Meijer
-        4  -  Test
-        5  -  Test
+        0.  Paper
+        1.  Paper
+        2.  Anthony Meijer
+        3.  Anthony Meijer
+        4.  Test
+        5.  Test
         """
     param.name = "glycine"
     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
@@ -474,7 +481,7 @@ def glycine(param):
 
 
 def iodobenzene(param):
-    """ [Dorosh2007]
+    """ See [Dorosh2007]
     """
     param.name = "iodobenzene"
     param.watson = 'A'
@@ -497,12 +504,14 @@ def phenylpyrrole(param):
 
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
-        Parameters (rot con and quadratic) for isomer = 0 (cis) from
-        [Dutta1985]_
-        for isomer = 1 (trans) from
-        [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
-        Isomer 11 (cis) and 12 (trans) from [Songhee2011]_ (YPChang)
-        Isomer 13 (cis) and 14 (trans) calculated by Yuan-Pin Chang, also the dipole moments
+        
+        Implemented isomers are
+        0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
+        1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
+        11. cis, from [Songhee2011]_ (YPChang)
+        12. trans, from [Songhee2011]_ (YPChang
+        13. cis, calculated by Yuan-Pin Chang, also the dipole moments
+        14. trans, calculated by Yuan-Pin Chang, also the dipole moments
         """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
@@ -531,7 +540,9 @@ def three_fluorophenol(param):
         param.dipole = convert.D2Cm(num.array([2.747456, -0.144641, 0.0]))
 
 def sulfur_dioxide(param):
-    # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
+    """ Rotational constants from [Helminger1985]_
+        Dipole moments from [Patel1979]_
+    """
     param.name = "sulfur_dioxide"
     param.watson = 'A'
     param.symmetry = 'C2b'
@@ -541,14 +552,14 @@ def sulfur_dioxide(param):
     param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6]))
     # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
     param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
-    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
+    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.]))
 
 
 def nitrogen_dioxide(param):
-    """Molecular parameters for NO2
+    """Molecular parameters for :math:`\\text{N}\\text{O}_2`
 
-    rot. const.: A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976).
-    dipole moment: J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963)
+    rot. const.: [Cabana1976]_
+    dipole moment: [Hodgeson1963]_
     """
     param.name = "nitrogen_dioxide"
     param.watson = 'A'
@@ -559,12 +570,10 @@ def nitrogen_dioxide(param):
 
 
 def nitrous_oxide(param):
-    """Molecular parameters for N2O
+    """Molecular parameters for :math:`\\text{N}_2\\text{O}`
 
-    rot. const.: B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, J. Mol. Spectrosc. 62, 125 (1976).
-    dipole moment: L.H. Scharpen, J.S. Muenter, and V.W. Laurie, J. Chem. Phys. 53, 2513 (1970).
-
-.. todo:: Please use references (see water, for example).
+    rot. const.: [Andreev1976]
+    dipole moment: [Scharpen1970]
 
     """
     param.name = "nitrous_oxide"
@@ -575,23 +584,15 @@ def nitrous_oxide(param):
     param.quartic  = convert.Hz2J(num.array([5.2808e6]))
 
 
-def MVK(param):
-    """Molecular parameters for MVK (Methyl Vinyl Ketone)
+def methylvinylketone(param):
+    """Molecular parameters for Methyl Vinyl Ketone
 
-    0 - cis:
-    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    dipole moment: MP2 calculation results with 0.81 scaling factor from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    1 - trans:
-    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    dipole moment: P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965)
+    Implemented isomers are
+    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from [Wilcox2011]_ with 0.81 scaling factor
+    1. trans, experimental  rot. const. of A symmetry from [Wilcox2011]_, and experimental dipole moment: [Foster1965]_
 
-.. todo:: Get formatting of the entry right...
-
-.. todo:: Please use references (see water, for example).
-
-.. todo:: Rename function and parameter to ``methylvinylketone``
     """
-    param.name = "MVK"
+    param.name = "methylvinylketone"
     param.type = 'A'
     param.symmetry = 'N'
     if param.isomer == 0: #cis
@@ -603,7 +604,9 @@ def MVK(param):
 
 
 def six_chloropyridazine_three_carbonitrile(param):
-    """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
+    """ Molecular parameters for 6-chloropyridazine-3-carbonitrile
+
+    Gaussian 2003 B3LYP/aug-pc-1; see [Hansen]_"""
     param.name = "6-chloropyridazine-3-carbonitrile"
     param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
     param.type = 'A'
@@ -618,9 +621,10 @@ def six_chloropyridazine_three_carbonitrile(param):
 
 
 def sulfur_monoxide(param):
-    """
-    rotcon, dipole: NIST (http://cccbdb.nist.gov/exp2.asp?casno=13827322)
-    quartic: Veseth, Lofthus, Molecular Physics 27, 2 511-519 (1974)
+    """ Molecular parameters for SO
+
+    rotcon, dipole: [NISTCCCBD_SO]_
+    quartic: [Veseth1974]_
     """
     param.name = "sulfur_monoxide"
     param.mass = Masses['S'] + Masses['O']
@@ -630,9 +634,10 @@ def sulfur_monoxide(param):
     param.quartic  = convert.Hz2J(num.array([33.577e3]))
 
 def carbon_monoxide(param):
-    """
-    rotcon, dipole: NIST (http://cccbdb.nist.gov)
-    quartic: Mina-Camilde et al. JCE 73 p.804 (1996) (http://web.ist.utl.pt/farinha/LQF/pdf_files/CO_ref4_JCE1986.pdf)
+    """ Molecular parameters for CO
+
+    rotcon, dipole: [NISTCCCBD_CO]_
+    quartic: [MinaCamilde1996]_
     """
     param.name = "carbon_monoxide"
     param.mass = Masses['C'] + Masses['O']
@@ -642,10 +647,10 @@ def carbon_monoxide(param):
     param.quartic  = convert.invcm2J(num.array([202.360e3]))
 
 def five_cyanoindole(param):
-    """Molecular parameters for 5-cyanoindole
+    """ Molecular parameters for 5-cyanoindole
 
-    Experimental values for rot constants from Oelterman et al, PCCP 14, 10266 (2012).
-    Dipole values calculated (aug-cc-pVTZ basis, see Daniel for details)
+    Experimental values for rot constants from [Oelterman2012]_.
+    Dipole values calculated (aug-cc-pVTZ basis, see [Horke]_ for details)
     """
 
     param.name = "5-cyanoindole"
@@ -657,18 +662,13 @@ def five_cyanoindole(param):
 
 
 def uracil(param):
-    """
-    Dipole & Rot. constants:
-    R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, J. Am. Chem. Soc., 1988, 110, 2329
-    Dipole errors are estimated by 10%
+    """ Molecular parameters for uracil
 
-    Centr. dist. const:
-    By: Brunken, S.; McCarthy, M. C.; Thaddeus, P.; et al.
-    ASTRONOMY & ASTROPHYSICS  Volume: 459   Issue: 1   Pages: 317-320   Published: NOV 2006
+    Dipole & Rot. constants: [Brown1988]_, Dipole errors are estimated by 10%
 
-    Good summary:
-    Puzzarini, Cristina; Barone, Vincenzo
-    PHYSICAL CHEMISTRY CHEMICAL PHYSICS  Volume: 13   Issue: 15   Pages: 7158-7166   Published: 2011
+    Centr. dist. const: [Brunken2006]_
+
+    Good summary: [Puzzarini2011]_
     """
     param.name = "uracil"
     param.mass = 4 * Masses['C'] + 4 * Masses['H'] + 2 * Masses['N'] + 2 * Masses['O']
