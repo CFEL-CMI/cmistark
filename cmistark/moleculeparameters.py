@@ -246,11 +246,13 @@ def indole_water1(param):
 
 
 def indole_water2(param):
-    """Molecular parameters for indole-(water)_2
+    """Molecular parameters for indole-(water):math:`_2`
 
     Implemented isomers are
 
     0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by [Chang2011]_; see [Trippel2012]_
+
+    .. todo:: See the math-usage and implement it for all sub- and super-scripts (if any)
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
@@ -371,7 +373,7 @@ def difluoro_iodobenzene(param):
 
 
 def diiodoethane(param):
-    """Molecular parameters for diiodo-ethane. 
+    """Molecular parameters for diiodo-ethane.
 
     Implemented isomers are
     0.  anti-conformation (C2h symmetry)
@@ -503,7 +505,7 @@ def phenylpyrrole(param):
 
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
-        
+
         Implemented isomers are
         0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
         1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
