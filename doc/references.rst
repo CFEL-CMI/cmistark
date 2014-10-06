@@ -23,6 +23,10 @@ References
                <http://dx.doi.org/10.1016/j.cpc.2013.09.001>`_
 .. [Chang2014arxiv] Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, arXiv:
                     `1308.4076 [physics] <http://arxiv.org/abs/1308.4076>`_
+
+.. todo:: replace  [Chang2014arxiv]_ by CPC reference, always add arxiv as regular secondary
+          indentifier ("arXiv:1308.4076 [physics] <http://arxiv.org/abs/1308.4076>")
+
 .. [Clough1973] Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973), DOI:
                 `10.1063/1.1680328 <http://dx.doi.org/10.1063/1.1680328>`_
 .. [DeLucia1971] F.C. De Lucia, R.L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334
@@ -57,9 +61,9 @@ References
 .. [Kong2005] QY Kong and J Kim and M Lorenc and TK Kim and H Ihee and M Wulff, J. Phys. Chem. A,
               109, 10451-10458 (2005), DOI: `10.1021/jp053390q
               <http://dx.doi.org/10.1021/jp053390q>`_
-.. [Korter1998] Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998), DOI: `10.1021/jp982456x
+.. [Korter1998] Korter, Pratt, Küpper, J. Phys. Chem. A 102, 7211 (1998), DOI: `10.1021/jp982456x
                 <http://dx.doi.org/10.1021/jp982456x>`_
-.. [Kuepper2010] J. Kuepper, 2010
+.. [Kuepper2010] J. Küpper, 2010
 .. [Miller2009] Diane M. Miller, Philip J. Morgan and David W. Pratt, J. Phys. Chem. A, 2009 vol.
                 113 (25) pp. 6964-6970, DOI: `10.1021/jp9017585
                 <http://dx.doi.org/10.1021/jp9017585>`_
@@ -105,15 +109,20 @@ References
                     DOI: `10.1016/0022-2852(87)90120-2
                     <http://dx.doi.org/10.1016/0022-2852(87)90120-2>`_
 
-.. todo:: References only give a aname and a year are not useful... If that;s what it is, say
-          private communication. But try to avoid it.
-
-.. todo:: the output formatiing should be much nicer... not sure how to do this, but please check.
+.. todo:: References only give a name and a year (and possibly a twon) are not useful... If it's
+          what it is, say private communication. But try to avoid it.
 
 .. todo:: For NIST SPec DB I would only provide references for general
           http://www.nist.gov/pml/data/msd-di/index.cfm,
           http://www.nist.gov/pml/data/msd-tri/index.cfm, etc. or maybe even only one entry pointing
           at http://www.nist.gov/pml/data/molspec.cfm
+
+.. todo:: Please write correct names, e.g., using the appropriate umlauts.
+
+.. todo:: journals should be printed in italics, volumes in bold
+
+.. todo:: the output formatting should be much nicer... not sure how to do this, but please check.
+          Maybe we can have a table or something like that?
 
 .. comment
    Local Variables:
