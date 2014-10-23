@@ -121,9 +121,15 @@ def vibrating_asymmetric_top(param):
     if param.isomer == 0:
         param.symmetry = 'C2a'
         param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
-        param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
-        param.vibeng = convert.invcm2J(num.array([0.0, 0.1]))
-        param.vibcopstr = num.array([[1.,0.],[0.,0.]])
+        param.dipole = convert.D2Cm(num.array([2., 0., 0.]))
+        param.vibeng = convert.invcm2J(num.array([0.0, 76.54, 118.68]))
+        param.vibcopstr = num.array([[1.,1.,1.],[1.,1.,1.],[1.,1.,1.]])
+    elif param.isomer == 1:
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
+        param.dipole = convert.D2Cm(num.array([2., 0., 0.]))
+        param.vibeng = convert.invcm2J(num.array([0.0, 76.54, 118.68]))
+        param.vibcopstr = num.array([[1.,0.,0.],[0.,1.,0.],[0.,0.,1.]])
 
 
 def three_aminophenol(param):

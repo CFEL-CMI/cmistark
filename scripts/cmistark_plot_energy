@@ -156,35 +156,62 @@ def main(args):
         # plot energie
         # use user given states, if available
         if None != userstates:
-            for userstate in userstates.split(","):
-                # if no m-value is specified, take all M=J values
-                mValues = list(range(0,int(userstate[0])+1,1))
-                # if a certain m is desired only take this one
-                if (len(userstate)>3):
-                    mValues = [int(userstate[3])]
-                for iso in isomer:
-                    for m in mValues:
-                        if colorindex > len(colors)-1: colorindex = 0
-                        color = colors[colorindex]
-                        colorindex += 1
-                        state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, iso)
-                        if (verbose):
-                            print("state to plot: " + state.name())
-                        fields, energies = mol.starkeffect(state)
-                        # convert energy
-                        energies = energyconversion(energies)
-                        plt.figure(1)
-                        plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
-                        if legend: plt.legend()
-                        print("state, color: " + state.name() + " " + color)
-                        if plotdips == True:
-                            fields, mueff = mol.mueff(state)
-                            plt.figure(2)
-                            plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+            if vibrotor == True:
+                for userstate in userstates.split(","):
+                    # if no m-value is specified, take all M=J values
+                    mValues = list(range(0,int(userstate[0])+1,1))
+                    # if a certain m is desired only take this one
+                    if (len(userstate)>4):
+                        mValues = [int(userstate[3])]
+                    for iso in isomer:
+                        for m in mValues:
+                            if colorindex > len(colors)-1: colorindex = 0
+                            color = colors[colorindex]
+                            colorindex += 1
+                            state = RVState(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, int(userstate[4]), iso)
+                            if (verbose):
+                                print("state to plot: " + state.name())
+                            fields, energies = mol.starkeffect(state)
+                            # convert energy
+                            energies = energyconversion(energies)
+                            plt.figure(1)
+                            plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                            if legend: plt.legend()
+                            print("state, color: " + state.name() + " " + color)
+                            if plotdips == True:
+                                fields, mueff = mol.mueff(state)
+                                plt.figure(2)
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
+            else:
+                for userstate in userstates.split(","):
+                    # if no m-value is specified, take all M=J values
+                    mValues = list(range(0,int(userstate[0])+1,1))
+                    # if a certain m is desired only take this one
+                    if (len(userstate)>3):
+                        mValues = [int(userstate[3])]
+                    for iso in isomer:
+                        for m in mValues:
+                            if colorindex > len(colors)-1: colorindex = 0
+                            color = colors[colorindex]
+                            colorindex += 1
+                            state = State(int(userstate[0]),int(userstate[1]),int(userstate[2]), m, iso)
+                            if (verbose):
+                                print("state to plot: " + state.name())
+                            fields, energies = mol.starkeffect(state)
+                            # convert energy
+                            energies = energyconversion(energies)
+                            plt.figure(1)
+                            plt.plot(V_m2kV_cm(fields), energies, color, label=state.name())
+                            if legend: plt.legend()
+                            print("state, color: " + state.name() + " " + color)
+                            if plotdips == True:
+                                fields, mueff = mol.mueff(state)
+                                plt.figure(2)
+                                plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color)
         # plot all states in given J-range
         else:
             # loop over state
-            if vibrotor != True:
+            if vibrotor == True:
                 for state in mol.starkeffect_rvstates():
                     if Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax \
                        and state.isomer() in isomer and 0 < state.nssw(nss_forbidden):

@@ -1492,10 +1492,11 @@ class VibratingAsymmetricRotor(Rotor):
         # set up Wang matrix
         Wmat = num.zeros(hmat.shape, self.hmat_type)
         value = 1/num.sqrt(2.)
-        
-        for Va, Vb in enumerate(range(Vmin, Vmax+1)):
+        #print("debug Wang: Vmin,Vmax,Jmin,Jmax", Vmin,Vmax,Jmin,Jmax)
+        for Va, Vb in zip(range(Vmin,Vmax+1), range(Vmin,Vmax+1)):
             for J in range(Jmin, Jmax+1):
                 for K in range(-J, 0):
+                    #print("debug Wang: Va,Vb,J,K", Va,Vb,J,K)
                     Wmat[self.index(J,  K, Va), self.index(J,  K, Vb)] = -value
                     Wmat[self.index(J, -K, Va), self.index(J,  K, Vb)] = value
                     Wmat[self.index(J,  K, Va), self.index(J, -K, Vb)] = value
@@ -1879,7 +1880,7 @@ if __name__ == "__main__":
     print()
 
     p = CalculationParameter
-    p.Jmax_calc = 4
+    p.Jmax_calc = 1
     p.Jmax_save = 0
     p.M = [0]
     p.type = 'VA'
@@ -1887,18 +1888,18 @@ if __name__ == "__main__":
     p.rotcon = cmiext.convert.Hz2J(num.array([3000.0e6, 2000.0e6, 1000.0e6]))
     p.quartic = cmiext.convert.Hz2J([0e3, 0e3, 0e3, 0e3, 0e3])
     p.dipole = cmiext.convert.D2Cm([1.0, 0.0, 0.0])
-    p.vibeng = num.array([0.0, 5.e-22])
-    p.vibcopstr = num.array([[1., 1.],[1., 1.]])
+    p.vibeng = num.array([0.0, 2.5e-22, 5.e-22])
+    p.vibcopstr = num.array([[1., 1., 1.],[1., 1., 1.],[1., 1., 1.]])
     p.watson = 'A'
     p.symmetry = 'C2a'
     iRotor = VibratingAsymmetricRotor
     for M in p.M:
-        for field in cmiext.convert.kV_cm2V_m(num.linspace(100.,100.,1)):
+        for field in cmiext.convert.kV_cm2V_m(num.linspace(0.,0.,1)):
             line = str(cmiext.convert.V_m2kV_cm(field)) + " "
             #print "\nM = %d, field strength = %.0f kV/cm" % (M, jkext.convert.V_m2kV_cm(field))
             top = iRotor(p, M, field)
             top.energy(RVState(0, 0, 0, M, 0, p.isomer))
-            for state in [RVState(0, 0, 0, M, 0, p.isomer), RVState(0, 0, 0, M, 1, p.isomer),
+            for state in [RVState(0, 0, 0, M, 0, p.isomer), RVState(0, 0, 0, M, 1, p.isomer), RVState(0, 0, 0, M, 2, p.isomer),
 #                          State(1, 0, 1, M, p.isomer), State(2, 0, 2, M, p.isomer), State(3, 0, 3, M, p.isomer),
 #                          State(4, 0, 4, M, p.isomer), State(5, 0, 5, M, p.isomer), State(2, 2, 0, M, p.isomer),
 #                          State(3, 2, 1, M, p.isomer), State(6, 0, 6, M, p.isomer), State(4, 2, 2, M, p.isomer),
