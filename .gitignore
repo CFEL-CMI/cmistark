@@ -7,4 +7,4 @@
 build/
 dist/
 doc/.build/
- .molecule
+*.molecule
