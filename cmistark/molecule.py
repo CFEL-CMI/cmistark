@@ -81,10 +81,10 @@ class Molecule(cmiext.molecule.Molecule):
         Molecule's HDF5 storage file.
 
         """
-        if energies == None and fields == None:
+        if energies is None and fields is None:
             return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
                 cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
-        elif energies == None or fields == None:
+        elif energies is None or fields is None:
             raise SyntaxError
         else:
             assert len(fields) == len(energies)
