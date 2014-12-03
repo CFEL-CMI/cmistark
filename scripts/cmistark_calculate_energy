@@ -184,6 +184,8 @@ def main(args):
     if None != pfunc:
         pfunc(param)
     param.M = list(range(0, param.Jmax_save+1))
+    if param.Jmax_save > param.Jmax_calc:
+        param.Jmax_save = param.Jmax_calc
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
