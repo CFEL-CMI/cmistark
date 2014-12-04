@@ -1,4 +1,4 @@
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
 # This file is part of JK Python extensions
 # Copyright (C) 2008,2009,2011,2012 Jochen Küpper <jochen.kuepper@cfel.de>
