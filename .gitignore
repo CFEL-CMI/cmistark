@@ -2,9 +2,10 @@
 *.bak
 *.egg
 *.egg-info
+*.molecule
 *.pyc
 .DS_Store
+cmistark.egg-info
 build/
 dist/
-doc/.build/
-*.molecule
+doc/.build
