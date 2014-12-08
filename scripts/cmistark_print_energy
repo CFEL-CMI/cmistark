@@ -93,11 +93,11 @@ def main(args):
             if  Mmin <= abs(state.M()) <= Mmax and Jmin <= state.J() <= Jmax and state.Ka() <= Kamax and state.isomer() == isomer:
                 print() # empty line for visual separation
                 fields, energies = mol.starkeffect(state)
-		fields, mueff = mol.mueff(state)
-		assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
-		print("# state:", state.name())
-		for i in range(len(fields)):
-		    print(V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6)
+                fields, mueff = mol.mueff(state)
+                assert len(fields) == len(energies) and  len(fields) == len(mueff), "HDF5 storage file is corrupted"
+                print("# state:", state.name())
+                for i in range(len(fields)):
+                    print("%10g  %15g  %10g" % (V_m2kV_cm(fields[i]), J2Hz(energies[i]) / 1e6, J2Hz(mueff[i] / V_m2kV_cm(1)) / 1e6))
 
 
 if __name__ == "__main__":
