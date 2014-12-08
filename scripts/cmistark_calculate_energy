@@ -56,7 +56,8 @@ def usage():
 
 def main(args):
     try:
-        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
+        opts, args = getopt.getopt(args[1:], "h", ["help", "debug",
+                                                   "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "oblate_symmetric_top",
                                                    "prolate_symmetric_top",
@@ -103,6 +104,8 @@ def main(args):
         if o in ("-h", "--help"):
             usage()
             sys.exit()
+        elif o == "--debug":
+            param.debug = True
         elif o == "--Mmax":
             param.M = list(range(0, int(a)+1))
         elif o == "--Jmin":
