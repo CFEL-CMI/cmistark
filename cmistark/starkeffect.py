@@ -126,14 +126,16 @@ class Rotor(object):
         return self.levelssym[state.id()]
 
 
-    def print_mat(self, mat, text=""):
+    def print_mat(self, mat, text="", converter=None):
         """Print matrix for debuging purposes."""
+        if converter is None:
+            converter = lambda x: x
         print("\n", text)
         rows, columns = mat.shape
         for i in range(rows):
             for j in range(columns):
                 if False == self.complex:
-                    print("%10.3g" % (mat[i,j]), end=' ')
+                    print("%10.3g" % (converter(mat[i,j])), end=' ')
                 else:
                     print("%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ), end=' ')
             print()
@@ -165,8 +167,13 @@ class LinearRotor(Rotor):
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
+        if self.debug: self.print_mat(hmat, converter=cmiext.convert.J2Hz)
         eval = num.linalg.eigvalsh(hmat) # calculate only energies
         eval = num.sort(eval)
+        if self.debug:
+            eval, evec = num.linalg.eigh(hmat)
+            print(eval)
+            self.print_mat(evec)
         for J in range(self.Jmin, self.Jmax_save+1):
             i = J - self.Jmin
             state = State(J, 0, 0, self.M, self.isomer)
@@ -419,7 +426,7 @@ class AsymmetricRotor(Rotor):
         self.levelssym = {}
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
-            if None != self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
+            if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             eval = num.sort(eval)
             i = 0
@@ -447,6 +454,7 @@ class AsymmetricRotor(Rotor):
             self.watson_S(hmat, Jmin, Jmax)
         else:
             assert self.watson == None
+        if self.debug: self.print_mat(hmat)
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
