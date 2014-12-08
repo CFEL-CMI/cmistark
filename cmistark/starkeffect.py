@@ -426,9 +426,8 @@ class AsymmetricRotor(Rotor):
         self.levelssym = {}
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
-            if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
+            # if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
-            eval = num.sort(eval)
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -454,7 +453,8 @@ class AsymmetricRotor(Rotor):
             self.watson_S(hmat, Jmin, Jmax)
         else:
             assert self.watson == None
-        if self.debug: self.print_mat(hmat)
+        if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmiext.convert.J2Hz)
+        if self.debug: print("\nEnergies of the asym. rotor:\n", cmiext.convert.J2Hz(num.linalg.eigvalsh(hmat)))
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
@@ -731,9 +731,9 @@ class AsymmetricRotor(Rotor):
             dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
         else:
             dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
-        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian")
+        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian", converter=cmiext.convert.J2Hz)
         hmat = dot(dot(Wmat, hmat), Wmat)
-        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian")
+        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian", converter=cmiext.convert.J2Hz)
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
