@@ -10,8 +10,11 @@ Hamburg, Germany.
 
 It is documented in
 
-* Computer Physics Communications [Chang2014]_
-* arXiv:1308.4076 [physics] (eprint of the above CPC paper) [Chang2014arxiv]_
+* Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, *Comp.
+  Phys. Comm.*, **185**, 339 (2014).
+* arXiv:1308.4076 [physics] (eprint of the above CPC paper).
+
+See [Chang2014]_ for the full reference and links.
 
 
 General usage

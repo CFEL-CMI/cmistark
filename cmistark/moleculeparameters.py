@@ -252,7 +252,7 @@ def indole_water2(param):
 
     Implemented isomers are
 
-    0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by [Chang2011]_; see [Trippel2012]_
+    0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Y.P. Chang; see [Trippel2012]_
 
     .. todo:: See the math-usage and implement it for all sub- and super-scripts (if any)
     """
@@ -609,7 +609,7 @@ def methylvinylketone(param):
 def six_chloropyridazine_three_carbonitrile(param):
     """ Molecular parameters for 6-chloropyridazine-3-carbonitrile
 
-    Gaussian 2003 B3LYP/aug-pc-1; see [Hansen]_"""
+    Gaussian 2003 B3LYP/aug-pc-1; see [Hansen2013]_"""
     param.name = "6-chloropyridazine-3-carbonitrile"
     param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
     param.type = 'A'

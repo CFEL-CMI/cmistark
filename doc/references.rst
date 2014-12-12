@@ -1,43 +1,38 @@
 References
 ==========
 
-.. [Andreev1976] B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, J. Mol.
-                 Spectrosc. 62, 125 (1976), DOI: `10.1016/0022-2852(76)90344-1
-                 <http://dx.doi.org/10.1016/0022-2852(76)90344-1>`_
-.. [Blanco2003] Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003), DOI: `10.1063/1.1578996
-                <http://dx.doi.org/10.1063/1.1578996>`_
-.. [Borst2001] D. R. Borst, T. M. Korter and D. W. Pratt, Chem. Phys. Lett. 350, 485 (2001), DOI:
-               `10.1016/S0009-2614(01)01344-6 <http://dx.doi.org/10.1016/S0009-2614(01)01344-6>`_
-.. [Brown1988] R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, J. Am. Chem. Soc., 1988,
-               110, 2329, DOI: `10.1016/0022-2860(88)80283-7
-               <http://dx.doi.org/10.1016/0022-2860(88)80283-7>`_
-.. [Brunken2006] Brunken, S.; McCarthy, M. C.; Thaddeus, P.; et al., ASTRONOMY & ASTROPHYSICS
-                 Volume: 459 Issue: 1 Pages: 317-320 Published: NOV 2006
-.. [Cabana1976] A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976), DOI:
-                `10.1016/0022-2852(76)90037-0 <http://dx.doi.org/10.1016/0022-2852(76)90037-0>`_
-.. [Caminati1990] W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990), DOI:
-                  `10.1016/0022-2860(90)80514-K <http://dx.doi.org/10.1016/0022-2860(90)80514-K>`_
-.. [Chang2011] Yuan-Pin Chang (2011)
-.. [Chang2014] Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, Comp. Phys. Comm.,
-               185, 339 (2014), DOI: `10.1016/j.cpc.2013.09.001
-               <http://dx.doi.org/10.1016/j.cpc.2013.09.001>`_
-.. [Chang2014arxiv] Yuan-Pin Chang, Frank Filsinger, Boris G. Sartakov, Jochen Küpper, arXiv:
-                    `1308.4076 [physics] <http://arxiv.org/abs/1308.4076>`_
-
-.. todo:: replace  [Chang2014arxiv]_ by CPC reference, always add arxiv as regular secondary
-          indentifier ("arXiv:1308.4076 [physics] <http://arxiv.org/abs/1308.4076>")
-
-.. [Clough1973] Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973), DOI:
-                `10.1063/1.1680328 <http://dx.doi.org/10.1063/1.1680328>`_
-.. [DeLucia1971] F.C. De Lucia, R.L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334
-                 (1971), DOI: `10.1063/1.1675675 <http://dx.doi.org/10.1063/1.1675675>`_
-.. [DeLucia1974] F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211
-                 (1974), DOI: `10.1063/1.3253138 <http://dx.doi.org/10.1063/1.3253138>`_
+.. [Andreev1976] B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, *J. Mol.
+                 Spectrosc.* **62**, 125 (1976).
+                 `DOI: 10.1016/0022-2852(76)90344-1  <http://dx.doi.org/10.1016/0022-2852(76)90344-1>`_
+.. [Blanco2003] Blanco S et al, *J. Chem. Phys.* **119**, 880 (2003),
+                `DOI: 10.1063/1.1578996 <http://dx.doi.org/10.1063/1.1578996>`_
+.. [Borst2001] D. R. Borst, T. M. Korter and D. W. Pratt, *Chem. Phys. Lett.* **350**, 485 (2001).
+               `DOI: 10.1016/S0009-2614(01)01344-6 <http://dx.doi.org/10.1016/S0009-2614(01)01344-6>`_
+.. [Brown1988] R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, *J. Am. Chem. Soc.*
+               **110**, 2329 (1988).
+               `DOI: 10.1016/0022-2860(88)80283-7 <http://dx.doi.org/10.1016/0022-2860(88)80283-7>`_
+.. [Brunken2006] Brünken, S.; McCarthy, M. C.; Thaddeus, P.; et al., *Astron. Astrophys.*
+                 **459**, 317-320 (2006)
+.. [Cabana1976] A. Cabana, M.L.C. Pepin, and W.J. Lafferty, *J. Mol. Spectrosc.* **59**, 13 (1976).
+                `DOI: 10.1016/0022-2852(76)90037-0 <http://dx.doi.org/10.1016/0022-2852(76)90037-0>`_
+.. [Caminati1990] W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990).
+                  `DOI: 10.1016/0022-2860(90)80514-K <http://dx.doi.org/10.1016/0022-2860(90)80514-K>`_
+.. [Chang2014] Y.-P. Chang, F. Filsinger, B.G. Sartakov, J. Küpper, *Comp. Phys. Comm.*, **185**, 339 (2014).
+               `DOI: 10.1016/j.cpc.2013.09.001 <http://dx.doi.org/10.1016/j.cpc.2013.09.001>`_,
+               `arXiv:1308.4076 [physics] <http://arxiv.org/abs/1308.4076>`_
+.. [Clough1973] Clough, Beers, Klein, Rothman, *J. Chem. Phys.* **59**, 2254-2259 (1973).
+                `DOI: 10.1063/1.1680328 <http://dx.doi.org/10.1063/1.1680328>`_
+.. [DeLucia1971] F.C. De Lucia, R.L. Cook, P. Helminger, and W. Gordy, *J. Chem. Phys.* **55**, 5334
+                 (1971).
+                 `DOI: 10.1063/1.1675675 <http://dx.doi.org/10.1063/1.1675675>`_
+.. [DeLucia1974] F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, *J. Phys. Chem. Ref. Data* **3**, 211
+                 (1974).
+                 `DOI: 10.1063/1.3253138 <http://dx.doi.org/10.1063/1.3253138>`_
 .. [Dorosh2007] Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski, J. Mol. Spec. 246, 228-232
-                (2007), DOI: `10.1016/j.jms.2007.09.010
-                <http://dx.doi.org/10.1016/j.jms.2007.09.010>`_
-.. [Dutta1985] Dutta, A and Jaman, A I, Pramana -- J. Phys. 24 (1985), DOI: `10.1007/BF02894850
-               <http://dx.doi.org/10.1007/BF02894850>`_
+                (2007).
+                DOI: `10.1016/j.jms.2007.09.010 <http://dx.doi.org/10.1016/j.jms.2007.09.010>`_
+.. [Dutta1985] Dutta, A and Jaman, A I, Pramana -- J. Phys. 24 (1985).
+               DOI: `10.1007/BF02894850 <http://dx.doi.org/10.1007/BF02894850>`_
 .. [Filsinger2008] F. Filsinger et al., Phem. Chem. Chem. Phys. 10, 666 (2008), DOI:
                    `10.1039/b711888k <http://dx.doi.org/10.1039/b711888k>`_
 .. [Foster1965] P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965), DOI:
