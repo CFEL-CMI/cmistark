@@ -25,7 +25,7 @@ import numpy as num
 import os
 import unittest
 
-import cmiext
+import cmistark.cmiext as cmiext
 import cmiext.convert as convert
 from cmiext.state import State
 

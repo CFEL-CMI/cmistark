@@ -22,6 +22,7 @@ __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 import scipy as num
 import scipy.linalg.blas
 
+import cmistark.cmiext as cmiext
 import cmiext.convert
 from cmiext.state import State
 

@@ -22,6 +22,7 @@ import numpy as num
 import numpy.linalg
 import tables
 
+import cmistark.cmiext as cmiext
 import cmiext.hdf5, cmiext.molecule, cmiext.util
 from cmiext.state import State
 
