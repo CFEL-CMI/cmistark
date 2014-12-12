@@ -98,8 +98,7 @@ class Molecule(cmiext.molecule.Molecule):
         try:
             self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
         except:
-            print("Cannot create HDF5 table -- exiting.")
-            exit(-1)
+            print("Cannot create HDF5 table, continuing")
             pass
         if 'L' == param.type:
             Rotor = cmistark.starkeffect.LinearRotor
