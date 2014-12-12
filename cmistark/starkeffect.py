@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
+from __future__ import print_function
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
@@ -254,7 +255,7 @@ class SymmetricRotor(Rotor):
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
         # The index starts from zero.
-        return J - max({abs(K), self.Jmin})
+        return J - max(abs(K), self.Jmin)
 
     def recalculate(self):
         """Perform calculation of rotational state energies with current parameters for individual K"""
@@ -274,7 +275,7 @@ class SymmetricRotor(Rotor):
     def hamiltonian(self, Jmin, Jmax, dcfield, K):
         # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
-        matrixsize = Jmax - max({abs(K),Jmin}) + 1
+        matrixsize = Jmax - max(abs(K), Jmin) + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
@@ -297,7 +298,7 @@ class SymmetricRotor(Rotor):
            AC, B = self.rotcon.tolist() #AC refers to A for p
         elif 'o' == self.symmetry:
            B, AC = self.rotcon.tolist() #AC refers to C for o
-        for J in range(max({Jmin,abs(K)}), Jmax+1):
+        for J in range(max(Jmin, abs(K)), Jmax+1):
             rigid = B * J*(J+1) + (AC-B) * K**2
             distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
             hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
@@ -307,7 +308,7 @@ class SymmetricRotor(Rotor):
         sqrt = num.sqrt
         M = self.M
         mu = float(self.dipole)
-        for J in range(max({Jmin,abs(K)}),Jmax):
+        for J in range(max(Jmin, abs(K)), Jmax):
             # diagonal term
             if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
                 hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
@@ -426,9 +427,8 @@ class AsymmetricRotor(Rotor):
         self.levelssym = {}
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
-            if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
+            # if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
             eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
-            eval = num.sort(eval)
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -454,7 +454,11 @@ class AsymmetricRotor(Rotor):
             self.watson_S(hmat, Jmin, Jmax)
         else:
             assert self.watson == None
-        if self.debug: self.print_mat(hmat)
+        if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmiext.convert.J2Hz)
+        if self.debug:
+               eval, evec = num.linalg.eigh(hmat) # calculate only energies
+               print("\nEnergies of the asym. rotor:\n", cmiext.convert.J2Hz(eval))
+               self.print_mat(evec, "Eigenvectors of the asym. rotor:\n")
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
@@ -731,9 +735,9 @@ class AsymmetricRotor(Rotor):
             dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
         else:
             dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
-        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian")
+        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian", converter=cmiext.convert.J2Hz)
         hmat = dot(dot(Wmat, hmat), Wmat)
-        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian")
+        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian", converter=cmiext.convert.J2Hz)
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks
