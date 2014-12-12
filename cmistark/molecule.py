@@ -95,11 +95,15 @@ class Molecule(cmiext.molecule.Molecule):
 
     def starkeffect_calculation(self, param):
         """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
-        them in our storage file."""
+        them in our storage file.
+
+        ..todo:: Improve diagnostics regarding the "create_table" try-except and distinguish
+        "pre-eistance" from real errors (and act accordingly)
+        """
         try:
             self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
         except:
-            print("Cannot create HDF5 table, continuing")
+            # Cannot create HDF5 table, continuing -- this is morst likely due to the fact that the entry/file exists already
             pass
         if 'L' == param.type:
             Rotor = cmistark.starkeffect.LinearRotor
