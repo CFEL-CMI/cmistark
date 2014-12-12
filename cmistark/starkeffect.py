@@ -255,7 +255,7 @@ class SymmetricRotor(Rotor):
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
         # The index starts from zero.
-        return J - max({abs(K), self.Jmin})
+        return J - max(abs(K), self.Jmin)
 
     def recalculate(self):
         """Perform calculation of rotational state energies with current parameters for individual K"""
@@ -275,7 +275,7 @@ class SymmetricRotor(Rotor):
     def hamiltonian(self, Jmin, Jmax, dcfield, K):
         # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
-        matrixsize = Jmax - max({abs(K),Jmin}) + 1
+        matrixsize = Jmax - max(abs(K), Jmin) + 1
         # create hamiltonian matrix
         hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
@@ -298,7 +298,7 @@ class SymmetricRotor(Rotor):
            AC, B = self.rotcon.tolist() #AC refers to A for p
         elif 'o' == self.symmetry:
            B, AC = self.rotcon.tolist() #AC refers to C for o
-        for J in range(max({Jmin,abs(K)}), Jmax+1):
+        for J in range(max(Jmin, abs(K)), Jmax+1):
             rigid = B * J*(J+1) + (AC-B) * K**2
             distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
             hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
@@ -308,7 +308,7 @@ class SymmetricRotor(Rotor):
         sqrt = num.sqrt
         M = self.M
         mu = float(self.dipole)
-        for J in range(max({Jmin,abs(K)}),Jmax):
+        for J in range(max(Jmin, abs(K)), Jmax):
             # diagonal term
             if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
                 hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
