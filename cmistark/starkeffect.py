@@ -213,7 +213,7 @@ class LinearRotor(Rotor):
         M = self.M
         mu = float(self.dipole)
         for J in range(Jmin, Jmax):
-            value = -mu * dcfield * sqrt((J+1)**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
+            value = -mu * dcfield * sqrt((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3))
             hmat[self.index(J+1), self.index(J)] += value
             hmat[self.index(J), self.index(J+1)] += value
 
