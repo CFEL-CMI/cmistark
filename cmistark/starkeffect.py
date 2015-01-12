@@ -233,10 +233,10 @@ class LinearRotor(Rotor):
 class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
-    This object will calculate rotational energies at the specified DC field strength for the given M-range, K-range and
-    :math:`J`-range. Note that in the field, states corresponding to :math:`+KM` and :math:`-KM` become not degenerate.
-    While always keeping :math:`M` positive in this program, we label states corresponding to :math:`-KM` by using
-    negative K values in the output hdf files.
+    This object will calculate rotational energies at the specified DC field strength for the given :math:`M`-range,
+    :math:`K`-range and :math:`J`-range. Note that in the field, states corresponding to :math:`+KM` and :math:`-KM`
+    become not degenerate. While always keeping :math:`M` positive in this program, we label states corresponding to
+    :math:`-KM` by using negative K values in the output hdf files.
 
     """
 
