@@ -75,7 +75,7 @@ All relevant parameters for molecules of interest need to be properly implemente
 import numpy as num
 import getopt, sys
 
-import cmistark.cmiext as cmiext
+import cmiext as cmiext
 import cmiext.convert as convert
 from cmiext.state import State
 from cmiext.molecule import Masses
@@ -683,12 +683,12 @@ def uracil(param):
 
 def mephenesin(param):
     """ Molecular parameters for mephenesin
-        
+
         Values for rot constants and dipole moments from Ecija et al, JPC B 118, 5357.
         Rot constants are experimental values
         Dipole values calculated with MP2
         """
-    
+
     param.name = "mephenesin"
     param.mass = 10 * Masses['C'] + 3 * Masses['O'] + 14 * Masses['H']
     param.watson = 'A'
