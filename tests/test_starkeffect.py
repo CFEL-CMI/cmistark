@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
 # This file is part of CMIstark
 # Copyright (C) 2008 Jochen Küpper <jochen.kuepper@cfel.de>
@@ -58,31 +58,28 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
         self.bn.starkeffect_calculation(self.param)
 
-
     def tearDown(self):
         os.remove(self.storagename)
-
 
     def test_fieldfree(self):
         # comparing to 0 is dangerous as assertAlmostEqual compares a specified number of digits after 0 i.e. 7
         # and a typical energy is 1e-23 J therefore  convert to Hz before test
         self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
-                                    % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
-
+                               % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
 
-        With our setup, these are he fifth values in the list of fields/energies.
+        With our setup, these are the fifth values in the list of fields/energies.
         """
         # test (once) that the fields are correct
         self.assertAlmostEqual(convert.kV_cm2V_m(100.), self.bn.starkeffect(State(0, 0, 0, 0, 0))[0][4], 7,
-                               "Field-free ground state energy is wrong")
+                               "Field-strength is wrong")
         # test energies for different states at 100 kV/cm
         self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4], 7,
-                                "Ground state energy is wrong: expected %g MHz, got %g MHz" \
-                                    % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
+                               "Ground state energy is wrong: expected %g MHz, got %g MHz" \
+                               % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
 
 
 if __name__ == '__main__':
