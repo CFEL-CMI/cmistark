@@ -82,7 +82,9 @@ def main(args):
                                                    "6-chloropyridazine-3-carbonitrile",
                                                    "sulfur_monoxide", "SO",
                                                    "carbon_monoxide", "CO",
-                                                   "uracil"
+                                                   "uracil",
+                                                   "5-cyanoindole",
+                                                   "mephenesin"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -133,6 +135,8 @@ def main(args):
             pfunc = three_aminobenzonitrile
         elif o == "--4-aminobenzonitrile":
             pfunc = four_aminobenzonitrile
+        elif o == "--5-cyanoindole":
+            pfunc = five_cyanoindole
         elif o == "--benzonitrile":
             pfunc = benzonitrile
         elif o == "--glycine":
@@ -155,6 +159,8 @@ def main(args):
             pfunc = indole_water1
         elif o == "--indole-water2":
             pfunc = indole_water2
+        elif o == "--mephenesin":
+            pfunc = mephenesin
         elif o == "--MVK":
             pfunc = MVK
         elif o == "--phenylpyrrole":

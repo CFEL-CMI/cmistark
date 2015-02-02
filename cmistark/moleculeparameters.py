@@ -656,7 +656,7 @@ def five_cyanoindole(param):
     Dipole values calculated (aug-cc-pVTZ basis, see [Horke]_ for details)
     """
 
-    param.name = "5-cyanoindole"
+    param.name = "five_cyanoindole"
     param.mass = 9 * Masses['C'] + 2 * Masses['N'] + 6 * Masses['H']
     param.watson = 'A'
     param.symmetry = 'N'
@@ -680,3 +680,25 @@ def uracil(param):
     param.rotcon = convert.Hz2J(num.array([3883878.25e3, 2023732.67e3, 1330923.80e3]))
     param.dipole = convert.D2Cm(num.array([1.61, 3.52, 0.0]))
     param.quartic  = convert.Hz2J(num.array([0.06336e3, 0.1055e3, 0.4530e3, -0.02623e3, -0.00680e3]))
+
+def mephenesin(param):
+    """ Molecular parameters for mephenesin
+        
+        Values for rot constants and dipole moments from Ecija et al, JPC B 118, 5357.
+        Rot constants are experimental values
+        Dipole values calculated with MP2
+        """
+    
+    param.name = "mephenesin"
+    param.mass = 10 * Masses['C'] + 3 * Masses['O'] + 14 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #conformer A
+        param.rotcon = convert.Hz2J(num.array([1707.7896e6, 388.661705e6, 331.331684e6]))
+        param.dipole = convert.D2Cm(num.array([1.15, 0.56, 1.12]))
+    elif param.isomer == 1: #conformer B
+        param.rotcon = convert.Hz2J(num.array([1978.986e6, 349.300307e6, 305.408511e6]))
+        param.dipole = convert.D2Cm(num.array([-2.36, -0.48, -0.04]))
+    elif param.isomer == 2: #conformer C
+        param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
+        param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
