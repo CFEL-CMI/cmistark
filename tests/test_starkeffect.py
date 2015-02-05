@@ -37,11 +37,6 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
     """Test the results of Stark effect calculations using the molecular parameters of benzonitrile"""
 
     def setUp(self):
-        self.storagename = "__cmiext_test_starkeffect.hdf"
-        if os.path.exists(self.storagename):
-            raise EnvironmentError("Test storage file already exists, not overwriting")
-        # create Molecule object and specify storage file
-        self.bn = molecule.Molecule(storage=self.storagename)
         # set molecular parameters
         self.param = starkeffect.CalculationParameter
         self.param.isomer = 0
@@ -56,6 +51,13 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.param.Jmax_calc = 15
         self.param.Jmax_save =  3
         self.param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
+        # create Molecule object and specify storage file
+        self.param.name = "__cmiext_test_starkeffect"
+        self.storagename = self.param.name + ".molecule"
+        if os.path.exists(self.storagename):
+            raise EnvironmentError("Test storage file already exists, not overwriting")
+        self.bn = molecule.Molecule(storage=self.storagename, name=self.param.name)
+        # calculate Stark energies
         self.bn.starkeffect_calculation(self.param)
 
     def tearDown(self):
