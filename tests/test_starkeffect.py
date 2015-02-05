@@ -36,7 +36,9 @@ import cmistark.starkeffect as starkeffect
 class StarkCalculationBenzonitrile(unittest.TestCase):
     """Test the results of Stark effect calculations using the molecular parameters of benzonitrile"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
+        """Run before the first test"""
         # set molecular parameters
         self.param = starkeffect.CalculationParameter
         self.param.isomer = 0
@@ -59,14 +61,24 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.bn = molecule.Molecule(storage=self.storagename, name=self.param.name)
         # calculate Stark energies
         self.bn.starkeffect_calculation(self.param)
+
+    @classmethod
+    def tearDownClass(self):
+        """Run after the last test"""
         del(self.bn)
+        os.remove(self.storagename)
+
+
+    def setUp(self):
+        """Run before every single test method"""
+        pass
 
     def tearDown(self):
-        os.remove(self.storagename)
+        """Run after every single test method"""
+        pass
 
     def test_fieldfree(self):
         """Test field-free energies (at 0 kV/cm)"""
-        self.bn = molecule.Molecule(storage=self.storagename, name=self.param.name)
         # comparing to 0 is dangerous as assertAlmostEqual compares a specified number of digits after 0 i.e. 7
         # and a typical energy is 1e-23 J therefore  convert to Hz before test
         self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
@@ -76,15 +88,13 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.assertAlmostEqual(2761.2796716e6,
                                convert.J2Hz(self.bn.starkeffect(State(1, 0, 1, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
-                               % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
-        del(self.bn)
+                               % (2761.2796716e6, convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
 
         With our setup, these are the fifth values in the list of fields/energies.
         """
-        self.bn = molecule.Molecule(storage=self.storagename, name=self.param.name)
         # test (once) that the fields are correct
         self.assertAlmostEqual(convert.kV_cm2V_m(100.), self.bn.starkeffect(State(0, 0, 0, 0, 0))[0][4], 7,
                                "Field-strength is wrong")
@@ -92,7 +102,6 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4], 7,
                                "Ground state energy is wrong: expected %g MHz, got %g MHz" \
                                % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
-        del(self.bn)
 
 
 if __name__ == '__main__':
