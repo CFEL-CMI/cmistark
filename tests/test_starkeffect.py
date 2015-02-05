@@ -36,7 +36,9 @@ import cmistark.starkeffect as starkeffect
 class StarkCalculationBenzonitrile(unittest.TestCase):
     """Test the results of Stark effect calculations using the molecular parameters of benzonitrile"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
+        """Run before the first test"""
         # set molecular parameters
         self.param = starkeffect.CalculationParameter
         self.param.isomer = 0
@@ -60,15 +62,33 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         # calculate Stark energies
         self.bn.starkeffect_calculation(self.param)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
+        """Run after the last test"""
+        del(self.bn)
         os.remove(self.storagename)
 
+
+    def setUp(self):
+        """Run before every single test method"""
+        pass
+
+    def tearDown(self):
+        """Run after every single test method"""
+        pass
+
     def test_fieldfree(self):
+        """Test field-free energies (at 0 kV/cm)"""
         # comparing to 0 is dangerous as assertAlmostEqual compares a specified number of digits after 0 i.e. 7
         # and a typical energy is 1e-23 J therefore  convert to Hz before test
         self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
                                % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
+        # 101 state has an energy of B+C + centrifugal distortion
+        self.assertAlmostEqual(2761.2796716e6,
+                               convert.J2Hz(self.bn.starkeffect(State(1, 0, 1, 0, 0))[1][0]), 7,
+                               "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
+                               % (2761.2796716e6, convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
