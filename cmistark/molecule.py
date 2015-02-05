@@ -49,6 +49,7 @@ class Molecule(cmiext.molecule.Molecule):
                 self.__storage = tables.open_file(storage, mode='a', title=name)
                 self.__storage.get_node("/")._v_title = name
         except:
+            raise EnvironmentError("Cannot create nor open storage file")
             self.__storage = None
 
 
