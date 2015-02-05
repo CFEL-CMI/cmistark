@@ -61,6 +61,7 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.bn.starkeffect_calculation(self.param)
 
     def tearDown(self):
+        del(self.bn)
         os.remove(self.storagename)
 
     def test_fieldfree(self):
