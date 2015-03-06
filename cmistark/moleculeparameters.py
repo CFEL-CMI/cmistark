@@ -702,3 +702,17 @@ def mephenesin(param):
     elif param.isomer == 2: #conformer C
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
+
+def five_fluoroindole(param):
+    """ Molecular parameters for 5-fluoroindole
+        
+        Rot. constants from Brand et al, CPC 13, 3134 (2012)
+        Dipole moments from MP2 calculations (Daniel)
+        
+        """
+    param.name = "five_fluoroindole"
+    param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
+    param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))

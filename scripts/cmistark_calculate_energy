@@ -84,7 +84,8 @@ def main(args):
                                                    "carbon_monoxide", "CO",
                                                    "uracil",
                                                    "5-cyanoindole",
-                                                   "mephenesin"
+                                                   "mephenesin",
+                                                   "5-fluoroindole"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -137,6 +138,8 @@ def main(args):
             pfunc = four_aminobenzonitrile
         elif o == "--5-cyanoindole":
             pfunc = five_cyanoindole
+        elif o == "--5-fluoroindole":
+            pfunc = five_fluoroindole
         elif o == "--benzonitrile":
             pfunc = benzonitrile
         elif o == "--glycine":
