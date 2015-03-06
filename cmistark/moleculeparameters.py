@@ -508,14 +508,14 @@ def phenylpyrrole(param):
 def three_fluorophenol(param):
     """Molecular parameters for three_fluorophenol
 
-        Implemented isomers are
-        0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
-        1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
-        11. cis, from [Songhee2011]_ (YPChang)
-        12. trans, from [Songhee2011]_ (YPChang
-        13. cis, calculated by Yuan-Pin Chang, also the dipole moments
-        14. trans, calculated by Yuan-Pin Chang, also the dipole moments
-        """
+    Implemented isomers are
+    0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
+    1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
+    11. cis, from [Songhee2011]_ (YPChang)
+    12. trans, from [Songhee2011]_ (YPChang
+    13. cis, calculated by Yuan-Pin Chang, also the dipole moments
+    14. trans, calculated by Yuan-Pin Chang, also the dipole moments
+    """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
     param.type = 'A'
@@ -542,9 +542,12 @@ def three_fluorophenol(param):
         param.rotcon = convert.Hz2J(num.array([3.76358267e9, 1.79886976e9, 1.21712413e9]))
         param.dipole = convert.D2Cm(num.array([2.747456, -0.144641, 0.0]))
 
+
 def sulfur_dioxide(param):
-    """ Rotational constants from [Helminger1985]_
-        Dipole moments from [Patel1979]_
+    """ SO2 (fix nomenclature)
+
+    Rotational constants from [Helminger1985]_
+    Dipole moments from [Patel1979]_
     """
     param.name = "sulfur_dioxide"
     param.watson = 'A'
@@ -561,7 +564,7 @@ def sulfur_dioxide(param):
 def nitrogen_dioxide(param):
     """Molecular parameters for :math:`\\text{N}\\text{O}_2`
 
-    rot. const.: [Cabana1976]_
+    rotational constants: [Cabana1976]_
     dipole moment: [Hodgeson1963]_
     """
     param.name = "nitrogen_dioxide"
@@ -591,9 +594,10 @@ def methylvinylketone(param):
     """Molecular parameters for Methyl Vinyl Ketone
 
     Implemented isomers are
-    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from [Wilcox2011]_ with 0.81 scaling factor
-    1. trans, experimental  rot. const. of A symmetry from [Wilcox2011]_, and experimental dipole moment: [Foster1965]_
+    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from
+       [Wilcox2011]_ with 0.81 scaling factor
 
+    1. trans, experimental  rot. const. of A symmetry from [Wilcox2011]_, and experimental dipole moment: [Foster1965]_
     """
     param.name = "methylvinylketone"
     param.type = 'A'
@@ -636,6 +640,7 @@ def sulfur_monoxide(param):
     param.dipole = convert.D2Cm(num.array([1.550]))
     param.quartic  = convert.Hz2J(num.array([33.577e3]))
 
+
 def carbon_monoxide(param):
     """ Molecular parameters for CO
 
@@ -649,13 +654,13 @@ def carbon_monoxide(param):
     param.dipole = convert.D2Cm(num.array([0.11]))
     param.quartic  = convert.invcm2J(num.array([202.360e3]))
 
+
 def five_cyanoindole(param):
     """ Molecular parameters for 5-cyanoindole
 
     Experimental values for rot constants from [Oelterman2012]_.
     Dipole values calculated (aug-cc-pVTZ basis, see [Horke]_ for details)
     """
-
     param.name = "five_cyanoindole"
     param.mass = 9 * Masses['C'] + 2 * Masses['N'] + 6 * Masses['H']
     param.watson = 'A'
@@ -681,13 +686,13 @@ def uracil(param):
     param.dipole = convert.D2Cm(num.array([1.61, 3.52, 0.0]))
     param.quartic  = convert.Hz2J(num.array([0.06336e3, 0.1055e3, 0.4530e3, -0.02623e3, -0.00680e3]))
 
+
 def mephenesin(param):
     """ Molecular parameters for mephenesin
 
-        Values for rot constants and dipole moments from Ecija et al, JPC B 118, 5357.
-        Rot constants are experimental values
-        Dipole values calculated with MP2
-        """
+    Values for rot constants and dipole moments from Ecija et al, JPC B 118, 5357
+    (Rotational constants are experimental values, dipole moment values calculated with MP2)
+    """
 
     param.name = "mephenesin"
     param.mass = 10 * Masses['C'] + 3 * Masses['O'] + 14 * Masses['H']
@@ -705,11 +710,10 @@ def mephenesin(param):
 
 def five_fluoroindole(param):
     """ Molecular parameters for 5-fluoroindole
-        
-        Rot. constants from Brand et al, CPC 13, 3134 (2012)
-        Dipole moments from MP2 calculations (Daniel)
-        
-        """
+
+    Rotational constants constants from Brand et al, CPC 13, 3134 (2012)
+    Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
+    """
     param.name = "five_fluoroindole"
     param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
     param.watson = 'A'
