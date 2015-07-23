@@ -65,6 +65,7 @@ def main(args):
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
                                                    "2-aminobenzonitrile", "3-aminobenzonitrile", "4-aminobenzonitrile",
+                                                   "adenine",
                                                    "benzonitrile",
                                                    "glycine",
                                                    "indole", "indole-water", "indole-water2",
@@ -140,6 +141,8 @@ def main(args):
             pfunc = five_cyanoindole
         elif o == "--5-fluoroindole":
             pfunc = five_fluoroindole
+        elif o == "--adenine":
+            pfunc = adenine
         elif o == "--benzonitrile":
             pfunc = benzonitrile
         elif o == "--glycine":

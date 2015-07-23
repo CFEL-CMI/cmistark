@@ -720,3 +720,22 @@ def five_fluoroindole(param):
     param.symmetry = 'N'
     param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
     param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
+
+def adenine(param):
+    """ Molecular parameters for adenine
+        
+        TEMPORARY VALUES - to be replaced with more accurate data asap
+        Rotational constants from Brown et al, CPL 156, 61 (1989)
+        Dipole moments from Mohammed et al, JMS 938, 263 (2009)
+        """
+    param.name = "adenine"
+    param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #tautomer 9H
+        param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
+        param.dipole = convert.D2Cm(num.array([2.2, 1.0, 0.0]))
+    elif param.isomer == 1: #tautomer 7H
+        param.rotcon = convert.Hz2J(num.array([2388e6, 1543e6, 941e6]))
+        param.dipole = convert.D2Cm(num.array([0.3, 7.5, 0.0]))
+
