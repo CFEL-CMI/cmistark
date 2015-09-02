@@ -70,6 +70,10 @@ The relevant parameters are:
 
 All relevant parameters for molecules of interest need to be properly implemented here.
 
+
+.. todo:: Everybody Sort the order of definitions of real molecules in alphabetical order. For sorting, could create
+sub-files that are imported into the local file-/namespace
+
 """
 
 import numpy as num
@@ -204,6 +208,42 @@ def prolate_symmetric_top(param):
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 
+
+def adenine(param):
+    """Molecular parameters for adenine
+
+    .. todo:: Nicole Teschmit: TEMPORARY VALUE, to be replaced with more accurate data asap Rotational constants from
+        Brown et al, CPL 156, 61 (1989) Dipole moments from Mohammed et al, JMS 938, 263 (2009) (put references in the
+        reference list and hyperlink)
+
+    """
+    param.name = "adenine"
+    param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #tautomer 9H
+        param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
+        param.dipole = convert.D2Cm(num.array([2.2, 1.0, 0.0]))
+    elif param.isomer == 1: #tautomer 7H
+        param.rotcon = convert.Hz2J(num.array([2388e6, 1543e6, 941e6]))
+        param.dipole = convert.D2Cm(num.array([0.3, 7.5, 0.0]))
+
+
+def five_fluoroindole(param):
+    """ Molecular parameters for 5-fluoroindole
+
+    Rotational constants constants from Brand et al, CPC 13, 3134 (2012)
+    Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
+    """
+    param.name = "five_fluoroindole"
+    param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
+    param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
+
+
+
 def indole(param):
     """Molecular parameters for indole
 
@@ -254,7 +294,7 @@ def indole_water2(param):
 
     0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Y.P. Chang; see [Trippel2012]_
 
-    .. todo:: See the math-usage and implement it for all sub- and super-scripts (if any)
+    .. todo:: Everybody: See the math-usage and implement it for all sub- and super-scripts (if any)
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
@@ -458,7 +498,10 @@ def glycine(param):
         3.  Anthony Meijer
         4.  Test
         5.  Test
-        """
+
+    .. todo:: Thomas Kierspel, update/fix documentation
+
+    """
     param.name = "glycine"
     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
     param.watson = 'A'
@@ -707,35 +750,3 @@ def mephenesin(param):
     elif param.isomer == 2: #conformer C
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
-
-def five_fluoroindole(param):
-    """ Molecular parameters for 5-fluoroindole
-
-    Rotational constants constants from Brand et al, CPC 13, 3134 (2012)
-    Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
-    """
-    param.name = "five_fluoroindole"
-    param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
-    param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
-
-def adenine(param):
-    """ Molecular parameters for adenine
-        
-        TEMPORARY VALUES - to be replaced with more accurate data asap
-        Rotational constants from Brown et al, CPL 156, 61 (1989)
-        Dipole moments from Mohammed et al, JMS 938, 263 (2009)
-        """
-    param.name = "adenine"
-    param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    if param.isomer == 0: #tautomer 9H
-        param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
-        param.dipole = convert.D2Cm(num.array([2.2, 1.0, 0.0]))
-    elif param.isomer == 1: #tautomer 7H
-        param.rotcon = convert.Hz2J(num.array([2388e6, 1543e6, 941e6]))
-        param.dipole = convert.D2Cm(num.array([0.3, 7.5, 0.0]))
-
