@@ -17,7 +17,7 @@
 # <http://www.gnu.org/licenses/>.
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
-__doc__ = """This modules implements the molecular parameters of all investigated molecules.
+__doc__ = """This modulEs Implements the molecular parameters of all investigated molecules.
 
 The relevant parameters are:
 
@@ -71,7 +71,7 @@ The relevant parameters are:
 All relevant parameters for molecules of interest need to be properly implemented here.
 
 
-.. todo:: Everybody Sort the order of definitions of real molecules in alphabetical order. For sorting, could create
+.. todo:: Everybody Sort the order of definitions of real molecules in alphabetical order. For sorting, could create \
 sub-files that are imported into the local file-/namespace
 
 """
@@ -385,7 +385,6 @@ def OCS(param):
 def iodomethane(param):
     """Molecular parameters for iodomethane (:math:`\\text{CH}_3\\text{I}`)
 
-
     B, DJ, and DK constants from [Wlodarczak1987]_ and [Gadhi1989]_.
     A and DK constants from [Pietila1996]_.
 
@@ -397,7 +396,7 @@ def iodomethane(param):
     debugging the various cases of the Stark code. Please do not remove it, but also do not use it for regular
     scientific work.
 
-    .. todo:: Sebastian Trippel, pleae rewrite documentation in more detail, using math syntax for subscritpts, etc.
+    .. todo:: Sebastian Trippel, please rewrite documentation in more detail, using math syntax for subscritpts, etc.
 
     """
     param.name = "iodomethane"
@@ -429,32 +428,33 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-def diiodoethane(param):
-    """Molecular parameters for diiodo-ethane.
-
-    Implemented isomers are
-    0.  anti-conformation (C2h symmetry)
-    1.  gauge-conformation (C2 symmetry)
-
-    Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
-
-    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
-
-    .. todo:: Which level of theory (program version)
-
-    """
-    param.name = "diiodoethane"
-    param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
-    param.watson = 'A'
-    if param.isomer == 0: # anti
-        param.symmetry = 'N'
-        param.rotcon = convert.Hz2J(num.array([2.79227492e10, 3.09470163e8, 3.07270856e8]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-    elif param.isomer == 1: # gauge
-        param.symmetry = 'C2b'
-        param.rotcon = convert.Hz2J(num.array([6.18776669e9, 4.92744613e8, 4.63936461e8]))
-        param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
+# def diiodoethane(param):
+#     """Molecular parameters for diiodo-ethane.
+#
+#     Implemented isomers are
+#     0.  anti-conformation (C2h symmetry)
+#     1.  gauge-conformation (C2 symmetry)
+#
+#     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
+#     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
+#
+#     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+#
+#     .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
+#     to calculate the rotational constants ab initio when the structural paramters are available from documentation?
+#
+#     """
+#     param.name = "diiodoethane"
+#     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
+#     param.watson = 'A'
+#     if param.isomer == 0: # anti
+#         param.symmetry = 'N'
+#         param.rotcon = convert.Hz2J(num.array([2.79227492e10, 3.09470163e8, 3.07270856e8]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
+#     elif param.isomer == 1: # gauge
+#         param.symmetry = 'C2b'
+#         param.rotcon = convert.Hz2J(num.array([6.18776669e9, 4.92744613e8, 4.63936461e8]))
+#         param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
 
 
 def two_aminobenzonitrile(param):
@@ -506,57 +506,57 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-def glycine(param):
-    """Molecular parameters for TEST glycine
+# def glycine(param):
+#     """Molecular parameters for TEST glycine
+#
+#         Implemented isomers are
+#         0.  Paper
+#         1.  Paper
+#         2.  Anthony Meijer
+#         3.  Anthony Meijer
+#         4.  Test
+#         5.  Test
+#
+#     .. todo:: Thomas Kierspel, update/fix documentation
+#
+#     """
+#     param.name = "glycine"
+#     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
+#     param.watson = 'A'
+#     param.symmetry = 'N'
+#     if param.isomer == 0: # cis, Filsinger et al. PCCP ...
+#         param.rotcon = convert.Hz2J(num.array([10.3415e9, 3.87618e9, 2.91235e9]))
+#         param.dipole = convert.D2Cm(num.array([0.911, 0.697, 0.]))
+#     elif param.isomer == 1:
+#         param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
+#         param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
+#     elif param.isomer == 2:
+#         param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
+#         param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
+#     elif param.isomer == 3:
+#         param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
+#         param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
+#     elif param.isomer == 4:
+#         param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
+#     elif param.isomer == 5:
+#         param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
-        Implemented isomers are
-        0.  Paper
-        1.  Paper
-        2.  Anthony Meijer
-        3.  Anthony Meijer
-        4.  Test
-        5.  Test
 
-    .. todo:: Thomas Kierspel, update/fix documentation
-
-    """
-    param.name = "glycine"
-    param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    if param.isomer == 0: # cis, Filsinger et al. PCCP ...
-        param.rotcon = convert.Hz2J(num.array([10.3415e9, 3.87618e9, 2.91235e9]))
-        param.dipole = convert.D2Cm(num.array([0.911, 0.697, 0.]))
-    elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
-        param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
-    elif param.isomer == 2:
-        param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
-        param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
-    elif param.isomer == 3:
-        param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
-        param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
-    elif param.isomer == 4:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-    elif param.isomer == 5:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-
-
-def iodobenzene(param):
-    """ See [Dorosh2007]
-
-    .. todo:: Seabstian Trippel: please document
-
-    """
-    param.name = "iodobenzene"
-    param.watson = 'A'
-    param.symmetry = 'C2a'
-    param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
-    param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
-    # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
-    param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+# def iodobenzene(param):
+#     """ See [Dorosh2007]
+#
+#     .. todo:: Seabstian Trippel: please document
+#
+#     """
+#     param.name = "iodobenzene"
+#     param.watson = 'A'
+#     param.symmetry = 'C2a'
+#     param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
+#     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
+#     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
+#     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
 
 
 def phenylpyrrole(param):
@@ -570,17 +570,17 @@ def phenylpyrrole(param):
 
 
 def three_fluorophenol(param):
-    """Molecular parameters for three_fluorophenol
+    """Molecular parameters for 3-fluorophenol
 
     Implemented isomers are
     0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
     1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
     11. cis, from [Songhee2011]_ (YPChang)
-    12. trans, from [Songhee2011]_ (YPChang
+    12. trans, from [Songhee2011]_ (YPChang)
     13. cis, calculated by Yuan-Pin Chang, also the dipole moments
     14. trans, calculated by Yuan-Pin Chang, also the dipole moments
 
-    .. todo:: Daniel Horke, please improve documentatin (headline)
+    .. todo:: YUan-Pin and Daniel, what are all the " (YPChang)" suppoed to say?
     """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
@@ -610,13 +610,10 @@ def three_fluorophenol(param):
 
 
 def sulfur_dioxide(param):
-    """ SO2 (fix nomenclature)
+    """Molecular parameters for sulphur dioxide (:math:`\\text{SO}_2`)
 
     Rotational constants from [Helminger1985]_
     Dipole moments from [Patel1979]_
-
-    .. todo:: Terry Mullins, please improve documentatin (headline)
-
     """
     param.name = "sulfur_dioxide"
     param.watson = 'A'
@@ -631,10 +628,10 @@ def sulfur_dioxide(param):
 
 
 def nitrogen_dioxide(param):
-    """Molecular parameters for :math:`\\text{N}\\text{O}_2`
+    """Molecular parameters for :math:`\\text{NO}_2`
 
-    rotational constants: [Cabana1976]_
-    dipole moment: [Hodgeson1963]_
+    Rotational constants from [Cabana1976]_
+    Dipole moment from [Hodgeson1963]_
     """
     param.name = "nitrogen_dioxide"
     param.watson = 'A'
@@ -663,9 +660,8 @@ def methylvinylketone(param):
     """Molecular parameters for Methyl Vinyl Ketone
 
     Implemented isomers are
-    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from
-       [Wilcox2011]_ with 0.81 scaling factor
-
+    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from \
+    [Wilcox2011]_ with 0.81 scaling factor
     1. trans, experimental  rot. const. of A symmetry from [Wilcox2011]_, and experimental dipole moment: [Foster1965]_
     """
     param.name = "methylvinylketone"

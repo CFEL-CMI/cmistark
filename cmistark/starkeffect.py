@@ -34,27 +34,42 @@ class CalculationParameter(object):
     Calculate energy for the specified ``dcfields`` (V/m) and rotor ``type``; all calculations are performed in
     representation Ir (x, y, z -> b, c, a).
 
-    General parameters:
     :param isomer:
-    :param rotcon: (Joule), quartic (Joule), dipole (Coulomb meter)
+    :param rotcon: rotational constant (Joule); this is a vector of length 1, 2, or 3 depending on rotor type
+    :param quartic: quartic centrifucal distortion constants according to (Joule); this is a vector of length 1, 3, or 5 \
+    depending on rotor type
+    :param dipole: dipole moment (Coulomb meter); this is a vector of length 1 or 3 depending on rotor type
     :param mass: mass of molecule/isomer
-    :param type: specify the type of rotor
-    * 'L': linear top
-    * 'S': prolate symmetric top
+    :param type: specify the type of rotor as given below.
+    :param M: :math:`J` quantum number to perform calculation for
+    :param Jmin: Minimum :math:`J` to include in matrix calculation (and in outout file)
+    :param Jmax_calc: Maximum :math:`J` to include in matrix calculation
+    :param Jmax_save: Maximum :math:`J` to include in outout file
+    :param watson: specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used; \
+    'A' for Watson's A reduction, 'S' for Watson's S reduction
+    :param symmetry: defines the remaining symmetry of Hamiltonian for the molecule in a DC field.
+
+    **Rotor types**
+
+    * 'L': linear top,
+    * 'S': prolate symmetric top,
     * 'A': asymmetric top
 
-    The following parameter are used for an asymmetric top:
-    :param M:
-    Jmin, Jmax_calc, Jmax_save
-    :param watson: specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used.
-    * 'A' for Watson's A reduction
-    * 'S' for Watson's S reduction
 
-    :param symmetry: defines the remaining symmetry of Hamiltonian for the molecule in a DC field. This is used to
-      disentangle the block-diagonalization from a Wang transformation of the Hamiltonian matrix. It can be 'N', 'C2a',
-      'C2b', 'C2c', 'V' for full Fourgroup symmetry, for asym top. 'W': block diagonalization in terms of E/O^+/- (Wang
-      submatrices) for asym top. This can only be correct for zero-field calculations or M=0. For a symmetric top, the
-      options are 'p' and 'o'.
+    **Symmetry considerations**
+
+    The parameter ``symmetry`` is used to disentangle the block-diagonalization from a Wang transformation of the
+    Hamiltonian matrix. It can be
+
+    * 'N',
+    * 'C2a',
+    * 'C2b',
+    * 'C2c',
+    * 'V' for full Fourgroup symmetry for asymmetric tops.
+    * 'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asymmetric tops. This can only be correct \
+    for zero-field calculations or M=0.
+
+    For a symmetric top, the options are 'p' and 'o'.
 
     """
     name = ' '
