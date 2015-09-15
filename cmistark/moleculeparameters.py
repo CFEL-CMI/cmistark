@@ -2,7 +2,7 @@
 # -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2012,2014 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2008,2009,2012,2014,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -216,6 +216,8 @@ def adenine(param):
         Brown et al, CPL 156, 61 (1989) Dipole moments from Mohammed et al, JMS 938, 263 (2009) (put references in the
         reference list and hyperlink)
 
+    .. todo:: Daniel Horke: you promised improved constants "soon" in the original git commit.
+
     """
     param.name = "adenine"
     param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
@@ -230,10 +232,14 @@ def adenine(param):
 
 
 def five_fluoroindole(param):
-    """ Molecular parameters for 5-fluoroindole
+    """Molecular parameters for 5-fluoroindole
 
     Rotational constants constants from Brand et al, CPC 13, 3134 (2012)
     Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
+
+    .. todo:: Daniel Horke put references into ref list and cite; provide details on DFT calculations (program, version,
+    functional basis, ...)
+
     """
     param.name = "five_fluoroindole"
     param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
@@ -353,6 +359,11 @@ def OCS(param):
     0. using above parameters with linear-rotor hamiltonian
     1. using above parameters with symmetric-rotor hamiltonian
     2. using above parameters with asymmetric-rotor hamiltonian
+
+    The special implementations 1 and 2 are not meant for production use. Instead, they were, and are, useful for
+    benchmarking and debugging the various cases of the Stark code. Please do not remove them, but also do not use them
+    for regular scientific work.
+
     """
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
@@ -377,13 +388,22 @@ def OCS(param):
 
 
 def iodomethane(param):
-    """B, DJ, and DK constants from [Wlodarczak1987]_ and [Gadhi1989]_.
+    """Molecular parameters for iodomethane (:math:`\\text{CH}_3\\text{I}`)
 
+
+    B, DJ, and DK constants from [Wlodarczak1987]_ and [Gadhi1989]_.
     A and DK constants from [Pietila1996]_.
 
     Implemented isomers are
     0. above constants using symmetric-top Hamiltonian
     1. above constants using asymmetric-top Hamiltonian
+
+    The special implementation 1 is not meant for production use. Instead, it was, and is, useful for benchmarking and
+    debugging the various cases of the Stark code. Please do not remove it, but also do not use it for regular
+    scientific work.
+
+    .. todo:: Sebastian Trippel, pleae rewrite documentation in more detail, using math syntax for subscritpts, etc.
+
     """
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
@@ -425,6 +445,9 @@ def diiodoethane(param):
     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
 
     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+
+    .. todo:: Which level of theory (program version)
+
     """
     param.name = "diiodoethane"
     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
@@ -528,6 +551,9 @@ def glycine(param):
 
 def iodobenzene(param):
     """ See [Dorosh2007]
+
+    .. todo:: Seabstian Trippel: please document
+
     """
     param.name = "iodobenzene"
     param.watson = 'A'
@@ -558,6 +584,8 @@ def three_fluorophenol(param):
     12. trans, from [Songhee2011]_ (YPChang
     13. cis, calculated by Yuan-Pin Chang, also the dipole moments
     14. trans, calculated by Yuan-Pin Chang, also the dipole moments
+
+    .. todo:: Daniel Horke, please improve documentatin (headline)
     """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
@@ -591,6 +619,9 @@ def sulfur_dioxide(param):
 
     Rotational constants from [Helminger1985]_
     Dipole moments from [Patel1979]_
+
+    .. todo:: Terry Mullins, please improve documentatin (headline)
+
     """
     param.name = "sulfur_dioxide"
     param.watson = 'A'
