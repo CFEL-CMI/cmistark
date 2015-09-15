@@ -49,32 +49,32 @@ Installing CMIstark: in user-specified path
 
 Use PYTHONUSERBASE to specify the installation path::
 
-  setenv PYTHONUSERBASE $HOME/.python
+  setenv PYTHONUSERBASE $HOME/.local
   python setup.py install --user
 
 In the above example of installation (in tcsh shell), the module will be installed in the following path::
 
-  $HOME/.python/lib/python/site-packages
+  $HOME/.local/lib/python/site-packages
 
 and the scripts will be installed in the following path::
 
-  $HOME/.python/bin
+  $HOME/.local/bin
 
 To import modules and call scripts of such user-specific installation, the following environment 
 declarifications are required::
 
-  setenv PATH /opt/local/bin:$HOME/.python/bin:$PATH
-  setenv PYTHONUSERBASE $HOME/.python
+  setenv PATH /opt/local/bin:$HOME/.local/bin:$PATH
+  setenv PYTHONUSERBASE $HOME/.local
 
 The above example is provided for the tcsh shell. You can also then use ``site`` module of python
 in python command prompt to make sure the environment is properly set up. For example::
 
   >>> import site
   >>> site.USER_BASE
-  '$HOME/.python'
+  '$HOME/.local'
 
 Also type "which ``name of script file``" to find the real path of the script called. It should
-be in "$HOME/.python/bin".
+be in "$HOME/.local/bin".
 
 For further details, see https://docs.python.org/3/install/index.html#inst-alt-install-user and
 https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE  
