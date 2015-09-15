@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8 -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012,2014 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,15 +15,16 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 import numpy as num
 import numpy.linalg
 import tables
 
-import jkext.hdf5, jkext.molecule, jkext.util
-from jkext.state import State
+import cmiext
+import cmiext.hdf5, cmiext.molecule, cmiext.util
+from cmiext.state import State
 
 import cmistark.starkeffect
 
@@ -35,28 +36,31 @@ class _isomer_mass(tables.IsDescription):
     mass  = tables.Float64Col()
 
 
-class Molecule(jkext.molecule.Molecule):
+class Molecule(cmiext.molecule.Molecule):
     """Representation of a Molecule"""
 
     def __init__(self, atoms=None, storage=None, name="Generic molecule", readonly=False):
         """Create Molecule from a list of atoms."""
-        jkext.molecule.Molecule.__init__(self, atoms, name)
+        cmiext.molecule.Molecule.__init__(self, atoms, name)
         try:
             if readonly:
-                self.__storage = tables.openFile(storage, mode='r')
+                self.__storage = tables.open_file(storage, mode='r')
             else:
-                self.__storage = tables.openFile(storage, mode='a', title=name)
-            ## YP: the line below requires the stark file writable, block it for now for 
-            ## readonly option
-            #self.__storage.getNode("/")._v_title = name
+                self.__storage = tables.open_file(storage, mode='a', title=name)
+                self.__storage.get_node("/")._v_title = name
         except:
+            raise EnvironmentError("Cannot create nor open storage file")
             self.__storage = None
 
 
     def mueff(self, state):
-        """Get the effective dipole moment \mu_eff as a function of the electric field strength.
+        """Effective dipole moment :math:`\mu_{\\text{eff}}` as a function of the electric field strength.
 
-        Return the effective dipole moment curve for the specified quantum |state|.
+        :return: effective dipole moment curve for the specified quantum ``state``.
+
+        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the mebers of the pair are
+                one-dimensional NumPy ndarrays.
+
         """
         fields, energies = self.starkeffect(state)
         assert len(fields) == len(energies)
@@ -70,30 +74,38 @@ class Molecule(jkext.molecule.Molecule):
     def starkeffect(self, state, fields=None, energies=None):
         """Get or set the potential energies as a function of the electric field strength.
 
-        When |energies| and |fields| are None, return the Stark curve for the specified quantum state.
+        :param state: Eigenstate for which the Stark effect is calculated.
+        :param fields: Field strengths at which the eigenenergies are calculated (default: None).
+        :param energy: Corresponding eigensergies at the given field strengths (default: None).
 
-        When |energies| and |fields| are specified, save the Stark curve for the specified quantum state in the
+        When ``energies`` and ``fields`` are None, return the Stark curve for the specified quantum state. When
+        ``energies`` and ``fields`` are specified, save the Stark curve for the specified quantum state in the
         Molecule's HDF5 storage file.
+
         """
-        if energies == None and fields == None:
-            return jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
-                jkext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
-        elif energies == None or fields == None:
+        if energies is None and fields is None:
+            return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
+                cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
+        elif energies is None or fields is None:
             raise SyntaxError
         else:
             assert len(fields) == len(energies)
-            jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
-            jkext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
+            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
+            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
 
 
     def starkeffect_calculation(self, param):
         """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
-        them in our storage file."""
-        try:
-            self.__storage.createTable("/", 'masses', _isomer_mass, "Isomer masses")
-        except:
-            pass
+        them in our storage file.
 
+        ..todo:: Improve diagnostics regarding the "create_table" try-except and distinguish
+        "pre-eistance" from real errors (and act accordingly)
+        """
+        try:
+            self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
+        except:
+            # Cannot create HDF5 table, continuing -- this is morst likely due to the fact that the entry/file exists already
+            pass
         if 'L' == param.type:
             Rotor = cmistark.starkeffect.LinearRotor
         elif 'S' == param.type:
@@ -121,12 +133,12 @@ class Molecule(jkext.molecule.Molecule):
                 calc = Rotor(param, M, field)
                 for state in calc.states():
                     id = state.id()
-                    if energies.has_key(id):
+                    if id in energies:
                         energies[id].append(calc.energy(state))
                     else:
                         energies[id] = [calc.energy(state),]
             # store calculated values for this M
-            for id in energies.keys():
+            for id in list(energies.keys()):
                 self.starkeffect_merge(State().fromid(id), param.dcfields, energies[id])
             # flush HDF5 file after every M
             self.__storage.flush()
@@ -140,7 +152,7 @@ class Molecule(jkext.molecule.Molecule):
         assert len(newfields) == len(newenergies)
         try:
             oldfields, oldenergies = self.starkeffect(state)
-            fields, energies = jkext.util.column_merge([oldfields, oldenergies], [newfields, newenergies])
+            fields, energies = cmiext.util.column_merge([oldfields, oldenergies], [newfields, newenergies])
         except tables.exceptions.NodeError:
             fields = newfields
             energies = newenergies
@@ -176,7 +188,7 @@ class Molecule(jkext.molecule.Molecule):
 # some simple tests
 if __name__ == "__main__":
     # test Stark calculation and storage/retrieval
-    from jkext.convert import *
+    from cmiext.convert import *
     param = cmistark.starkeffect.CalculationParameter
     param.name = 'cis'
     param.isomer = 0
@@ -199,9 +211,15 @@ if __name__ == "__main__":
         for Kc in range(J, -1, -1):
             state = State(J, Ka, Kc, 0, 0)
             fields, energies = mol.starkeffect(state)
-            print state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6
+            print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
             if Kc > 0:
                 Ka += 1
                 state = State(J, Ka, Kc, 0, 0)
                 fields, energies = mol.starkeffect(state)
-                print state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6
+                print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:

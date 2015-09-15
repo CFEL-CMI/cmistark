@@ -1,6 +1,6 @@
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
-# Copyright (C) 2008 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2014 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -13,5 +13,5 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
-__author__ = "Jochen Küpper <software@jochen-kuepper.de>"
+
+__author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"

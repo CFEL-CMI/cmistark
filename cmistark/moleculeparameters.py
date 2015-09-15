@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8; fill-column: 120 -*-
+# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
 # This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2012 Jochen Küpper <software@jochen-kuepper.de>
+# Copyright (C) 2008,2009,2012,2014,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,66 +15,90 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
-__doc__ = """This modules implements the molecular parameters of all investigated molecules.
+__doc__ = """This modulEs Implements the molecular parameters of all investigated molecules.
 
 The relevant parameters are:
 
 - param.rotcon: rotational constants
-  - linear top: B
-  - symmetric top: (A,B) for prolate, (B,C) for oblate
-  - asymmetric top: (A,B,C)
+
+  - linear top: :math:`B`
+  - symmetric top: :math:`(A,B)` for prolate, :math:`(B,C)` for oblate
+  - asymmetric top: :math:`(A,B,C)`
+
 - param.quartic: centrifugal distortion constants
-  - linear top: D
-  - symmetric top: (D_J, D_{JK}, D_K)
+
+  - linear top: :math:`D`
+  - symmetric top: :math:`(D_{J},D_{JK},D_{K})`
   - asymmetric top
-    - in Watson's A reduction: (\Detlta_J, \Detlta_{JK}, \Detlta_K, d_J, d_K)
+
+    - in Watson's A reduction: :math:`(\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K})`
+    - in Watson's S reduction: :math:`(D_{J}, D_{JK}, D_{K}, d_{1}, d_{2})`
+
 - param.dipole: dipole moments
-  - for linear and symmetric tops: \mu
-  - for an asymmetric top: (\mu_a, \mu_b, \mu_c)
+
+  - for linear and symmetric tops: :math:`\mu`
+  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{a}`, :math:`\mu_{a}`)
+
 - param.type: type of rotors
-  - linear rotor: 'L'
-  - symmetric top: 'S'
-  - asymmetric top: 'A'
+
+  - linear rotor: *L*
+  - symmetric top: *S*
+  - asymmetric top: *A*
+
 - param.symmetry: symmetry in the feild for linear/asymmetric tops. For symmetric top,
   prolate or oblate is specifie here
-  - linear rotor: 'N' (as no symmetry is implemented for linear top)
+
+  - linear rotor: *N* (as no symmetry is implemented for linear top)
   - symmetric top:
-    - prolate: 'p'
-    - oblate: 's'
-  - asymmetric top (for M != 0 cases, the program takes care the M = 0 case itself):
-    - only \mu_a != 0: 'C2a'
-    - only \mu_b != 0: 'C2b'
-    - only \mu_c != 0: 'C2c'
-    - other dipole directions: 'N'
+
+    - prolate: *p*
+    - oblate: *s*
+
+  - asymmetric top (for :math:`M != 0` cases, the program takes care the :math:`M = 0` case itself):
+
+    - only :math:`\mu_a != 0`: *C2a*
+    - only :math:`\mu_b != 0`: *C2b*
+    - only :math:`\mu_c != 0`: *C2c*
+    - other dipole directions: *N*
+
 - param.watson: only for asymmetric top.
-  - Watson's A reduction: 'A'
-  - Watson's S reduction: 'S' (not implemented yet)
+
+  - Watson's A reduction: *A*
+  - Watson's S reduction: *S*
 
 All relevant parameters for molecules of interest need to be properly implemented here.
+
+
+.. todo:: Everybody Sort the order of definitions of real molecules in alphabetical order. For sorting, could create \
+sub-files that are imported into the local file-/namespace
+
 """
 
 import numpy as num
 import getopt, sys
 
-import jkext.convert as convert
+import cmiext as cmiext
+import cmiext.convert as convert
+from cmiext.state import State
+from cmiext.molecule import Masses
+
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
-from jkext.state import State
-from jkext.molecule import Masses
 
 
 def asymmetric_top(param):
     """Molecular parameters for an artificial asymmetric top
 
     Implemented isomers are (modified) examples of
-     0 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b != 0
-     1 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c != 0
-     2 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_a = 0
-     3 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_b = 0
-     4 - rot. const. from Fig7.2 in Gordy & Cook (1984), and only u_c = 0
-     5 - rot. const. from Fig7.2 in Gordy & Cook (1984), and no any u_i = 0
+
+    0. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b != 0`
+    1. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c != 0`
+    2. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_a = 0`
+    3. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_b = 0`
+    4. rot. const. from Fig7.2 in Gordy & Cook (1984), and only :math:`\mu_c = 0`
+    5. rot. const. from Fig7.2 in Gordy & Cook (1984), and no any :math:`\mu_i = 0`
     """
     param.name = "asymmetric_top"
     param.watson = 'A'
@@ -109,12 +133,13 @@ def three_aminophenol(param):
     """Molecular parameters for 3-aminophenol
 
     Implemented isomers are
-     0  -  cis conformer, experimental values from F. Filsinger et al., PCCP 10, 666 (2008)
-     1  -  trans conformer, exp values, F. Filsinger et al., PCCP 10, 666 (2008)
-     2  -  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> by Daniel Rösch, Basel, 2011
-     3  -  trans conformer, calculated values of MP2/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-     4  -  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
-     5  -  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from Daniel Rösch in Basel, 2011
+
+    0.  cis conformer, experimental values from [Filsinger2008]_
+    1.  trans conformer, exp values from [Filsinger2008]_
+    2.  cis conformer, MP2/aug-cc-pVTZ calculation using <Gaussian 2003.1> from [Roesch2011]_
+    3.  trans conformer, calculated values of MP2/aug-cc-pVTZ method from [Roesch2011]_
+    4.  cis conformer, calculated values of B3LYP/aug-cc-pVTZ method from [Roesch2011]_
+    5.  trans conformer, calculated values of B3LYP/aug-cc-pVTZ method from [Roesch2011]_
     """
     param.name = "3-aminophenol"
     param.watson = 'A'
@@ -140,7 +165,13 @@ def three_aminophenol(param):
 
 
 def oblate_symmetric_top(param):
-    """Molecular parameters for an artificial oblate top"""
+    """Molecular parameters for an artificial oblate top
+
+    Implemented isomers are
+
+    0. rotor type is set to 'S' - symmetric top, and symmetry is set to 'o' - oblate
+    1. rotor type is set to 'A' - asymmetric top, and symmetry is set to 'C2c' - only u_c != 0
+    """
     param.name = "oblate_symmetric_top"
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     if 0 == param.isomer:
@@ -177,13 +208,50 @@ def prolate_symmetric_top(param):
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 
+
+def adenine(param):
+    """Molecular parameters for adenine
+
+    Expt values for 9H rot constants from [Brown1989]_
+
+    All values for 7H and all dipole moments from [Franz2014]_
+
+    """
+    param.name = "adenine"
+    param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #tautomer 9H
+        param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
+        param.dipole = convert.D2Cm(num.array([1.86, -1.39, -0.03]))
+    elif param.isomer == 1: #tautomer 7H
+        param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
+        param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
+
+
+def five_fluoroindole(param):
+    """Molecular parameters for 5-fluoroindole
+
+    Experimental values from [Brand2012]_
+    Dipole moments from MP2 calculations (Daniel Horke, Feb 2015, Gamess2013, 6-311G++(d,p), MP2)
+
+    """
+    param.name = "five_fluoroindole"
+    param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
+    param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
+
+
+
 def indole(param):
     """Molecular parameters for indole
 
     Implemented isomers are
-    0  -  experimental values from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005)
-    1  -  experimental inertial constants from W. Caminati and S. Dibernardo, J. Mol. Struct. 240, 253 (1990)
-          and dipole moment from Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005) for dipole moment.
+
+    0.  experimental values from [Kang2005]_
+    1.  experimental inertial constants from [Caminati1990]_ and dipole moment from [Kang2005]_ for dipole moment.
     """
     param.name = "indole"
     param.mass = 8 * Masses['C'] + Masses['N'] + 7 * Masses['H']
@@ -202,10 +270,9 @@ def indole_water1(param):
     """Molecular parameters for the indole-water complex
 
     Implemented isomers are
-    0  -  experimental inertial parameters from Korter, Pratt, Kuepper, J. Phys. Chem. A 102, 7211 (1998)
-          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
-    1  -  experimental inertial parameters from Blanco S et al, J. Chem. Phys., Vol. 119, 880 (2003)
-          and experimental dipole moment from C. Kang, T. M. Korter, and D. W. Pratt, J. Chem. Phys. 122, 174301 (2005)
+
+    0.  experimental inertial parameters from [Korter1998]_ and experimental dipole moment from [Kang2005]_
+    1.  experimental inertial parameters from [Blanco2003]_ and experimental dipole moment from [Kang2005]_
     """
     param.name = "indole-water"
     param.mass = 8 * Masses['C'] + Masses['N'] + Masses['O'] + 9 * Masses['H']
@@ -222,11 +289,13 @@ def indole_water1(param):
 
 
 def indole_water2(param):
-    """Molecular parameters for indole-(water)_2
+    """Molecular parameters for indole-(water):math:`_2`
 
     Implemented isomers are
-    0  -  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Yuan-Pin Chang (2011);
-          see Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
+
+    0.  values calculated at B3LYP/6-31+G* with GAMESS-US 2009 by Y.P. Chang; see [Trippel2012]_
+
+    .. todo:: Everybody: See the math-usage and implement it for all sub- and super-scripts (if any)
     """
     param.name = "indole-water2"
     param.mass = 8 * Masses['C'] + Masses['N'] + 2 * Masses['O'] + 11 * Masses['H']
@@ -238,18 +307,21 @@ def indole_water2(param):
 
 
 def water(param):
-    """Molecular parameters for H2O, D2O, HDO
+    """Molecular parameters for water isotopologues (:math:`\\text{H}_2\\text{O}`, :math:`\\text{D}_2\\text{O}`, :math:`\\text{HDO}`)
+
+    :param param: Calculation parameter object to be filled with appropriate content
+    :type param: starkeffect.CalculationParameter
 
     Implemented isomers are
-    0  -  H2O: experimental inertial parameters from F.C. DeLucia, P. Helminger, and W.H. Kirchhoff, J. Phys. Chem. Ref. Data 3, 211 (1974)
-               and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-    1  -  D2O: experimental inertial parameters from G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973)
-               and experimental dipole moment from Clough, Beers, Klein, Rothman, J. Chem. Phys. 59, 2254-2259 (1973)
-    2  -  HDO: experimental inertial parameters from F. C. De Lucia, R. L. Cook, P. Helminger, and W. Gordy, J. Chem. Phys., 55, 5334 (1971)
-          and experimental dipole moment from Shostak, Ebenstein, and Muenter, J. Chem. Phys., 94, 5875 (1991)
-    These values and references are also listed at http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/H2O.html
 
-    Default isomers are 0 for water/H2O, 1 for D2O, and 2 for HDO.
+    0. H2O: experimental inertial parameters from [DeLucia1974]_ and experimental dipole moment from [Shostak1991]_
+    1. D2O: experimental inertial parameters from [Steenbeckeliers1973]_ and experimental dipole moment from [Clough1973]_
+    2. HDO: experimental inertial parameters from [DeLucia1971]_ and experimental dipole moment from [Shostak1991]_
+
+    Default isomers are '0' for water/H2O, '1' for D2O, and '2' for HDO.
+
+    .. seealso:: These molecular parameters and references are also listed at NIST Spectral Database - H2O [NISTspecDB_H2O]_
+
     """
     param.name = "water"
     param.watson = 'A'
@@ -275,65 +347,78 @@ def water(param):
 def OCS(param):
     """Molecular parameters for OCS
 
-    Paramters from http://physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/OCS.html (2012) and
-    Reinartz, J., & Dymanus, A. Chemical Physics Letters, 24(3), 346–351 (1974).
+    Paramters from NIST Spectral Database - OCS [NISTspecDB_OCS]_ and [Reinartz1974]_.
 
     Implemented isomers are
-    0  - using above parameters with linear-rotor hamiltonian
-    1  - using above parameters with symmetric-rotor hamiltonian
-    2  - using above parameters with asymmetric-rotor hamiltonian
+
+    0. using above parameters with linear-rotor hamiltonian
+    1. using above parameters with symmetric-rotor hamiltonian
+    2. using above parameters with asymmetric-rotor hamiltonian
+
+    The special implementations 1 and 2 are not meant for production use. Instead, they were, and are, useful for
+    benchmarking and debugging the various cases of the Stark code. Please do not remove them, but also do not use them
+    for regular scientific work.
+
     """
     param.name = "OCS"
     param.mass = Masses['O'] + Masses['C'] + Masses['S']
     if 0 == param.isomer:
-	param.type = 'L'
-	param.symmetry = 'N'
-	param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3]))
+        param.type = 'L'
+        param.symmetry = 'N'
+        param.rotcon = convert.Hz2J(num.array([6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3]))
     elif 1 == param.isomer:
-	param.type = 'S'
-	param.symmetry = 'p'
-	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
+        param.type = 'S'
+        param.symmetry = 'p'
+        param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0.]))
     elif 2 == param.isomer:
-	param.type = 'A'
-	param.symmetry = 'C2a'
-	param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
-	param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
-	param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
+        param.type = 'A'
+        param.symmetry = 'C2a'
+        param.rotcon = convert.Hz2J(num.array([1e15, 6.081492475e9, 6.081492475e9]))
+        param.dipole = convert.D2Cm(num.array([0.71519, 0., 0.]))
+        param.quartic  = convert.Hz2J(num.array([1.301777e3, 0., 0., 0., 0.]))
 
 
 def iodomethane(param):
-    """B, DJ, and DK constants from Wlodarczak, Boucher, Bocquet, & Demaison, J. Mol. Spectros., 124, 53–65 (1987) and
-    Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401–404 (1989).
+    """Molecular parameters for iodomethane (:math:`\\text{CH}_3\\text{I}`)
 
-    A and DK constants from Pietilä, Koivusaari, Alanko, & Anttila, Mol Phys 87, 523 (1996)
+    B, DJ, and DK constants from [Wlodarczak1987]_ and [Gadhi1989]_.
+    A and DK constants from [Pietila1996]_.
 
     Implemented isomers are
-    0  - above constants using symmetric-top Hamiltonian
-    1  - above constants using asymmetric-top Hamiltonian
+    0. above constants using symmetric-top Hamiltonian
+    1. above constants using asymmetric-top Hamiltonian
+
+    The special implementation 1 is not meant for production use. Instead, it was, and is, useful for benchmarking and
+    debugging the various cases of the Stark code. Please do not remove it, but also do not use it for regular
+    scientific work.
+
+    .. todo:: Sebastian Trippel, please rewrite documentation in more detail, using math syntax for subscritpts, etc.
+
     """
     param.name = "iodomethane"
     param.mass = 3*Masses['H'] + Masses['C'] + Masses['I']
     if 0 == param.isomer:
-	param.type = 'S'
+        param.type = 'S'
         param.symmetry = 'p'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
+        param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6)])
         param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6)])
-	param.dipole = convert.D2Cm(num.array([1.6406]))
+        param.dipole = convert.D2Cm(num.array([1.6406]))
     elif 1 == param.isomer:
-	param.type = 'A'
+        param.type = 'A'
         param.watson = 'A'
-	param.symmetry = 'C2a'
-	param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
-	param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
-	param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
+        param.symmetry = 'C2a'
+        param.rotcon = num.array([convert.invcm2J(5.1742629), convert.Hz2J(7501.2757456e6), convert.Hz2J(7501.2757456e6)])
+        param.quartic  = num.array([convert.Hz2J(6.307583e3), convert.Hz2J(98.76798e3), convert.invcm2J(87.857e-6), 0., 0.])
+        param.dipole = convert.D2Cm(num.array([1.6406, 0., 0.]))
 
 
 def difluoro_iodobenzene(param):
-    # parameters from simple ab initio calculations (Jochen Küpper, 2010)
+    """ parameters from simple ab initio calculations [Kuepper2010]_.
+    """
     param.name = "2,6-difluoro-iodobenzene"
     param.type = 'A'
     param.watson = 'A'
@@ -343,31 +428,38 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-def diiodoethane(param):
-    """Molecular parameters for diiodo-ethane, implemented isomers are
-    0  -  anti-conformation (C2h symmetry)
-    1  -  gauge-conformation (C2 symmetry)
-
-    Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study", J. Phys. Chem. A, 109, 10451-10458 (2005)
-
-    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**)
-    """
-    param.name = "diiodoethane"
-    param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
-    param.watson = 'A'
-    if param.isomer == 0: # anti
-        param.symmetry = 'N'
-        param.rotcon = convert.Hz2J(num.array([2.79227492e10, 3.09470163e8, 3.07270856e8]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-    elif param.isomer == 1: # gauge
-        param.symmetry = 'C2b'
-        param.rotcon = convert.Hz2J(num.array([6.18776669e9, 4.92744613e8, 4.63936461e8]))
-        param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
+# def diiodoethane(param):
+#     """Molecular parameters for diiodo-ethane.
+#
+#     Implemented isomers are
+#     0.  anti-conformation (C2h symmetry)
+#     1.  gauge-conformation (C2 symmetry)
+#
+#     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
+#     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
+#
+#     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+#
+#     .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
+#     to calculate the rotational constants ab initio when the structural paramters are available from documentation?
+#
+#     """
+#     param.name = "diiodoethane"
+#     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
+#     param.watson = 'A'
+#     if param.isomer == 0: # anti
+#         param.symmetry = 'N'
+#         param.rotcon = convert.Hz2J(num.array([2.79227492e10, 3.09470163e8, 3.07270856e8]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
+#     elif param.isomer == 1: # gauge
+#         param.symmetry = 'C2b'
+#         param.rotcon = convert.Hz2J(num.array([6.18776669e9, 4.92744613e8, 4.63936461e8]))
+#         param.dipole = convert.D2Cm(num.array([0., 2.249726, 0.]))
 
 
 def two_aminobenzonitrile(param):
-    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    """ See [Miller2009]_
+    """
     param.name = "2-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -378,7 +470,8 @@ def two_aminobenzonitrile(param):
 
 
 def three_aminobenzonitrile(param):
-    # Miller et al., J. Phys. Chem. A, 2009 vol. 113 (25) pp. 6964-6970
+    """ See [Miller2009]_
+    """
     param.name = "3-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -389,7 +482,8 @@ def three_aminobenzonitrile(param):
 
 
 def four_aminobenzonitrile(param):
-    # Borst et al., Chem. Phys. Lett. 350, p.485 (2001)
+    """ See [Borst2001]_
+    """
     param.name = "4-aminobenzonitrile"
     param.type = 'A'
     param.watson = 'A'
@@ -400,7 +494,8 @@ def four_aminobenzonitrile(param):
 
 
 def benzonitrile(param):
-    # Wohlfart, Schnell, Grabow, Küpper, J. Mol. Spec. 247, 119-121 (2008)
+    """ See [Wohlfart2008]_
+    """
     param.name = "benzonitrile"
     param.mass = 7 * Masses['C'] + Masses['N'] + 5 * Masses['H']
     param.type = 'A'
@@ -411,54 +506,62 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-def glycine(param):
-    """Molecular parameters for TEST glycine
+# def glycine(param):
+#     """Molecular parameters for TEST glycine
+#
+#         Implemented isomers are
+#         0.  Paper
+#         1.  Paper
+#         2.  Anthony Meijer
+#         3.  Anthony Meijer
+#         4.  Test
+#         5.  Test
+#
+#     .. todo:: Thomas Kierspel, update/fix documentation
+#
+#     """
+#     param.name = "glycine"
+#     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
+#     param.watson = 'A'
+#     param.symmetry = 'N'
+#     if param.isomer == 0: # cis, Filsinger et al. PCCP ...
+#         param.rotcon = convert.Hz2J(num.array([10.3415e9, 3.87618e9, 2.91235e9]))
+#         param.dipole = convert.D2Cm(num.array([0.911, 0.697, 0.]))
+#     elif param.isomer == 1:
+#         param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
+#         param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
+#     elif param.isomer == 2:
+#         param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
+#         param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
+#     elif param.isomer == 3:
+#         param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
+#         param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
+#     elif param.isomer == 4:
+#         param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
+#     elif param.isomer == 5:
+#         param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
+#         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
-        Implemented isomers are
-        0  -  Paper
-        1  -  Paper
-        2  -  Anthony Meijer
-        3  -  Anthony Meijer
-        4  -  Test
-        5  -  Test
-        """
-    param.name = "glycine"
-    param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
-    param.watson = 'A'
-    param.symmetry = 'N'
-    if param.isomer == 0: # cis, Filsinger et al. PCCP ...
-        param.rotcon = convert.Hz2J(num.array([10.3415e9, 3.87618e9, 2.91235e9]))
-        param.dipole = convert.D2Cm(num.array([0.911, 0.697, 0.]))
-    elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([10.1301e9, 4.07151e9, 3.00748e9]))
-        param.dipole = convert.D2Cm(num.array([5.372, 0.93, 0.]))
-    elif param.isomer == 2:
-        param.rotcon = convert.Hz2J(num.array([9.71997e9, 3.97849e9, 2.98658e9]))
-        param.dipole = convert.D2Cm(num.array([-0.1559, 1.6907, -0.0773]))
-    elif param.isomer == 3:
-        param.rotcon = convert.Hz2J(num.array([10.2564941e9, 3.9707803e9, 2.9620284e9]))
-        param.dipole = convert.D2Cm(num.array([-0.0058, -1.5519, 1.4356]))
-    elif param.isomer == 4:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
-    elif param.isomer == 5:
-        param.rotcon = convert.Hz2J(num.array([0., 0., 0.]))
-        param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
-
-def iodobenzene(param):
-    # Dorosh, Bialkowskajaworska, Kisiel, Pszczolkowski,  J. Mol. Spec. 246, 228-232 (2007)
-    param.name = "iodobenzene"
-    param.watson = 'A'
-    param.symmetry = 'C2a'
-    param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
-    param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
-    # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
-    param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+# def iodobenzene(param):
+#     """ See [Dorosh2007]
+#
+#     .. todo:: Seabstian Trippel: please document
+#
+#     """
+#     param.name = "iodobenzene"
+#     param.watson = 'A'
+#     param.symmetry = 'C2a'
+#     param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
+#     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
+#     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
+#     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
 
 
 def phenylpyrrole(param):
-    # A. J. Fleisher
+    """ A. J. Fleisher
+    """
     param.name = "phenylpyrrole"
     param.watson = 'A'
     param.symmetry = 'C2a'
@@ -467,15 +570,18 @@ def phenylpyrrole(param):
 
 
 def three_fluorophenol(param):
-    """Molecular parameters for three_fluorophenol
-        Parameters (rot con and quadratic) for isomer = 0 (cis) from
-        Dutta et al, Pramana – J. Phys. 24 (1985) 499–502, "Microwave spectrum of cis 3-FP"
-        for isomer = 1 (trans) from
-        Jaman et al, J.of Mol. Spec., 86, 269.274 (1981) "Microwave Spectrum of 3-FP" for
-        dipoles from Songhee Han (YPChang)
-        Isomer 11 (cis) and 12 (trans) from Songhee Han (YPChang)
-        Isomer 13 (cis) and 14 (trans) calculated by Yuan-Pin Chang, also the dipole moments
-        """
+    """Molecular parameters for 3-fluorophenol
+
+    Implemented isomers are
+    0. cis, Parameters (rot con and quadratic) from [Dutta1985]_
+    1. trans, from [Jaman1981]_ for dipoles from [Songhee2011]_ (YPChang)
+    11. cis, from [Songhee2011]_ (YPChang)
+    12. trans, from [Songhee2011]_ (YPChang)
+    13. cis, calculated by Yuan-Pin Chang, also the dipole moments
+    14. trans, calculated by Yuan-Pin Chang, also the dipole moments
+
+    .. todo:: YUan-Pin and Daniel, what are all the " (YPChang)" suppoed to say?
+    """
     param.name = "three_fluorophenol"
     param.mass = 6 * Masses['C'] + 1 * Masses['F'] + 1 * Masses['O'] + 5 * Masses['H']
     param.type = 'A'
@@ -502,8 +608,13 @@ def three_fluorophenol(param):
         param.rotcon = convert.Hz2J(num.array([3.76358267e9, 1.79886976e9, 1.21712413e9]))
         param.dipole = convert.D2Cm(num.array([2.747456, -0.144641, 0.0]))
 
+
 def sulfur_dioxide(param):
-    # Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111, 66-72 (1985)
+    """Molecular parameters for sulphur dioxide (:math:`\\text{SO}_2`)
+
+    Rotational constants from [Helminger1985]_
+    Dipole moments from [Patel1979]_
+    """
     param.name = "sulfur_dioxide"
     param.watson = 'A'
     param.symmetry = 'C2b'
@@ -513,14 +624,14 @@ def sulfur_dioxide(param):
     param.rotcon = convert.Hz2J(num.array([60778.5522e6, 10318.0722e6, 8799.7023e6]))
     # Alternative papers: F.J. Lovas, J. Phys. Chem. Ref. Data 7, 1445 (1978).
     param.quartic = convert.Hz2J(num.array([0.0066610013e6, -0.1169588e6, 2.5904328e6, 0.001701045, 0.0253531]))
-    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.])) # Dipole from J. Chem. Phys. 70, 2740 (1979).
+    param.dipole = convert.D2Cm(num.array([0., 1.633189, 0.]))
 
 
 def nitrogen_dioxide(param):
-    """Molecular parameters for NO2
+    """Molecular parameters for :math:`\\text{NO}_2`
 
-    rot. const.: A. Cabana, M.L.C. Pepin, and W.J. Lafferty, J. Mol. Spectrosc. 59, 13 (1976).
-    dipole moment: J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963)
+    Rotational constants from [Cabana1976]_
+    Dipole moment from [Hodgeson1963]_
     """
     param.name = "nitrogen_dioxide"
     param.watson = 'A'
@@ -531,10 +642,11 @@ def nitrogen_dioxide(param):
 
 
 def nitrous_oxide(param):
-    """Molecular parameters for N2O
+    """Molecular parameters for :math:`\\text{N}_2\\text{O}`
 
-    rot. const.: B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, J. Mol. Spectrosc. 62, 125 (1976).
-    dipole moment: L.H. Scharpen, J.S. Muenter, and V.W. Laurie, J. Chem. Phys. 53, 2513 (1970).
+    rot. const.: [Andreev1976]
+    dipole moment: [Scharpen1970]
+
     """
     param.name = "nitrous_oxide"
     param.type = 'L'
@@ -544,17 +656,15 @@ def nitrous_oxide(param):
     param.quartic  = convert.Hz2J(num.array([5.2808e6]))
 
 
-def MVK(param):
-    """Molecular parameters for MVK (Methyl Vinyl Ketone)
-    
-    0 - cis:
-    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    dipole moment: MP2 calculation results with 0.81 scaling factor from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    1 - trans:
-    rot. const.: A symmetry from D. Wilcox, A. Shirar, O. Williams, B. Dian, Chem. Phys. Lett. 508, 10 (2011)
-    dipole moment: P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965)
+def methylvinylketone(param):
+    """Molecular parameters for Methyl Vinyl Ketone
+
+    Implemented isomers are
+    0. cis, experimetnal rot. const. of A symmetry from [Wilcox2011]_, and dipole moment is MP2 calculation results from \
+    [Wilcox2011]_ with 0.81 scaling factor
+    1. trans, experimental  rot. const. of A symmetry from [Wilcox2011]_, and experimental dipole moment: [Foster1965]_
     """
-    param.name = "MVK"
+    param.name = "methylvinylketone"
     param.type = 'A'
     param.symmetry = 'N'
     if param.isomer == 0: #cis
@@ -566,7 +676,9 @@ def MVK(param):
 
 
 def six_chloropyridazine_three_carbonitrile(param):
-    """Gaussian 2003 B3LYP/aug-pc-1; see Hansen et al, to be submitted to J. Chem. Phys."""
+    """ Molecular parameters for 6-chloropyridazine-3-carbonitrile
+
+    Gaussian 2003 B3LYP/aug-pc-1; see [Hansen2013]_"""
     param.name = "6-chloropyridazine-3-carbonitrile"
     param.mass = 5 * Masses['C'] + 1 * Masses['Cl'] + 3 * Masses['N'] + 2 * Masses['H']
     param.type = 'A'
@@ -581,9 +693,10 @@ def six_chloropyridazine_three_carbonitrile(param):
 
 
 def sulfur_monoxide(param):
-    """
-    rotcon, dipole: NIST (http://cccbdb.nist.gov/exp2.asp?casno=13827322)
-    quartic: Veseth, Lofthus, Molecular Physics 27, 2 511-519 (1974)
+    """ Molecular parameters for SO
+
+    rotcon, dipole: [NISTCCCBD_SO]_
+    quartic: [Veseth1974]_
     """
     param.name = "sulfur_monoxide"
     param.mass = Masses['S'] + Masses['O']
@@ -592,10 +705,12 @@ def sulfur_monoxide(param):
     param.dipole = convert.D2Cm(num.array([1.550]))
     param.quartic  = convert.Hz2J(num.array([33.577e3]))
 
+
 def carbon_monoxide(param):
-    """
-    rotcon, dipole: NIST (http://cccbdb.nist.gov)
-    quartic: Mina-Camilde et al. JCE 73 p.804 (1996) (http://web.ist.utl.pt/farinha/LQF/pdf_files/CO_ref4_JCE1986.pdf)
+    """ Molecular parameters for CO
+
+    rotcon, dipole: [NISTCCCBD_CO]_
+    quartic: [MinaCamilde1996]_
     """
     param.name = "carbon_monoxide"
     param.mass = Masses['C'] + Masses['O']
@@ -604,14 +719,14 @@ def carbon_monoxide(param):
     param.dipole = convert.D2Cm(num.array([0.11]))
     param.quartic  = convert.invcm2J(num.array([202.360e3]))
 
-def five_cyanoindole(param):
-    """Molecular parameters for 5-cyanoindole
-    
-    Experimental values for rot constants from Oelterman et al, PCCP 14, 10266 (2012).
-    Dipole values calculated (aug-cc-pVTZ basis, see Daniel for details)
-    """
 
-    param.name = "5-cyanoindole"
+def five_cyanoindole(param):
+    """ Molecular parameters for 5-cyanoindole
+
+    Experimental values for rot constants from [Oelterman2012]_.
+    Dipole values calculated (aug-cc-pVTZ basis, see [Horke]_ for details)
+    """
+    param.name = "five_cyanoindole"
     param.mass = 9 * Masses['C'] + 2 * Masses['N'] + 6 * Masses['H']
     param.watson = 'A'
     param.symmetry = 'N'
@@ -620,18 +735,13 @@ def five_cyanoindole(param):
 
 
 def uracil(param):
-    """
-    Dipole & Rot. constants:
-    R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, J. Am. Chem. Soc., 1988, 110, 2329
-    Dipole errors are estimated by 10%
+    """ Molecular parameters for uracil
 
-    Centr. dist. const:
-    By: Brunken, S.; McCarthy, M. C.; Thaddeus, P.; et al.
-    ASTRONOMY & ASTROPHYSICS  Volume: 459   Issue: 1   Pages: 317-320   Published: NOV 2006 
+    Dipole & Rot. constants: [Brown1988]_, Dipole errors are estimated by 10%
 
-    Good summary:
-    Puzzarini, Cristina; Barone, Vincenzo
-    PHYSICAL CHEMISTRY CHEMICAL PHYSICS  Volume: 13   Issue: 15   Pages: 7158-7166   Published: 2011 
+    Centr. dist. const: [Brunken2006]_
+
+    Good summary: [Puzzarini2011]_
     """
     param.name = "uracil"
     param.mass = 4 * Masses['C'] + 4 * Masses['H'] + 2 * Masses['N'] + 2 * Masses['O']
@@ -640,3 +750,25 @@ def uracil(param):
     param.rotcon = convert.Hz2J(num.array([3883878.25e3, 2023732.67e3, 1330923.80e3]))
     param.dipole = convert.D2Cm(num.array([1.61, 3.52, 0.0]))
     param.quartic  = convert.Hz2J(num.array([0.06336e3, 0.1055e3, 0.4530e3, -0.02623e3, -0.00680e3]))
+
+
+def mephenesin(param):
+    """ Molecular parameters for mephenesin
+
+    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357
+    dipole moment values calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+    """
+
+    param.name = "mephenesin"
+    param.mass = 10 * Masses['C'] + 3 * Masses['O'] + 14 * Masses['H']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0: #conformer A
+        param.rotcon = convert.Hz2J(num.array([1707.7896e6, 388.661705e6, 331.331684e6]))
+        param.dipole = convert.D2Cm(num.array([1.15, 0.56, 1.12]))
+    elif param.isomer == 1: #conformer B
+        param.rotcon = convert.Hz2J(num.array([1978.986e6, 349.300307e6, 305.408511e6]))
+        param.dipole = convert.D2Cm(num.array([-2.36, -0.48, -0.04]))
+    elif param.isomer == 2: #conformer C
+        param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
+        param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))

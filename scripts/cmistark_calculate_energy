@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
-from __future__ import division
+
 
 """Calculate adiabatic energy curves and store them in a HDF5 file
 
@@ -33,7 +33,7 @@ import numpy as num
 import getopt, sys
 import cmistark.moleculeparameters
 
-import jkext.convert as convert
+import cmiext.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
 from cmistark.moleculeparameters import *
@@ -41,7 +41,7 @@ from cmistark.moleculeparameters import *
 
 def usage():
     # ToDo implement a useful usage description -- use argparse instead of getopt to auto-create it
-    print """
+    print("""
            --help:      help
            --dc-fields: specify the range of the DC elecric field (in kV/cm):
                         start:end:step (example: --dc-fields=0:150:151)
@@ -52,11 +52,12 @@ def usage():
            --Mmax:      specify the maximum value of M included in the calculation
            --isomer:    specify which isomer is used, when <moleculename> have more than
                         one isomers defined in moleculeparameter.py
-"""
+""")
 
 def main(args):
     try:
-        opts, args = getopt.getopt(args[1:], "h", ["help", "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
+        opts, args = getopt.getopt(args[1:], "h", ["help", "debug",
+                                                   "Jmin=", "Jmax_calc=", "Jmax_save=", "Mmax=",
                                                    "dc-fields=", "isomer=",
                                                    "oblate_symmetric_top",
                                                    "prolate_symmetric_top",
@@ -64,6 +65,7 @@ def main(args):
                                                    "2,6-difluoro-iodobenzene",
                                                    "3-aminophenol",
                                                    "2-aminobenzonitrile", "3-aminobenzonitrile", "4-aminobenzonitrile",
+                                                   "adenine",
                                                    "benzonitrile",
                                                    "glycine",
                                                    "indole", "indole-water", "indole-water2",
@@ -81,11 +83,14 @@ def main(args):
                                                    "6-chloropyridazine-3-carbonitrile",
                                                    "sulfur_monoxide", "SO",
                                                    "carbon_monoxide", "CO",
-                                                   "uracil"
+                                                   "uracil",
+                                                   "5-cyanoindole",
+                                                   "mephenesin",
+                                                   "5-fluoroindole"
                                                    ])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     # default values
@@ -103,8 +108,10 @@ def main(args):
         if o in ("-h", "--help"):
             usage()
             sys.exit()
+        elif o == "--debug":
+            param.debug = True
         elif o == "--Mmax":
-            param.M = range(0, int(a)+1)
+            param.M = list(range(0, int(a)+1))
         elif o == "--Jmin":
             param.Jmin = int(a)
         elif o == "--Jmax_calc":
@@ -130,9 +137,15 @@ def main(args):
             pfunc = three_aminobenzonitrile
         elif o == "--4-aminobenzonitrile":
             pfunc = four_aminobenzonitrile
+        elif o == "--5-cyanoindole":
+            pfunc = five_cyanoindole
+        elif o == "--5-fluoroindole":
+            pfunc = five_fluoroindole
+        elif o == "--adenine":
+            pfunc = adenine
         elif o == "--benzonitrile":
             pfunc = benzonitrile
-	elif o == "--glycine":
+        elif o == "--glycine":
             pfunc = glycine
         elif o == "--iodobenzene":
             pfunc = iodobenzene
@@ -152,6 +165,8 @@ def main(args):
             pfunc = indole_water1
         elif o == "--indole-water2":
             pfunc = indole_water2
+        elif o == "--mephenesin":
+            pfunc = mephenesin
         elif o == "--MVK":
             pfunc = MVK
         elif o == "--phenylpyrrole":
@@ -183,7 +198,9 @@ def main(args):
     # finalize initialization
     if None != pfunc:
         pfunc(param)
-    param.M = range(0, param.Jmax_save+1)
+    param.M = list(range(0, param.Jmax_save+1))
+    if param.Jmax_save > param.Jmax_calc:
+        param.Jmax_save = param.Jmax_calc
 
     # perform calculation
     mol = molecule.Molecule(storage=param.name+".molecule", name=param.name)
