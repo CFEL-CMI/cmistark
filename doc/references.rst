@@ -8,6 +8,8 @@ References
                 `DOI: 10.1063/1.1578996 <http://dx.doi.org/10.1063/1.1578996>`_
 .. [Borst2001] D. R. Borst, T. M. Korter and D. W. Pratt, *Chem. Phys. Lett.* **350**, 485 (2001).
                `DOI: 10.1016/S0009-2614(01)01344-6 <http://dx.doi.org/10.1016/S0009-2614(01)01344-6>`_
+.. [Brand2012] C. Brand, O. Oelterman, M. Wilke, J. Tatchen and M. Schmitt, *Chem. Phys. Chem.*
+              **13**, 3134 (2012). `DOI:10.1002/cphc.201200345
 .. [Brown1988] R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, *J. Am. Chem. Soc.*
                **110**, 2329 (1988).
                `DOI: 10.1016/0022-2860(88)80283-7 <http://dx.doi.org/10.1016/0022-2860(88)80283-7>`_

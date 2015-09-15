@@ -234,7 +234,7 @@ def adenine(param):
 def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
 
-    Rotational constants constants from Brand et al, CPC 13, 3134 (2012)
+    Experimental values from [Brand2012]_
     Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
 
     .. todo:: Daniel Horke put references into ref list and cite; provide details on DFT calculations (program, version,
