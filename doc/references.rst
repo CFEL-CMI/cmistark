@@ -13,6 +13,9 @@ References
 .. [Brown1988] R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, *J. Am. Chem. Soc.*
                **110**, 2329 (1988).
                `DOI: 10.1016/0022-2860(88)80283-7 <http://dx.doi.org/10.1016/0022-2860(88)80283-7>`_
+ .. [Brown1989] R. D. Brown, P. D. Godfrey, D. McNaughton and A. P. Pierlot, *Chem. Phys. Lett.*
+                **156**, 61 (1989).
+                `DOI: 10.1016/0009-2614(89)87081-2 `_
 .. [Brunken2006] Brünken, S.; McCarthy, M. C.; Thaddeus, P.; et al., *Astron. Astrophys.*
                  **459**, 317-320 (2006)
 .. [Cabana1976] A. Cabana, M.L.C. Pepin, and W.J. Lafferty, *J. Mol. Spectrosc.* **59**, 13 (1976).
@@ -36,11 +39,13 @@ References
 .. [Dutta1985] Dutta, A and Jaman, A I, Pramana -- J. Phys. 24 (1985).
                DOI: `10.1007/BF02894850 <http://dx.doi.org/10.1007/BF02894850>`_
 .. [Ecija2014] P. Ecija et al., *J. Phys. Chem. B* **118**, 5357 (2014). DOI:
-                  `10.1021/jp5014785
+                  `10.1021/jp5014785`_
 .. [Filsinger2008] F. Filsinger et al., Phem. Chem. Chem. Phys. 10, 666 (2008), DOI:
                    `10.1039/b711888k <http://dx.doi.org/10.1039/b711888k>`_
 .. [Foster1965] P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965), DOI:
                 `10.1063/1.1696821 <http://dx.doi.org/10.1063/1.1696821>`_
+.. [Franz2014]J. Franz and F. A. Gianturco, *Eur. Phys. J. D* **68**, 279 (2014). DOI:
+                  `10.1140/epjd/e2014-50072-0`_
 .. [Gadhi1989] Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401-404 (1989), DOI:
                `10.1016/0009-2614(89)87116-7 <http://dx.doi.org/10.1016/0009-2614(89)87116-7>`_
 .. [Hansen2013] Hansen, Jonas L and Omiste Romero, Juan J and Nielsen, Jens Hedegaard and

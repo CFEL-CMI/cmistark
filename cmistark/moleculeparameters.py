@@ -212,11 +212,9 @@ def prolate_symmetric_top(param):
 def adenine(param):
     """Molecular parameters for adenine
 
-    .. todo:: Nicole Teschmit: TEMPORARY VALUE, to be replaced with more accurate data asap Rotational constants from
-        Brown et al, CPL 156, 61 (1989) Dipole moments from Mohammed et al, JMS 938, 263 (2009) (put references in the
-        reference list and hyperlink)
+    Expt values for 9H rot constants from [Brown1989]_
 
-    .. todo:: Daniel Horke: you promised improved constants "soon" in the original git commit.
+    All values for 7H and all dipole moments from [Franz2014]_
 
     """
     param.name = "adenine"
@@ -225,10 +223,10 @@ def adenine(param):
     param.symmetry = 'N'
     if param.isomer == 0: #tautomer 9H
         param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
-        param.dipole = convert.D2Cm(num.array([2.2, 1.0, 0.0]))
+        param.dipole = convert.D2Cm(num.array([1.86, -1.39, -0.03]))
     elif param.isomer == 1: #tautomer 7H
-        param.rotcon = convert.Hz2J(num.array([2388e6, 1543e6, 941e6]))
-        param.dipole = convert.D2Cm(num.array([0.3, 7.5, 0.0]))
+        param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
+        param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
 
 
 def five_fluoroindole(param):
