@@ -235,10 +235,7 @@ def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
 
     Experimental values from [Brand2012]_
-    Dipole moments from MP2 calculations (Daniel Horke, February 2015, DFT/basis...)
-
-    .. todo:: Daniel Horke put references into ref list and cite; provide details on DFT calculations (program, version,
-    functional basis, ...)
+    Dipole moments from MP2 calculations (Daniel Horke, Feb 2015, Gamess2013, 6-311G++(d,p), MP2)
 
     """
     param.name = "five_fluoroindole"
@@ -764,8 +761,8 @@ def uracil(param):
 def mephenesin(param):
     """ Molecular parameters for mephenesin
 
-    Values for rot constants and dipole moments from Ecija et al, JPC B 118, 5357
-    (Rotational constants are experimental values, dipole moment values calculated with MP2)
+    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357
+    dipole moment values calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
     """
 
     param.name = "mephenesin"

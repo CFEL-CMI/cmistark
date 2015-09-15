@@ -35,6 +35,8 @@ References
                 DOI: `10.1016/j.jms.2007.09.010 <http://dx.doi.org/10.1016/j.jms.2007.09.010>`_
 .. [Dutta1985] Dutta, A and Jaman, A I, Pramana -- J. Phys. 24 (1985).
                DOI: `10.1007/BF02894850 <http://dx.doi.org/10.1007/BF02894850>`_
+.. [Ecija2014] P. Ecija et al., *J. Phys. Chem. B* **118**, 5357 (2014). DOI:
+                  `10.1021/jp5014785
 .. [Filsinger2008] F. Filsinger et al., Phem. Chem. Chem. Phys. 10, 666 (2008), DOI:
                    `10.1039/b711888k <http://dx.doi.org/10.1039/b711888k>`_
 .. [Foster1965] P.D. Foster, V.M. Rao, R.F. Curl Jr., J. Chem. Phys. 43, 1064 (1965), DOI:
