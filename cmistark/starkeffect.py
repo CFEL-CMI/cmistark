@@ -736,7 +736,7 @@ class AsymmetricRotor(Rotor):
         blocks = {}
         # set up Wang matrix
         Wmat = num.zeros(hmat.shape, self.hmat_type)
-        value = 1/num.sqrt(2.)
+        value = 0.70710678118654746 # 1/sqrt(2.)
         for J in range(Jmin, Jmax+1):
             for K in range(-J, 0):
                 Wmat[self.index(J,  K), self.index(J,  K)] = -value
