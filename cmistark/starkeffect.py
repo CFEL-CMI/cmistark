@@ -1,7 +1,6 @@
 # -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
-# This file is part of JK Python extensions
-# Copyright (C) 2008,2009,2011,2012 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2008,2009,2011,2012,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
