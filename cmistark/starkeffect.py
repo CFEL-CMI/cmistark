@@ -212,7 +212,6 @@ class LinearRotor(Rotor):
     def fieldfree(self, hmat, Jmin, Jmax):
         """Add the field-free-rotor matrix element terms to hmat"""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
-        sqrt = num.sqrt
         B = float(self.rotcon)
         D = float(self.quartic)
         for J in range(Jmin, Jmax+1):
