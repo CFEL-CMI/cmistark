@@ -16,8 +16,8 @@
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
-import scipy as num
-import scipy.linalg.blas
+import numpy as np
+import numpy.linalg
 
 import cmiext as cmiext
 import cmiext.convert
@@ -79,12 +79,12 @@ class CalculationParameter(object):
     Jmax_calc = 10
     Jmax_save = 6
     # fields
-    dcfields = cmiext.convert.kV_cm2V_m(num.array((0, 100.), num.float64))
+    dcfields = cmiext.convert.kV_cm2V_m(np.array((0, 100.), np.float64))
     # molecular parameters
-    mass = num.zeros((1,), num.float64)      # kg
-    rotcon = num.zeros((3,), num.float64)    # Joule - vector of length 1, 2, or 3 depending on type
-    quartic = num.zeros((5,), num.float64)   # Joule - vector of length 1, 3, or 5 depending on type
-    dipole = num.zeros((3,), num.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
+    mass = np.zeros((1,), np.float64)      # kg
+    rotcon = np.zeros((3,), np.float64)    # Joule - vector of length 1, 2, or 3 depending on type
+    quartic = np.zeros((5,), np.float64)   # Joule - vector of length 1, 3, or 5 depending on type
+    dipole = np.zeros((3,), np.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
     # internal
     debug = None
 
@@ -96,7 +96,7 @@ class Rotor(object):
         """Save the relevant type-independent parameters"""
         ### general parameters
         self.complex = False
-        self.hmat_type = num.float64
+        self.hmat_type = np.float64
         self.type = param.type
         # save quantum numbers
         self.M = int(M) # use the single specified M
@@ -105,14 +105,14 @@ class Rotor(object):
         self.Jmax = int(param.Jmax_calc)
         self.Jmax_save = int(param.Jmax_save)
         # molecular constants
-        self.rotcon = num.array(param.rotcon, num.float64)
-        self.quartic = num.array(param.quartic, num.float64)
-        self.dipole = num.array(param.dipole, num.float64)
+        self.rotcon = np.array(param.rotcon, np.float64)
+        self.quartic = np.array(param.quartic, np.float64)
+        self.dipole = np.array(param.dipole, np.float64)
         # field strengths
-        self.dcfield = num.float64(dcfield)
+        self.dcfield = np.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
         self.symmetry = param.symmetry
-        self.tiny = num.finfo(num.dtype(num.float64)).tiny * 10
+        self.tiny = np.finfo(np.dtype(np.float64)).tiny * 10
         # we have not yet calculated the correct energies - mark invalid
         self.levels = {}
         self.levelssym = {}
@@ -182,10 +182,10 @@ class LinearRotor(Rotor):
         """Perform calculation of rotational state energies for current parameters"""
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
         if self.debug: self.print_mat(hmat, converter=cmiext.convert.J2Hz)
-        eval = num.linalg.eigvalsh(hmat) # calculate only energies
-        eval = num.sort(eval)
+        eval = np.linalg.eigvalsh(hmat) # calculate only energies
+        eval = np.sort(eval)
         if self.debug:
-            eval, evec = num.linalg.eigh(hmat)
+            eval, evec = np.linalg.eigh(hmat)
             print(eval)
             self.print_mat(evec)
         for J in range(self.Jmin, self.Jmax_save+1):
@@ -200,7 +200,7 @@ class LinearRotor(Rotor):
         """Return Hamiltonian matrix"""
         matrixsize = Jmax - Jmin + 1
         # create hamiltonian matrix
-        hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
+        hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
         self.fieldfree(hmat, Jmin, Jmax)
         # fill matrix with appropriate Stark terms for nonzero fields
@@ -220,7 +220,7 @@ class LinearRotor(Rotor):
 
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         M = self.M
         mu = float(self.dipole)
         for J in range(Jmin, Jmax):
@@ -274,8 +274,8 @@ class SymmetricRotor(Rotor):
         self.levels = {}
         for K in range(-self.Jmax, self.Jmax+1): # scan K
             blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, K) # create a full hamt for a single K. (note not |K|.)
-            eval = num.linalg.eigvalsh(blocks) # calculate only energies
-            eval = num.sort(eval)
+            eval = np.linalg.eigvalsh(blocks) # calculate only energies
+            eval = np.sort(eval)
             i = 0
             for state in self.stateorder(K):
                 if state.J() <= self.Jmax_save:
@@ -289,7 +289,7 @@ class SymmetricRotor(Rotor):
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
         matrixsize = Jmax - max(abs(K), Jmin) + 1
         # create hamiltonian matrix
-        hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
+        hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
         self.rigid(hmat, Jmin, Jmax, K)
         # fill matrix with appropriate Stark terms for nonzero fields
@@ -317,7 +317,7 @@ class SymmetricRotor(Rotor):
 
     def stark_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         M = self.M
         mu = float(self.dipole)
         for J in range(max(Jmin, abs(K)), Jmax):
@@ -379,10 +379,10 @@ class AsymmetricRotor(Rotor):
                                   self.tiny < abs(self.dipole[2])]
         if True == self.dipole_components[2]: # µ_c != 0 -- the Hamiltonian matrix is complex (and hermitean)
             self.complex = True
-            self.hmat_type = num.complex128
+            self.hmat_type = np.complex128
         else: # µ_c == 0 --  the Hamiltonian matrix is real (and symmetric)
             self.complex = False
-            self.hmat_type = num.float64
+            self.hmat_type = np.float64
         # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
         # Needs to be reimplemented correctly *soon*
         if 0 == self.M:
@@ -440,7 +440,7 @@ class AsymmetricRotor(Rotor):
         blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, self.symmetry)
         for symmetry in list(blocks.keys()):
             # if None is not self.debug: self.print_mat(blocks[symmetry], "\nSymmetry: " + symmetry)
-            eval = num.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
+            eval = np.linalg.eigvalsh(blocks[symmetry]) # calculate only energies
             i = 0
             for state in self.stateorder(symmetry):
                 if state.J() <= self.Jmax_save:
@@ -456,7 +456,7 @@ class AsymmetricRotor(Rotor):
         self.Jmin_matrixsize = Jmin *(Jmin-1) + Jmin # this is used by index
         matrixsize = (Jmax + 1) * Jmax + Jmax + 1 - self.Jmin_matrixsize
         # create hamiltonian matrix
-        hmat = num.zeros((matrixsize, matrixsize), self.hmat_type)
+        hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rigid-rotor terms
         self.rigid(hmat, Jmin, Jmax)
         # add appropriate field-free centrifugal distortion terms
@@ -468,7 +468,7 @@ class AsymmetricRotor(Rotor):
             assert self.watson == None
         if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmiext.convert.J2Hz)
         if self.debug:
-               eval, evec = num.linalg.eigh(hmat) # calculate only energies
+               eval, evec = np.linalg.eigh(hmat) # calculate only energies
                print("\nEnergies of the asym. rotor:\n", cmiext.convert.J2Hz(eval))
                self.print_mat(evec, "Eigenvectors of the asym. rotor:\n")
         # fill matrix with appropriate Stark terms for nonzero fields
@@ -484,7 +484,7 @@ class AsymmetricRotor(Rotor):
 
         Gordy & Cook, section 7, Table 7.2
         """
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         A, B, C = self.rotcon.tolist()
         for J in range(Jmin, Jmax+1):
             for K in range(-J, J+1):
@@ -497,7 +497,7 @@ class AsymmetricRotor(Rotor):
 
     def stark_DC(self, hmat, Jmin, Jmax, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         M = self.M
         muA, muB, muC = self.dipole
         if self.dipole_components[0]:
@@ -614,9 +614,9 @@ class AsymmetricRotor(Rotor):
                 # get block diagonal hamiltonian (make sure you calculate this in 'V'!)
                 if 0 == J:
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
-                        blocks = {'Epe': num.zeros((1, 1), self.hmat_type)}
+                        blocks = {'Epe': np.zeros((1, 1), self.hmat_type)}
                     else:
-                        blocks = {'A': num.zeros((1, 1), self.hmat_type)}
+                        blocks = {'A': np.zeros((1, 1), self.hmat_type)}
                 else:
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
                         blocks = self.hamiltonian(J, J, None, 'W')
@@ -625,7 +625,7 @@ class AsymmetricRotor(Rotor):
                 # store sorted eigenenergies for respective J and block
                 for sym in list(blocks.keys()):
                     if 0 < blocks[sym].size:
-                        eigenvalues[sym] += num.sort(num.linalg.eigvalsh(num.array(blocks[sym]))).tolist()
+                        eigenvalues[sym] += np.sort(np.linalg.eigvalsh(np.array(blocks[sym]))).tolist()
             # sort assignments according to energy
             if 'Wa' == self.symmetry:
                 symmetries = ['Ep', 'Em', 'Op', 'Om']
@@ -722,8 +722,8 @@ class AsymmetricRotor(Rotor):
             else:
                 raise NotImplementedError("Hamiltonian symmetry %s not implemented" % (self.symmetry, ))
             for sym in symmetries:
-                idx = num.argsort(eigenvalues[sym])
-                self.stateorder_dict[sym] = num.array(label[sym])[idx]
+                idx = np.argsort(eigenvalues[sym])
+                self.stateorder_dict[sym] = np.array(label[sym])[idx]
             self.stateorder_valid = True
         return self.stateorder_dict[symmetry]
 
@@ -733,7 +733,7 @@ class AsymmetricRotor(Rotor):
         matrixsize = ((Jmax + 1) * Jmax + Jmax + 1) - (Jmin *(Jmin-1) + Jmin)
         blocks = {}
         # set up Wang matrix
-        Wmat = num.zeros(hmat.shape, self.hmat_type)
+        Wmat = np.zeros(hmat.shape, self.hmat_type)
         value = 0.70710678118654746 # 1/sqrt(2.)
         for J in range(Jmin, Jmax+1):
             for K in range(-J, 0):
@@ -743,12 +743,8 @@ class AsymmetricRotor(Rotor):
                 Wmat[self.index(J, -K), self.index(J, -K)] = value
             Wmat[self.index(J, 0), self.index(J, 0)] = 1.
         # transform Hamiltonian matrix
-        if self.complex:
-            dot = lambda a, b: scipy.linalg.blas.cgemm(1., a, b)
-        else:
-            dot = lambda a, b: scipy.linalg.blas.dgemm(1., a, b)
         if None != self.debug: self.print_mat(hmat, "Original Hamiltonian", converter=cmiext.convert.J2Hz)
-        hmat = dot(dot(Wmat, hmat), Wmat)
+        hmat = np.dot(np.dot(Wmat, hmat), Wmat)
         if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian", converter=cmiext.convert.J2Hz)
         # delete Wang matrix (it's not used anymore)
         del Wmat
@@ -778,7 +774,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wa' == symmetry:
             # use Wang submatrices E+/-,O+/- for only u_a!=0 and M=0 case
             idx = {'Ep': [], 'Em': [], 'Op': [], 'Om': []}
@@ -804,7 +800,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wb' == symmetry:
             # for only u_b !=0 and M=0
             # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
@@ -833,7 +829,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wc' == symmetry:
             # for u_c !=0 and u_b = 0 and M=0
             # the Stark element <J+1,K+/-1,M|H^b_Stark|J,K,M> couples:
@@ -861,7 +857,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wab' == symmetry:
             # for only u_c = 0  and M=0
             # combine the coupling cases of Wa and Wb
@@ -888,7 +884,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wbc' == symmetry:
             # for only u_a = 0  and M=0
             # combine the coupling cases of Wb and Wc
@@ -917,7 +913,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'Wac' == symmetry:
             # for only u_b = 0  and M=0
             # combine the coupling cases of Wa and Wc
@@ -944,7 +940,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'V' == symmetry:
             # full Fourgroup symmetry (field free Hamiltonian or M=0!!!)
             # I^r representation, Wang transformed Hamiltonian factorizes into four submatrices E-, E+, O-, O+,
@@ -974,7 +970,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'C2a' == symmetry:
             # C2 rotation about a-axis is symmetry element
             #
@@ -990,7 +986,7 @@ class AsymmetricRotor(Rotor):
                 idx[order[i%2]].append(i)
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'C2b' == symmetry:
             # C2 rotation about b-axis is symmetry element
             #
@@ -1015,7 +1011,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'C2c' == symmetry:
             # C2 rotation about c-axis is symmetry element
             #
@@ -1044,7 +1040,7 @@ class AsymmetricRotor(Rotor):
                 i += 2*J+1
             for sym in order:
                 if 0 < len(idx[sym]):
-                    blocks[sym] = hmat[num.ix_(idx[sym], idx[sym])]
+                    blocks[sym] = hmat[np.ix_(idx[sym], idx[sym])]
         elif 'N' == symmetry:
             # nothing to do, return
             blocks['N'] = hmat
@@ -1054,7 +1050,7 @@ class AsymmetricRotor(Rotor):
         # for sym in set(order):
         #     for sym2 in set(order):
         #         if sym != sym2:
-        #             if (hmat[num.ix_(idx[sym], idx[sym2])]!=0).any():
+        #             if (hmat[np.ix_(idx[sym], idx[sym2])]!=0).any():
         #                 print "There is a problem with your symmetry"
         #                 print  sym, "and ", sym2, "are connected for M =", self.M
         # for symmetry in blocks.keys():
@@ -1065,7 +1061,7 @@ class AsymmetricRotor(Rotor):
     def watson_A(self, hmat, Jmin, Jmax):
         """Add the centrifugal distortion matrix element terms in Watson's A reduction to hmat."""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         DJ, DJK, DK, dJ, dK = self.quartic.tolist()
         for J in range(Jmin, Jmax+1):
             for K in range(-J, J+1):
@@ -1081,7 +1077,7 @@ class AsymmetricRotor(Rotor):
     def watson_S(self, hmat, Jmin, Jmax):
         """Add the centrifugal distortion matrix element terms in Watson's S reduction to hmat."""
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
-        sqrt = num.sqrt
+        sqrt = np.sqrt
         DJ, DJK, DK, dJ, dK = self.quartic.tolist()
         for J in range(Jmin, Jmax+1):
             for K in range(-J, J+1):
