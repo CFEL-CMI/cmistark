@@ -6,6 +6,8 @@
 *.pyc
 .DS_Store
 cmistark.egg-info
+cmistark/*.c
+cmistark/*.so
 build/
 dist/
 doc/.build

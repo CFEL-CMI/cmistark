@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; mode: python; fill-column: 120; truncate-lines: t -*-
+# cython: language_level=3
 #
 # This file is part of JK Python extensions
 # Copyright (C) 2008,2009,2012,2014 Jochen Küpper <jochen.kuepper@cfel.de>
@@ -217,9 +218,3 @@ if __name__ == "__main__":
                 state = State(J, Ka, Kc, 0, 0)
                 fields, energies = mol.starkeffect(state)
                 print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
-
-
-### Local Variables:
-### fill-column: 100
-### truncate-lines: t
-### End:

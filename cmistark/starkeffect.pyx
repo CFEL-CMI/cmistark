@@ -1,4 +1,5 @@
-# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
+# -*- coding: utf-8; mode: python; fill-column: 120; truncate-lines: t -*-
+# cython: language_level=3
 #
 # Copyright (C) 2008,2009,2011,2012,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 #

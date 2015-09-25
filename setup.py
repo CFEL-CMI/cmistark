@@ -6,6 +6,7 @@
 
 import os
 from setuptools import setup
+from Cython.Build import cythonize
 
 extra_compile_args = []
 library_dirs = []
@@ -32,7 +33,7 @@ setup(name="cmistark",
       version             = "1.1.dev0",
       long_description    = long_description,
       license             = "GPL",
-      packages            = ['cmistark'],
+      ext_modules         = cythonize('cmistark/*.pyx'),
       scripts             = ['scripts/cmistark_brute-force-orientation',
                              'scripts/cmistark_calculate_energy',
                              'scripts/cmistark_plot_energy',
