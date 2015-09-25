@@ -4,7 +4,7 @@
 # Copyright (C) 2008,2009,2012,2013,2014,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 
 
-import os
+import numpy,os
 from setuptools import setup
 from Cython.Build import cythonize
 
@@ -33,7 +33,7 @@ setup(name="cmistark",
       version             = "1.1.dev0",
       long_description    = long_description,
       license             = "GPL",
-      ext_modules         = cythonize('cmistark/*.pyx'),
+      ext_modules         = cythonize('cmistark/*.pyx'), include_dirs=[numpy.get_include()],
       scripts             = ['scripts/cmistark_brute-force-orientation',
                              'scripts/cmistark_calculate_energy',
                              'scripts/cmistark_plot_energy',

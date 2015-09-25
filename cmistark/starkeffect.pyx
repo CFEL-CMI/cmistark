@@ -19,6 +19,7 @@ __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
 import numpy as np
 import numpy.linalg
+cimport numpy as np
 
 import cmiext as cmiext
 import cmiext.convert
@@ -90,13 +91,15 @@ class CalculationParameter(object):
     debug = None
 
 
-class Rotor(object):
+cdef class Rotor(object):
     """Abstract representation of an rotating top for energy level calculation purposes."""
 
-    def __init__(self, param, M, dcfield=0.):
+    cdef public bint iscomplex
+
+    def __init__(self, param, Py_ssize_t M, dcfield=0.):
         """Save the relevant type-independent parameters"""
         ### general parameters
-        self.complex = False
+        self.iscomplex = False
         self.hmat_type = np.float64
         self.type = param.type
         # save quantum numbers
@@ -149,7 +152,7 @@ class Rotor(object):
         rows, columns = mat.shape
         for i in range(rows):
             for j in range(columns):
-                if False == self.complex:
+                if False == self.iscomplex:
                     print("%10.3g" % (converter(mat[i,j])), end=' ')
                 else:
                     print("%9.3gi" % (abs((mat[i,j]).real)+abs((mat[i,j]).imag), ), end=' ')
@@ -157,7 +160,7 @@ class Rotor(object):
 
 
 
-class LinearRotor(Rotor):
+cdef class LinearRotor(Rotor):
     """Representation of a linear top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
@@ -174,8 +177,8 @@ class LinearRotor(Rotor):
         assert self.quartic.shape == (1,)
 
 
-    def index(self, J):
-        blockstart = J - self.Jmin
+    def index(self, Py_ssize_t J):
+        cdef Py_ssize_t blockstart = J - self.Jmin
         return blockstart
 
 
@@ -242,7 +245,7 @@ class LinearRotor(Rotor):
 
 
 
-class SymmetricRotor(Rotor):
+cdef class SymmetricRotor(Rotor):
     """Representation of a symmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given :math:`M`-range,
@@ -359,13 +362,13 @@ class SymmetricRotor(Rotor):
         return self.stateorder_dict
 
 
-class AsymmetricRotor(Rotor):
+cdef class AsymmetricRotor(Rotor):
     """Representation of an asymmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
     """
 
-    def __init__(self, param, M, dcfield=0.):
+    def __init__(self, param, Py_ssize_t M, dcfield=0.):
         """Save the relevant parameters"""
         Rotor.__init__(self, param, M, dcfield)
         assert 'A' == param.type.upper()
@@ -379,10 +382,10 @@ class AsymmetricRotor(Rotor):
                                   self.tiny < abs(self.dipole[1]),
                                   self.tiny < abs(self.dipole[2])]
         if True == self.dipole_components[2]: # µ_c != 0 -- the Hamiltonian matrix is complex (and hermitean)
-            self.complex = True
-            self.hmat_type = np.complex128
+            self.iscomplex = True
+            self.hmat_type = np.iscomplex128
         else: # µ_c == 0 --  the Hamiltonian matrix is real (and symmetric)
-            self.complex = False
+            self.iscomplex = False
             self.hmat_type = np.float64
         # For linear and symmetric top molecules this does not seem to be correct, therefore we disabled it for now.
         # Needs to be reimplemented correctly *soon*
@@ -427,10 +430,10 @@ class AsymmetricRotor(Rotor):
         return list
 
 
-    def index(self, J, K):
+    def index(self, Py_ssize_t J, Py_ssize_t K):
         # this requires a correct "global" value of self.Jmin_matrixsize, which is set in hamiltonian.
         # Therefore, we must be called only through hamiltonian
-        blockstart = J*(J-1) + J - self.Jmin_matrixsize
+        cdef Py_ssize_t blockstart = J*(J-1) + J - self.Jmin_matrixsize
         return blockstart + K + J
 
 
@@ -729,13 +732,13 @@ class AsymmetricRotor(Rotor):
         return self.stateorder_dict[symmetry]
 
 
-    def wang(self, hmat, symmetry, Jmin, Jmax):
+    def wang(self, hmat, symmetry, Py_ssize_t Jmin, Py_ssize_t Jmax):
         """Wang transform matrix and return a dictionary with the individual (sub)matrices."""
-        matrixsize = ((Jmax + 1) * Jmax + Jmax + 1) - (Jmin *(Jmin-1) + Jmin)
+        cdef Py_ssize_t matrixsize = ((Jmax + 1) * Jmax + Jmax + 1) - (Jmin *(Jmin-1) + Jmin)
         blocks = {}
         # set up Wang matrix
         Wmat = np.zeros(hmat.shape, self.hmat_type)
-        value = 0.70710678118654746 # 1/sqrt(2.)
+        cdef double value = 0.70710678118654746 # 1/sqrt(2.)
         for J in range(Jmin, Jmax+1):
             for K in range(-J, 0):
                 Wmat[self.index(J,  K), self.index(J,  K)] = -value
