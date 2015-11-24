@@ -76,6 +76,7 @@ def main(args):
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
+                                                   "water2",
                                                    "sulfur_dioxide", "SO2",
                                                    "nitrogen_dioxide", "NO2",
                                                    "nitrous_oxide",
@@ -193,6 +194,8 @@ def main(args):
             pfunc = carbon_monoxide
         elif o in ("--uracil"):
             pfunc = uracil
+        elif o in ("--water2"):
+            pfunc = water2
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
