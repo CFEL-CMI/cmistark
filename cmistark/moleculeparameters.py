@@ -441,23 +441,23 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-# def diiodoethane(param):
-#     """Molecular parameters for diiodo-ethane.
-#
-#     Implemented isomers are
-#     0.  anti-conformation (C2h symmetry)
-#     1.  gauge-conformation (C2 symmetry)
-#
-#     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-#     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
-#
-#     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
-#
-#     .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
-#     to calculate the rotational constants ab initio when the structural paramters are available from documentation?
-#
-#     """
-#     param.name = "diiodoethane"
+def diiodoethane(param):
+    """Molecular parameters for diiodo-ethane.
+
+    Implemented isomers are
+    0.  anti-conformation (C2h symmetry)
+    1.  gauge-conformation (C2 symmetry)
+
+    Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
+    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
+
+    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+
+    .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
+    to calculate the rotational constants ab initio when the structural paramters are available from documentation?
+
+    """
+    param.name = "diiodoethane"
 #     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
 #     param.watson = 'A'
 #     if param.isomer == 0: # anti
@@ -519,21 +519,21 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-# def glycine(param):
-#     """Molecular parameters for TEST glycine
-#
-#         Implemented isomers are
-#         0.  Paper
-#         1.  Paper
-#         2.  Anthony Meijer
-#         3.  Anthony Meijer
-#         4.  Test
-#         5.  Test
-#
-#     .. todo:: Thomas Kierspel, update/fix documentation
-#
-#     """
-#     param.name = "glycine"
+def glycine(param):
+    """Molecular parameters for TEST glycine
+
+        Implemented isomers are
+        0.  Paper
+        1.  Paper
+        2.  Anthony Meijer
+        3.  Anthony Meijer
+        4.  Test
+        5.  Test
+
+    .. todo:: (Thomas Kierspel) update/fix documentation
+
+    """
+    param.name = "glycine"
 #     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
 #     param.watson = 'A'
 #     param.symmetry = 'N'
@@ -557,12 +557,13 @@ def benzonitrile(param):
 #         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
 
-# def iodobenzene(param):
-#     """ See [Dorosh2007]
-#
-#     .. todo:: Seabstian Trippel: please document
-#
-#     """
+def iodobenzene(param):
+    """ See [Dorosh2007]
+
+    .. todo:: (Seabstian Trippel) please check and document
+
+    """
+    pass
 #     param.name = "iodobenzene"
 #     param.watson = 'A'
 #     param.symmetry = 'C2a'
