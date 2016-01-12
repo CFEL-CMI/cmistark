@@ -558,9 +558,13 @@ def glycine(param):
 
 
 def iodobenzene(param):
-    """ See [Dorosh2007]
+    """Parameters for iodobenzene
 
-    .. todo:: (Seabstian Trippel) please check and document
+    The inertial parameters (rotational constants and centrifugal distortion parameters) are from
+    [Neil:JMolSpec269:21]_
+
+    .. todo:: (Sebastian Trippel) please check all values and fully document; need to add all sextic
+    constants (simpl set the undefined ones to 0.0).
 
     """
     pass
@@ -786,3 +790,9 @@ def mephenesin(param):
     elif param.isomer == 2: #conformer C
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:
