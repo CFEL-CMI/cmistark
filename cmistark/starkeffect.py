@@ -85,6 +85,7 @@ class CalculationParameter(object):
     rotcon = np.zeros((3,), np.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = np.zeros((5,), np.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = np.zeros((3,), np.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
+    polar = np.zeros((3,), np.float64)    # Angström**3 - vector of length 1 or 3 depending on type
     # internal
     debug = None
 
@@ -108,6 +109,7 @@ class Rotor(object):
         self.rotcon = np.array(param.rotcon, np.float64)
         self.quartic = np.array(param.quartic, np.float64)
         self.dipole = np.array(param.dipole, np.float64)
+        self.polar = np.array(param.polar, np.float64)
         # field strengths
         self.dcfield = np.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
@@ -171,6 +173,7 @@ class LinearRotor(Rotor):
         assert self.rotcon.shape == (1,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
+        assert self.polar.shape == (1,)
 
 
     def index(self, J):
@@ -206,6 +209,9 @@ class LinearRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
+        # add polarizability terms
+        if None != dcfield and self.tiny < abs(dcfield):
+            self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
         return hmat
 
 
@@ -225,6 +231,17 @@ class LinearRotor(Rotor):
         mu = float(self.dipole)
         for J in range(Jmin, Jmax):
             value = -mu * dcfield * sqrt((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3))
+            hmat[self.index(J+1), self.index(J)] += value
+            hmat[self.index(J), self.index(J+1)] += value
+
+    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+        """Add the polarizability matrix element terms to hmat
+            see: Gordy & Cook - Microwave Molecular Spectra, 1984, formula 10.118"""
+        sqrt = np.sqrt
+        M = self.M
+        alpha = float(self.polar)
+        for J in range(Jmin, Jmax):
+            value = -0.5 * alpha * (1.11259e-40) * dcfield**2 * (((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
             hmat[self.index(J+1), self.index(J)] += value
             hmat[self.index(J), self.index(J+1)] += value
 
