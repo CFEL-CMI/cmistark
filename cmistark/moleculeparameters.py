@@ -445,16 +445,19 @@ def diiodoethane(param):
     """Molecular parameters for diiodo-ethane.
 
     Implemented isomers are
-    0.  anti-conformation (C2h symmetry)
-    1.  gauge-conformation (C2 symmetry)
 
-    Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-    1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
+    0. anti-conformation (C2h symmetry)
+    1. gauge-conformation (C2 symmetry)
+
+    Structural parameters are from the supplementary material of Qingyu Kong et al.,
+    "Photodissociation Reaction of 1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction
+    Study" [Kong2005]_
 
     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
 
-    .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
-    to calculate the rotational constants ab initio when the structural paramters are available from documentation?
+    .. todo:: Who did this calculation? Which level of theory and program version? Why was it
+        necessary, to begin with, to calculate the rotational constants ab initio when the
+        structural paramters are available from documentation?
 
     """
     param.name = "diiodoethane"
@@ -564,7 +567,7 @@ def iodobenzene(param):
     [Neil:JMolSpec269:21]_
 
     .. todo:: (Sebastian Trippel) please check all values and fully document; need to add all sextic
-    constants (simpl set the undefined ones to 0.0).
+        constants (simply set the undefined ones to 0.0).
 
     """
     pass
@@ -771,10 +774,14 @@ def uracil(param):
 
 
 def mephenesin(param):
-    """ Molecular parameters for mephenesin
+    """Molecular parameters for mephenesin
 
-    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357
-    dipole moment values calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357 dipole moment values
+    calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+
+    .. todo:: (Nicole Teschmit) Fix references (-> references.rst, cite here); provide full
+        sentences in description.
+
     """
 
     param.name = "mephenesin"
@@ -791,13 +798,30 @@ def mephenesin(param):
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
 
+
 def hydrogen(param):
-    """ Molecular parameters for hydrogen (H2)
-        Rot. constant: RH Orcutt "Influence of Molecular Quadrupole Moments on the Second Virial Coefficient" J. Chem. Phys. 39(3), 605, 1963, DOI:10.1063/1.1734300
-        Polarizability: TN Olney, NM Cann, G Cooper, CE Brion, Absolute scale determination for photoabsorption spectra and the calculation of molecular properties using dipole sum-rules, Chem. Phys. 223 (1997) 59-98, DOI: 10.1016/S0301-0104(97)00145-6
-        centrifugal distortion constant: David W. Bell, "Physical Chemistry", chapter 14.7, table 14.2 & verified by Hamaguchi et al, Mol. Phys. 43, 4, (1981), 963-973
-        
-        Polarizability is in Å³.
+    """Molecular parameters for hydrogen (H:math:`_2`)
+
+    Rot. constant: RH Orcutt "Influence of Molecular Quadrupole Moments on the Second Virial
+    Coefficient" J. Chem. Phys. 39(3), 605, 1963, DOI:10.1063/1.1734300 Polarizability: TN Olney, NM
+    Cann, G Cooper, CE Brion, Absolute scale determination for photoabsorption spectra and the
+    calculation of molecular properties using dipole sum-rules, Chem. Phys. 223 (1997) 59-98, DOI:
+    10.1016/S0301-0104(97)00145-6 centrifugal distortion constant: David W. Bell, "Physical
+    Chemistry", chapter 14.7, table 14.2 & verified by Hamaguchi et al, Mol. Phys. 43, 4, (1981),
+    963-973
+
+    Polarizability is in Å³.
+
+    .. todo:: (Jens Kienitz) Fix references (-> references.rst, cite here).
+
+    .. todo:: (Jens Kienitz) put polariability into SI units
+
+    .. todo:: (Jens Kienitz): AFAICT the polarizability you spcify here is the absolute (scalar)
+        polarizability -- that's wrong. You need the anisotropy, or, really the parallel and
+        perpendicular component of the polariability. However, the anisotropy is very likely smaller
+        in value anyway -- and thus you too-small effect would become even smaller. Most likely that
+        is due to wrong units; should be fixed once everything is in SI again.
+
     """
     param.name = "H2"
     param.mass = 2 * Masses['H']
