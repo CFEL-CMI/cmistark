@@ -50,6 +50,9 @@ References
                   `DOI: 10.1140/epjd/e2014-50072-0 <http://dx.doi.org/10.1140/epjd/e2014-50072-0>`_
 .. [Gadhi1989] Gadhi, Wlodarczak, Legrand, & Demaison, Chem. Phys. Lett., 156, 401-404 (1989), DOI:
                `10.1016/0009-2614(89)87116-7 <http://dx.doi.org/10.1016/0009-2614(89)87116-7>`_
+.. [Gordy:MMS:1984] Gordy and Cook, *Microwave Molecular Spectra*, John Wiley & Sons (1984)
+.. [Hamaguchi1981] Hamaguchi, Buckingham, Jones, *Mol. Phys.* **43**, 6 (1981). DOI:
+                `10.1080/00268978100102081 <http://dx.doi.org/10.1080/00268978100102081>`_
 .. [Hansen2013] Hansen, Jonas L and Omiste Romero, Juan J and Nielsen, Jens Hedegaard and
                 Pentlehner, Dominik and Küpper, Jochen and Gonz{\'a}lez-F{\'e}rez, Rosario and
                 Stapelfeldt, Henrik, J. Chem. Phys. 139, 234313 (2013), DOI: `10.1063/1.4848735
@@ -64,6 +67,8 @@ References
                `10.1016/0022-2852(81)90279-4 <http://dx.doi.org/10.1016/0022-2852(81)90279-4>`_
 .. [Kang2005] Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005), DOI: `10.1063/1.1883635
               <http://dx.doi.org/10.1063/1.1883635>`_
+.. [Kim1976] Kim, Hameka, Svendsen, *Chem. Phys. Lett.* **41**, 2 (1976). DOI:
+                `10.1016/0009-2614(76)80794-4 <http://dx.doi.org/10.1016/0009-2614(76)80794-4>`_
 .. [Kong2005] QY Kong and J Kim and M Lorenc and TK Kim and H Ihee and M Wulff, J. Phys. Chem. A,
               109, 10451-10458 (2005), DOI: `10.1021/jp053390q
               <http://dx.doi.org/10.1021/jp053390q>`_
@@ -89,6 +94,8 @@ References
 .. [Oelterman2012] Oeltermann, Olivia and Brand, Christian and Engels, Bernd and Tatchen, Jorg and
                    Schmitt, Michael, Phys. Chem. Chem. Phys. 14, 10266 (2012), DOI:
                    `10.1039/C2CP41094J <http://dx.doi.org/10.1039/C2CP41094J>`_
+.. [Orcutt1963] *J. Chem. Phys.* **39(3)**, 605 (1963),
+                DOI: `10.1063/1.1734300 <http://dx.doi.org/10.1063/1.1734300>`_
 .. [Patel1979] Patel, D. and Margolese, D. and Dyke, T. R., J. Chem. Phys. 70, 2740-2747 (1979),
                DOI: `10.1063/1.437860 <http://dx.doi.org/10.1063/1.437860>`_
 .. [Pietila1996] Pietilä, Koivusaari, Alanko, & Anttila, Mol. Phys. 87, 523 (1996), DOI:

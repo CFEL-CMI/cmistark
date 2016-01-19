@@ -802,26 +802,13 @@ def mephenesin(param):
 def hydrogen(param):
     """Molecular parameters for hydrogen (H:math:`_2`)
 
-    Rot. constant: RH Orcutt "Influence of Molecular Quadrupole Moments on the Second Virial
-    Coefficient" J. Chem. Phys. 39(3), 605, 1963, DOI:10.1063/1.1734300 Polarizability: TN Olney, NM
-    Cann, G Cooper, CE Brion, Absolute scale determination for photoabsorption spectra and the
-    calculation of molecular properties using dipole sum-rules, Chem. Phys. 223 (1997) 59-98, DOI:
-    10.1016/S0301-0104(97)00145-6 centrifugal distortion constant: David W. Bell, "Physical
-    Chemistry", chapter 14.7, table 14.2 & verified by Hamaguchi et al, Mol. Phys. 43, 4, (1981),
-    963-973
+    Rot. constant: [Orcutt1963]_
+    Polarizability: [Kim1976]_
+    centrifugal distortion constant: [Hamaguchi1981]_
 
-    Polarizability is in Å³.
-
-    .. todo:: (Jens Kienitz) Fix references (-> references.rst, cite here).
-
-    .. todo:: (Jens Kienitz) put polariability into SI units
-
-    .. todo:: (Jens Kienitz): AFAICT the polarizability you spcify here is the absolute (scalar)
-        polarizability -- that's wrong. You need the anisotropy, or, really the parallel and
-        perpendicular component of the polariability. However, the anisotropy is very likely smaller
-        in value anyway -- and thus you too-small effect would become even smaller. Most likely that
-        is due to wrong units; should be fixed once everything is in SI again.
-
+    .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+    .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
+    All polarizabilies are in SI units
     """
     param.name = "H2"
     param.mass = 2 * Masses['H']
@@ -829,8 +816,8 @@ def hydrogen(param):
     param.symmetry = 'N'
     param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
-    param.quartic  = convert.invcm2J(num.array([0.0464]))
-    param.polar = num.array([0.787])
+    param.quartic  = convert.invcm2J(num.array([0.0460]))
+    param.polarizability = num.array([7.632e-41, 1.238e-40])
 
 
 

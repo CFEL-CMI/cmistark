@@ -80,11 +80,6 @@ class CalculationParameter(object):
 
     For a symmetric top, the options are 'p' and 'o'.
 
-    .. todo:: (Jens Kienitz): Rename `polar` to `polarizability`
-
-    .. todo:: (Jens Kienitz): Rename All parmaters in this class must be in SI units. You could, for
-    instance, provide a conversion function for polarizabilites in `cmiext.convert`.
-
     """
     name = ' '
     isomer = 0
@@ -102,7 +97,7 @@ class CalculationParameter(object):
     rotcon = np.zeros((3,), np.float64)    # Joule - vector of length 1, 2, or 3 depending on type
     quartic = np.zeros((5,), np.float64)   # Joule - vector of length 1, 3, or 5 depending on type
     dipole = np.zeros((3,), np.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
-    polar = np.zeros((3,), np.float64)     # Angström**3 - vector of length 1 or 3 depending on type
+    polarizability = np.zeros((3,), np.float64)     # F * m**2 - vector of length 2 or 3 depending on type
     # internal
     debug = None
 
@@ -126,7 +121,7 @@ class Rotor(object):
         self.rotcon = np.array(param.rotcon, np.float64)
         self.quartic = np.array(param.quartic, np.float64)
         self.dipole = np.array(param.dipole, np.float64)
-        self.polar = np.array(param.polar, np.float64)
+        self.polarizability = np.array(param.polarizability, np.float64)
         # field strengths
         self.dcfield = np.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
@@ -186,8 +181,6 @@ class LinearRotor(Rotor):
     ... The LinearRotor description includes the polarizability interaction betwwen the dc field and
     the polarizability of the molecule, see `polarizability` for details.
 
-    .. todo:: (Jens Kienitz) Add description of Hamiltonian (formula and explanation).
-
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -199,7 +192,7 @@ class LinearRotor(Rotor):
         assert self.rotcon.shape == (1,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
-        assert self.polar.shape == (1,)
+        assert self.polarizability.shape == (2,)
 
 
     def index(self, J):
@@ -266,30 +259,31 @@ class LinearRotor(Rotor):
         Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
         polarizability of the molecule is described as
 
-        .. math:: \hat{H} =
+        .. math:: \hat{H} = - 0.5 * \alpha * E * \Phi^2_{Zz}
 
         with
 
-        .. math:: \alpha = \alpha_\parallel - \alpha_\perp
+        .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
+        
+        .. math:: E = dcfield
+        
+        and
+        
+        .. math:: \Phi^2_{Zz},
+        which represents the direction cosine of the principal axis with Z.
+        
+        For symmetric-top and linear rotors we have K = 0 and we can write a second order contribution to the stark effect as:
+        
+        .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
 
         This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
         compues the difference itself.
-
-        .. todo:: (Jens Kienitz) Please document a bit better, e.g., add the formula and
-            corresponding assumptions (Yes, I know that most of the program is not documented well.
-            But here is a chane to do this one better;-)
-
-        .. todo:: Add reference (Gordy & Cook - Microwave Molecular Spectra, 1984) to references.rst
-            and cite it here.
-
-        .. todo:: (Jens Kienitz) No unit conversions here, see ToDo above.
-
         """
         sqrt = np.sqrt
         M = self.M
-        alpha = float(self.polar[0]-self.polar[1])
+        alpha = float(self.polarizability[1]-self.polarizability[0])
         for J in range(Jmin, Jmax):
-            value = -0.5 * alpha * (1.11259e-40) * dcfield**2 * (((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
+            value = -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
             hmat[self.index(J+1), self.index(J)] += value
             hmat[self.index(J), self.index(J+1)] += value
 
