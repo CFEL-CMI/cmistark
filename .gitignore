@@ -4,6 +4,8 @@
 *.egg-info
 *.molecule
 *.pyc
+cmistark/*.c
+cmistark/*.so
 .DS_Store
 cmistark.egg-info
 build/
