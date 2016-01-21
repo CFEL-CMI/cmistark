@@ -76,6 +76,7 @@ def main(args):
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
+                                                   "water2",
                                                    "sulfur_dioxide", "SO2",
                                                    "nitrogen_dioxide", "NO2",
                                                    "nitrous_oxide",
@@ -86,7 +87,8 @@ def main(args):
                                                    "uracil",
                                                    "5-cyanoindole",
                                                    "mephenesin",
-                                                   "5-fluoroindole"
+                                                   "5-fluoroindole",
+                                                   "hydrogen","H2"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -193,6 +195,10 @@ def main(args):
             pfunc = carbon_monoxide
         elif o in ("--uracil"):
             pfunc = uracil
+        elif o in ("--water2"):
+            pfunc = water2
+        elif o in ("--hydrogen", "--H2"):
+            pfunc = hydrogen
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
