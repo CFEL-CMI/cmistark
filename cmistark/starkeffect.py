@@ -279,14 +279,11 @@ class LinearRotor(Rotor):
         This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
         compues the difference itself.
         """
-        sqrt = np.sqrt
+        
         M = self.M
         alpha = float(self.polarizability[1]-self.polarizability[0])
         for J in range(Jmin, Jmax):
-            value = -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
-            hmat[self.index(J+1), self.index(J)] += value
-            hmat[self.index(J), self.index(J+1)] += value
-
+            hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
 
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
