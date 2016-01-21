@@ -39,7 +39,8 @@ class CalculationParameter(object):
     :param quartic: quartic centrifucal distortion constants according to (Joule); this is a vector
         of length 1, 3, or 5 \ depending on rotor type
 
-    :param dipole: dipole moment (Coulomb meter); this is a vector of length 1 or 3 depending on rotor type
+    :param dipole: dipole moment (Coulomb meter); this is a vector of length 1 or 3 depending on the
+        rotor type.
 
     :param mass: mass of molecule/isomer
 
@@ -80,6 +81,9 @@ class CalculationParameter(object):
 
     For a symmetric top, the options are 'p' and 'o'.
 
+
+    .. todo:: (Jens) Document `polarizability` (and other possibly missing parameters)
+
     """
     name = ' '
     isomer = 0
@@ -92,12 +96,14 @@ class CalculationParameter(object):
     Jmax_save = 6
     # fields
     dcfields = cmiext.convert.kV_cm2V_m(np.array((0, 100.), np.float64))
-    # molecular parameters
-    mass = np.zeros((1,), np.float64)      # kg
-    rotcon = np.zeros((3,), np.float64)    # Joule - vector of length 1, 2, or 3 depending on type
-    quartic = np.zeros((5,), np.float64)   # Joule - vector of length 1, 3, or 5 depending on type
-    dipole = np.zeros((3,), np.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
-    polarizability = np.zeros((3,), np.float64)     # F * m**2 - vector of length 2 or 3 depending on type
+    # molecular parameters -- see above for definitions and units
+    # whenever a subset of the vector is used, that is the first elements; details are documented in
+    # the specific routines that set up the Hamiltonian.
+    mass = np.zeros((1,), np.float64)
+    rotcon = np.zeros((3,), np.float64)
+    quartic = np.zeros((5,), np.float64)
+    dipole = np.zeros((3,), np.float64)
+    polarizability = np.zeros((3,), np.float64)
     # internal
     debug = None
 
@@ -264,26 +270,33 @@ class LinearRotor(Rotor):
         with
 
         .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
-        
+
         .. math:: E = dcfield
-        
+
         and
-        
-        .. math:: \Phi^2_{Zz},
+
+        .. math:: \Phi^2_{Zz}
+
         which represents the direction cosine of the principal axis with Z.
-        
-        For symmetric-top and linear rotors we have K = 0 and we can write a second order contribution to the stark effect as:
-        
+
+        For symmetric-top and linear rotors we have :math:`K=0` and we can write a second order
+        contribution to the stark effect as:
+
         .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
 
         This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
-        compues the difference itself.
+        computes the difference itself.
+
         """
-        
+        # current M
         M = self.M
+        # polarization anisotropy
         alpha = float(self.polarizability[1]-self.polarizability[0])
-        for J in range(Jmin, Jmax):
-            hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3)) + ((J**2 - M**2)/((2*J + 1) * (2*J - 1))))
+        for J in range(Jmin, Jmax+1):
+            # the following is (10.118) from [Gordy:MMS:1984]_
+            hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3))
+                                                                               + ((J**2 - M**2) / ((2*J + 1) * (2*J - 1))))
+
 
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
