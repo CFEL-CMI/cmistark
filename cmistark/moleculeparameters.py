@@ -345,16 +345,17 @@ def water(param):
 
 def water2(param):
     """Molecular parameters for water dimer`
-                calcualted dipole moment at MP2 6-311++g(d,p)
+                dipole moment from DOI: 10.1134/S0036024414080172
                 rot constants from JMS 139, 259 (1990)
-                also have D(J), D(JK). not implemented yet...
+                centrifugal constants D(J), D(JK), d1, d2 from coudert and Houghen, JMS 139, 259 (1990),
     """
     param.name = "water2"
     param.symmetry = 'C2a'
     param.mass = 2 * Masses['O'] + 4* Masses['H']
-    param.watson = 'A'
+    param.watson = 'S'
     param.rotcon = convert.Hz2J(num.array([190327.0e+6, 6162.762e+06, 6133.741e+06]))
-    param.dipole = convert.D2Cm(num.array([2.47, -0.02, 0.10]))
+    param.dipole = convert.D2Cm(num.array([2.63, 0.0, 0.0]))
+    param.quartic = convert.Hz2J(num.array([0.049207, 3.18839, 0., 1.1578e-3, 0.8444e-3]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
 
 
 def OCS(param):
