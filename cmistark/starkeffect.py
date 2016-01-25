@@ -1,4 +1,4 @@
-# -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2008,2009,2011,2012,2015 Jochen Küpper <jochen.kuepper@cfel.de>
 #
@@ -28,22 +28,35 @@ from cmiext.state import State
 class CalculationParameter(object):
     """Container of parameters for calculation of Stark energies plus some more generic parameters of the molecule
 
-    Calculate energy for the specified ``dcfields`` (V/m) and rotor ``type``; all calculations are performed in
-    representation Ir (x, y, z -> b, c, a).
+    Calculate energy for the specified ``dcfields`` (V/m) and rotor ``type``; all calculations are
+    performed in representation Ir (x, y, z -> b, c, a).
 
     :param isomer:
-    :param rotcon: rotational constant (Joule); this is a vector of length 1, 2, or 3 depending on rotor type
-    :param quartic: quartic centrifucal distortion constants according to (Joule); this is a vector of length 1, 3, or 5 \
-    depending on rotor type
-    :param dipole: dipole moment (Coulomb meter); this is a vector of length 1 or 3 depending on rotor type
+
+    :param rotcon: rotational constant (Joule); this is a vector of length 1, 2, or 3 depending on
+    rotor type
+
+    :param quartic: quartic centrifucal distortion constants according to (Joule); this is a vector
+        of length 1, 3, or 5 \ depending on rotor type
+
+    :param dipole: dipole moment (Coulomb meter); this is a vector of length 1 or 3 depending on the
+        rotor type.
+
     :param mass: mass of molecule/isomer
+
     :param type: specify the type of rotor as given below.
+
     :param M: :math:`J` quantum number to perform calculation for
+
     :param Jmin: Minimum :math:`J` to include in matrix calculation (and in outout file)
+
     :param Jmax_calc: Maximum :math:`J` to include in matrix calculation
+
     :param Jmax_save: Maximum :math:`J` to include in outout file
-    :param watson: specifies which reduction of the centrifugal distortion constants of an asymmetric top shall be used; \
-    'A' for Watson's A reduction, 'S' for Watson's S reduction
+
+    :param watson: specifies which reduction of the centrifugal distortion constants of an
+        asymmetric top shall be used; \ 'A' for Watson's A reduction, 'S' for Watson's S reduction
+
     :param symmetry: defines the remaining symmetry of Hamiltonian for the molecule in a DC field.
 
     **Rotor types**
@@ -63,10 +76,13 @@ class CalculationParameter(object):
     * 'C2b',
     * 'C2c',
     * 'V' for full Fourgroup symmetry for asymmetric tops.
-    * 'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asymmetric tops. This can only be correct \
-    for zero-field calculations or M=0.
+    * 'W': block diagonalization in terms of E/O^+/- (Wang submatrices) for asymmetric tops. This
+        can only be correct \ for zero-field calculations or M=0.
 
     For a symmetric top, the options are 'p' and 'o'.
+
+
+    .. todo:: (Jens) Document `polarizability` (and other possibly missing parameters)
 
     """
     name = ' '
@@ -80,11 +96,14 @@ class CalculationParameter(object):
     Jmax_save = 6
     # fields
     dcfields = cmiext.convert.kV_cm2V_m(np.array((0, 100.), np.float64))
-    # molecular parameters
-    mass = np.zeros((1,), np.float64)      # kg
-    rotcon = np.zeros((3,), np.float64)    # Joule - vector of length 1, 2, or 3 depending on type
-    quartic = np.zeros((5,), np.float64)   # Joule - vector of length 1, 3, or 5 depending on type
-    dipole = np.zeros((3,), np.float64)    # Coulomb meter - vector of length 1 or 3 depending on type
+    # molecular parameters -- see above for definitions and units
+    # whenever a subset of the vector is used, that is the first elements; details are documented in
+    # the specific routines that set up the Hamiltonian.
+    mass = np.zeros((1,), np.float64)
+    rotcon = np.zeros((3,), np.float64)
+    quartic = np.zeros((5,), np.float64)
+    dipole = np.zeros((3,), np.float64)
+    polarizability = np.zeros((3,), np.float64)
     # internal
     debug = None
 
@@ -108,6 +127,7 @@ class Rotor(object):
         self.rotcon = np.array(param.rotcon, np.float64)
         self.quartic = np.array(param.quartic, np.float64)
         self.dipole = np.array(param.dipole, np.float64)
+        self.polarizability = np.array(param.polarizability, np.float64)
         # field strengths
         self.dcfield = np.float64(dcfield)
         # symmetry of Hamiltonian (possible values: 'N', 'C2a', 'C2b', 'C2c', 'V', 'W' for asym rotor, 'p' and 'o' for sym rotor)
@@ -159,7 +179,14 @@ class Rotor(object):
 class LinearRotor(Rotor):
     """Representation of a linear top for energy level calculation purposes.
 
-    This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
+    This object will calculate rotational energies at the specified DC field strength for the given
+    M-value and J-range using the following Hamiltonian:
+
+    <formula>
+
+    ... The LinearRotor description includes the polarizability interaction betwwen the dc field and
+    the polarizability of the molecule, see `polarizability` for details.
+
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -171,6 +198,7 @@ class LinearRotor(Rotor):
         assert self.rotcon.shape == (1,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
+        assert self.polarizability.shape == (2,)
 
 
     def index(self, J):
@@ -203,9 +231,11 @@ class LinearRotor(Rotor):
         hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
         self.fieldfree(hmat, Jmin, Jmax)
-        # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
+            # fill matrix with appropriate Stark terms for nonzero fields
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
+            # and add polarizability terms
+            self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
         return hmat
 
 
@@ -227,6 +257,45 @@ class LinearRotor(Rotor):
             value = -mu * dcfield * sqrt((J+1)**2 - M**2) / sqrt((2*J+1) * (2*J+3))
             hmat[self.index(J+1), self.index(J)] += value
             hmat[self.index(J), self.index(J+1)] += value
+
+
+    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+        """Add the polarizability matrix element terms to hmat
+
+        Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
+        polarizability of the molecule is described as
+
+        .. math:: \hat{H} = - 0.5 * \alpha * E * \Phi^2_{Zz}
+
+        with
+
+        .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
+
+        .. math:: E = dcfield
+
+        and
+
+        .. math:: \Phi^2_{Zz}
+
+        which represents the direction cosine of the principal axis with Z.
+
+        For symmetric-top and linear rotors we have :math:`K=0` and we can write a second order
+        contribution to the stark effect as:
+
+        .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
+
+        This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
+        computes the difference itself.
+
+        """
+        # current M
+        M = self.M
+        # polarization anisotropy
+        alpha = float(self.polarizability[1]-self.polarizability[0])
+        for J in range(Jmin, Jmax+1):
+            # the following is (10.118) from [Gordy:MMS:1984]_
+            hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3))
+                                                                               + ((J**2 - M**2) / ((2*J + 1) * (2*J - 1))))
 
 
     def states(self):
@@ -1096,4 +1165,11 @@ class AsymmetricRotor(Rotor):
 
 # some simple tests
 if __name__ == "__main__":
-    print()
+    pass
+
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:

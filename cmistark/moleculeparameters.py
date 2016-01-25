@@ -442,23 +442,26 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-# def diiodoethane(param):
-#     """Molecular parameters for diiodo-ethane.
-#
-#     Implemented isomers are
-#     0.  anti-conformation (C2h symmetry)
-#     1.  gauge-conformation (C2 symmetry)
-#
-#     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-#     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
-#
-#     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
-#
-#     .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
-#     to calculate the rotational constants ab initio when the structural paramters are available from documentation?
-#
-#     """
-#     param.name = "diiodoethane"
+def diiodoethane(param):
+    """Molecular parameters for diiodo-ethane.
+
+    Implemented isomers are
+
+    0. anti-conformation (C2h symmetry)
+    1. gauge-conformation (C2 symmetry)
+
+    Structural parameters are from the supplementary material of Qingyu Kong et al.,
+    "Photodissociation Reaction of 1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction
+    Study" [Kong2005]_
+
+    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+
+    .. todo:: Who did this calculation? Which level of theory and program version? Why was it
+        necessary, to begin with, to calculate the rotational constants ab initio when the
+        structural paramters are available from documentation?
+
+    """
+    param.name = "diiodoethane"
 #     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
 #     param.watson = 'A'
 #     if param.isomer == 0: # anti
@@ -520,21 +523,21 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-# def glycine(param):
-#     """Molecular parameters for TEST glycine
-#
-#         Implemented isomers are
-#         0.  Paper
-#         1.  Paper
-#         2.  Anthony Meijer
-#         3.  Anthony Meijer
-#         4.  Test
-#         5.  Test
-#
-#     .. todo:: Thomas Kierspel, update/fix documentation
-#
-#     """
-#     param.name = "glycine"
+def glycine(param):
+    """Molecular parameters for TEST glycine
+
+        Implemented isomers are
+        0.  Paper
+        1.  Paper
+        2.  Anthony Meijer
+        3.  Anthony Meijer
+        4.  Test
+        5.  Test
+
+    .. todo:: (Thomas Kierspel) update/fix documentation
+
+    """
+    param.name = "glycine"
 #     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
 #     param.watson = 'A'
 #     param.symmetry = 'N'
@@ -558,12 +561,17 @@ def benzonitrile(param):
 #         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
 
-# def iodobenzene(param):
-#     """ See [Dorosh2007]
-#
-#     .. todo:: Seabstian Trippel: please document
-#
-#     """
+def iodobenzene(param):
+    """Parameters for iodobenzene
+
+    The inertial parameters (rotational constants and centrifugal distortion parameters) are from
+    [Neil:JMolSpec269:21]_
+
+    .. todo:: (Sebastian Trippel) please check all values and fully document; need to add all sextic
+        constants (simply set the undefined ones to 0.0).
+
+    """
+    pass
 #     param.name = "iodobenzene"
 #     param.watson = 'A'
 #     param.symmetry = 'C2a'
@@ -767,10 +775,14 @@ def uracil(param):
 
 
 def mephenesin(param):
-    """ Molecular parameters for mephenesin
+    """Molecular parameters for mephenesin
 
-    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357
-    dipole moment values calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357 dipole moment values
+    calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+
+    .. todo:: (Nicole Teschmit) Fix references (-> references.rst, cite here); provide full
+        sentences in description.
+
     """
 
     param.name = "mephenesin"
@@ -786,3 +798,31 @@ def mephenesin(param):
     elif param.isomer == 2: #conformer C
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
+
+
+def hydrogen(param):
+    """Molecular parameters for hydrogen (H:math:`_2`)
+
+    Rot. constant: [Orcutt1963]_
+    Polarizability: [Kim1976]_
+    centrifugal distortion constant: [Hamaguchi1981]_
+
+    .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+    .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
+    All polarizabilies are in SI units
+    """
+    param.name = "H2"
+    param.mass = 2 * Masses['H']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.invcm2J(num.array([0.0460]))
+    param.polarizability = num.array([7.632e-41, 1.238e-40])
+
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:

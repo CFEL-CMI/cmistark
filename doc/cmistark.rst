@@ -14,6 +14,9 @@ Module contents
 ---------------
 
 .. automodule:: cmistark
+    :inherited-members:
     :members:
-    :undoc-members:
+    :private-members:
+    :special-members: __init__
     :show-inheritance:
+    :undoc-members:

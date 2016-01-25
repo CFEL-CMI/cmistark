@@ -37,7 +37,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'CMIstark'
-copyright = '(C) 2014 CFEL Controlled Molecule Imaging'
+copyright = '(C) 2014--2016 CFEL Controlled Molecule Imaging'
 
 # The version info for the project you're documenting, acts as replacement for |version| and
 # |release|, also used in various other places throughout the built documents.
@@ -65,7 +65,7 @@ exclude_patterns = ['.build']
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description unit titles (such as ..
 # function::).
@@ -252,7 +252,7 @@ texinfo_documents = [
 epub_title = 'CMIstark'
 epub_author = 'CFEL Controlled Molecule Imaging'
 epub_publisher = 'CFEL Controlled Molecule Imaging'
-epub_copyright = '(C) 2014 CFEL Controlled Molecule Imaging'
+epub_copyright = '(C) 2014--2016 CFEL Controlled Molecule Imaging'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = 'CMIstark'
