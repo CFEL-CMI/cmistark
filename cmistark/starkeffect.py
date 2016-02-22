@@ -19,9 +19,13 @@ __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 import numpy as np
 import numpy.linalg
 
+from sympy.physics.quantum.cg import Wigner3j
+from sympy.functions.special.tensor_functions import KroneckerDelta
+
 import cmiext as cmiext
 import cmiext.convert
 from cmiext.state import State
+
 
 
 
@@ -226,7 +230,7 @@ class LinearRotor(Rotor):
 
     def hamiltonian(self, Jmin, Jmax, dcfield):
         """Return Hamiltonian matrix"""
-        matrixsize = Jmax - Jmin + 1
+        matrixsize = Jmax - Jmin + 4 #1
         # create hamiltonian matrix
         hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
@@ -236,6 +240,9 @@ class LinearRotor(Rotor):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
             # and add polarizability terms
             self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
+        
+        if dcfield >= 99999000.0:
+            print(hmat)
         return hmat
 
 
@@ -244,7 +251,7 @@ class LinearRotor(Rotor):
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
         B = float(self.rotcon)
         D = float(self.quartic)
-        for J in range(Jmin, Jmax+1):
+        for J in range(Jmin, Jmax+4):
             hmat[self.index(J), self.index(J)] += B * J*(J+1) - D * (J*(J+1))**2
 
 
@@ -259,7 +266,7 @@ class LinearRotor(Rotor):
             hmat[self.index(J), self.index(J+1)] += value
 
 
-    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+    def polarizability_DC_old(self, hmat, Jmin, Jmax, dcfield):
         """Add the polarizability matrix element terms to hmat
 
         Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
@@ -287,7 +294,7 @@ class LinearRotor(Rotor):
         This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
         computes the difference itself.
 
-        """
+"""
         # current M
         M = self.M
         # polarization anisotropy
@@ -296,6 +303,67 @@ class LinearRotor(Rotor):
             # the following is (10.118) from [Gordy:MMS:1984]_
             hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3))
                                                                                + ((J**2 - M**2) / ((2*J + 1) * (2*J - 1))))
+
+
+
+
+    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+        # current M
+        M = self.M
+        K = 0.0
+        
+        for J in range(Jmin, Jmax+2):
+            alpha = float(self.polarizability[1]-self.polarizability[0])
+            
+            Jp = J+2
+            Mp = M
+            Kp = K
+            
+            w3jk = Wigner3j(J,K,Jp,-K,2,0)
+            w3jm = Wigner3j(J,M,Jp,-M,2,0)
+            
+            dj = KroneckerDelta(J,Jp)
+            dm = KroneckerDelta(M,Mp)
+            dk = KroneckerDelta(K,Kp)
+            
+            pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
+            
+            # <cos theta>
+            cost = (pre*w3jk*w3jm+dj/3)*dm*dk
+            
+            
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0])#self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
+            
+            # Off-Diagonal elements
+            hmat[self.index(J+2), self.index(J)] += value
+            hmat[self.index(J), self.index(J+2)] += value
+
+
+        for J in range(Jmin, Jmax+1):
+            alpha = float(self.polarizability[1]-self.polarizability[0])
+    
+            Jp = J
+            Mp = M
+            Kp = K
+            
+            w3jk = Wigner3j(J,K,Jp,-K,2,0)
+            w3jm = Wigner3j(J,M,Jp,-M,2,0)
+            
+            dj = KroneckerDelta(J,Jp)
+            dm = KroneckerDelta(M,Mp)
+            dk = KroneckerDelta(K,Kp)
+            
+            pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
+            
+            # <cos theta>
+            cost = (pre*w3jk*w3jm+dj/3)*dm*dk
+            
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0]) #self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
+            
+            # Diagonal elements
+            hmat[self.index(J), self.index(J)] += value
 
 
     def states(self):
