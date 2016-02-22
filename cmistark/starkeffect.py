@@ -240,9 +240,6 @@ class LinearRotor(Rotor):
             self.stark_DC(hmat, Jmin, Jmax, dcfield)
             # and add polarizability terms
             self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
-        
-        if dcfield >= 99999000.0:
-            print(hmat)
         return hmat
 
 
@@ -266,102 +263,47 @@ class LinearRotor(Rotor):
             hmat[self.index(J), self.index(J+1)] += value
 
 
-    def polarizability_DC_old(self, hmat, Jmin, Jmax, dcfield):
-        """Add the polarizability matrix element terms to hmat
-
-        Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
-        polarizability of the molecule is described as
-
-        .. math:: \hat{H} = - 0.5 * \alpha * E * \Phi^2_{Zz}
-
-        with
-
-        .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
-
-        .. math:: E = dcfield
-
-        and
-
-        .. math:: \Phi^2_{Zz}
-
-        which represents the direction cosine of the principal axis with Z.
-
-        For symmetric-top and linear rotors we have :math:`K=0` and we can write a second order
-        contribution to the stark effect as:
-
-        .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
-
-        This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
-        computes the difference itself.
-
-"""
-        # current M
-        M = self.M
-        # polarization anisotropy
-        alpha = float(self.polarizability[1]-self.polarizability[0])
-        for J in range(Jmin, Jmax+1):
-            # the following is (10.118) from [Gordy:MMS:1984]_
-            hmat[self.index(J), self.index(J)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3))
-                                                                               + ((J**2 - M**2) / ((2*J + 1) * (2*J - 1))))
-
-
-
-
     def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+        """
+
+        .. todo:: (Jens Kienitz) Document the code
+        """
         # current M
         M = self.M
         K = 0.0
-        
         for J in range(Jmin, Jmax+2):
             alpha = float(self.polarizability[1]-self.polarizability[0])
-            
             Jp = J+2
             Mp = M
             Kp = K
-            
             w3jk = Wigner3j(J,K,Jp,-K,2,0)
             w3jm = Wigner3j(J,M,Jp,-M,2,0)
-            
             dj = KroneckerDelta(J,Jp)
             dm = KroneckerDelta(M,Mp)
             dk = KroneckerDelta(K,Kp)
-            
             pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
-            
             # <cos theta>
             cost = (pre*w3jk*w3jm+dj/3)*dm*dk
-            
-            
             # Energy of the polarizability
             value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0])#self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
-            
             # Off-Diagonal elements
             hmat[self.index(J+2), self.index(J)] += value
             hmat[self.index(J), self.index(J+2)] += value
-
-
         for J in range(Jmin, Jmax+1):
             alpha = float(self.polarizability[1]-self.polarizability[0])
-    
             Jp = J
             Mp = M
             Kp = K
-            
             w3jk = Wigner3j(J,K,Jp,-K,2,0)
             w3jm = Wigner3j(J,M,Jp,-M,2,0)
-            
             dj = KroneckerDelta(J,Jp)
             dm = KroneckerDelta(M,Mp)
             dk = KroneckerDelta(K,Kp)
-            
             pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
-            
             # <cos theta>
             cost = (pre*w3jk*w3jm+dj/3)*dm*dk
-            
             # Energy of the polarizability
             value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0]) #self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
-            
             # Diagonal elements
             hmat[self.index(J), self.index(J)] += value
 
@@ -499,34 +441,34 @@ class SymmetricRotor(Rotor):
 
     def polarizability_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """I AM NOT SURE, IF THIS IS CORRECT IMPLEMENTED!
-            
+
             Add the polarizability matrix element terms to hmat
-        
+
         Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
         polarizability of the molecule is described as
-        
+
         .. math:: \hat{H} = - 0.5 * \alpha * E * \Phi^2_{Zz}
-        
+
         with
-        
+
         .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
-        
+
         .. math:: E = dcfield
-        
+
         and
-        
+
         .. math:: \Phi^2_{Zz}
-        
+
         which represents the direction cosine of the principal axis with Z.
-        
+
         For symmetric-top and linear rotors we have :math:`K=0` and we can write a second order
         contribution to the stark effect as:
-        
+
         .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
-        
+
         This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
         computes the difference itself.
-        
+
         """
         # current M
         M = self.M
