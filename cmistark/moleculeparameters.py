@@ -39,7 +39,12 @@ The relevant parameters are:
 - param.dipole: dipole moments
 
   - for linear and symmetric tops: :math:`\mu`
-  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{a}`, :math:`\mu_{a}`)
+  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{b}`, :math:`\mu_{c}`)
+
+- param.polarizability: dipole moments
+
+  - for linear and symetric top: :math:`\alpha_{parallel}, \alpha_{perpendicular}`
+  - for an asymmetric top: (:math:`\alpha_{aa}`, :math:`\alpha_{bb}`, :math:`\alpha_{cc}`)
 
 - param.type: type of rotors
 
