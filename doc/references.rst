@@ -6,6 +6,8 @@ References
                  <http://dx.doi.org/10.1016/0022-2852(76)90344-1>`_
 .. [Blanco2003] Blanco S et al, *J. Chem. Phys.* **119**, 880 (2003), `DOI: 10.1063/1.1578996
                 <http://dx.doi.org/10.1063/1.1578996>`_
+.. [Bonham2009] R. A. Bonham, G. Cooper and A. P. Hitchcock, *J. Chem. Phys.* **130**, 144303 (2009)
+                `DOI: 10.1063/1.3108490 <http://dx.doi.org/10.1063/1.3108490>`_
 .. [Borst2001] D. R. Borst, T. M. Korter and D. W. Pratt, *Chem. Phys. Lett.* **350**, 485 (2001).
                `DOI: 10.1016/S0009-2614(01)01344-6
                <http://dx.doi.org/10.1016/S0009-2614(01)01344-6>`_
@@ -63,6 +65,8 @@ References
 .. [Hodgeson1963] J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963),
                   DOI: `10.1021/j100806a079 <http://dx.doi.org/10.1021/j100806a079>`_
 .. [Horke] Daniel Horke
+.. [Huber1979] Huber, K.P.; Herzberg, G., *Molecular Spectra and Molecular Structure. IV.
+                Constants of Diatomic Molecules,* Van Nostrand Reinhold Co., (1979)
 .. [Jaman1981] Jaman, A I and Nandi, R N and Ghosh, D K, J.of Mol. Spec., 86, 269.274 (1981), DOI:
                `10.1016/0022-2852(81)90279-4 <http://dx.doi.org/10.1016/0022-2852(81)90279-4>`_
 .. [Kang2005] Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005), DOI: `10.1063/1.1883635
@@ -75,6 +79,8 @@ References
 .. [Korter1998] Korter, Pratt, Küpper, *J. Phys. Chem.* A **102**, 7211 (1998), DOI:
                 `10.1021/jp982456x <http://dx.doi.org/10.1021/jp982456x>`_
 .. [Kuepper2010] J. Küpper, 2010
+.. [Mckellar1976] Mckellar and Goetz and Ramsay,  *The Astrophysical Journal* **207**, (1976), DOI:
+`10.1086/154533 <http://dx.doi.org/10.1086/154533>`_
 .. [Miller2009] Diane M. Miller, Philip J. Morgan and David W. Pratt, *J. Phys. Chem.* A, **113**,
                 6964-6970 (2009), DOI: `10.1021/jp9017585 <http://dx.doi.org/10.1021/jp9017585>`_
 .. [MinaCamilde1996] Mina-Camilde et al. JCE 73 p.804 (1996)
@@ -104,6 +110,8 @@ References
                   `10.1016/0009-2614(74)85275-9 <http://dx.doi.org/10.1016/0009-2614(74)85275-9>`_
 .. [Puzzarini2011] Puzzarini, Cristina; Barone, Vincenzo, Phys. Chem. Chem. Phys. 13, 7158-7166
                    (2011), DOI: `10.1039/C0CP02636K <http://dx.doi.org/10.1039/C0CP02636K>`_
+.. [Rychlewski1980] J. Rychlewski1980, *Mol. Phys.* **41**, 4 (1980) DOI: `10.1063/1.1734300
+                    10.1080/00268978000103191<http://dx.doi.org/10.1080/00268978000103191>`_
 .. [Roesch2011] Daniel Rösch, Basel, 2011
 .. [Scharpen1970] L.H. Scharpen, J.S. Muenter, and V.W. Laurie, J. Chem. Phys. 53, 2513 (1970), DOI:
                   `<10.1063/1.1674355 http://dx.doi.org/10.1063/1.1674355>`_
@@ -113,6 +121,8 @@ References
 .. [Steenbeckeliers1973] G. Steenbeckeliers, and J. Bellet, J. Mol. Spectrosc. 45, 10 (1973), DOI:
                          `10.1016/0022-2852(73)90171-9
                          <http://dx.doi.org/10.1016/0022-2852(73)90171-9>`_
+.. [Trefler1968] M. Trefler and H. P. Gush, *Phys. Rev. Lett.* **20**, 703 (1968) DOI:
+                  `<10.1103/PhysRevLett.20.703 http://dx.doi.org/10.1103/PhysRevLett.20.703>`_
 .. [Trippel2012] Trippel, Chang, Stern, Mullins, Holmegaard, Küpper, Phys. Rev. A 86, 033202 (2012)
                  DOI: `10.1103/PhysRevA.86.033202 <http://dx.doi.org/10.1103/PhysRevA.86.033202>`_
 .. [Veseth1974] Veseth, Lofthus, Mol. Phys. 27, 2 511-519 (1974), DOI: `10.1080/00268977400100461
