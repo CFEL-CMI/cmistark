@@ -809,7 +809,7 @@ def hydrogen(param):
     """Molecular parameters for hydrogen (H:math:`_2`)
 
     Rot. constant: [Orcutt1963]_
-    Polarizability: [Kim1976]_
+    Polarizability: [Rychlewski1980]_, which is close to [Kim1976]_
     centrifugal distortion constant: [Hamaguchi1981]_
 
     .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
@@ -824,7 +824,51 @@ def hydrogen(param):
     param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([0.0460]))
-    param.polarizability = num.array([1.238e-40, 7.632e-41])
+    param.polarizability = num.array([11.1576e-41, 7.8225e-41])
+
+def hydrogen_deuteride(param):
+    """Molecular parameters for hydrogen (HD)
+        
+        Rot. constant: [Huber1979]_
+        Polarizability: [Rychlewski1980]_
+        centrifugal distortion constant: [Mckellar1976]_
+        
+        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+        
+        All polarizabilies are in SI units
+        """
+    param.name = "HD"
+    param.mass = Masses['H'] + Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([1368.70247e9]))
+    param.dipole = convert.D2Cm(num.array([5.85e-4]))
+    param.quartic  = convert.invcm2J(num.array([0.02586]))
+    param.polarizability = num.array([11.0767e-41, 7.787e-41])
+
+
+def deuterium(param):
+    """Molecular parameters for hydrogen (D:math:`_2`)
+        
+        Rot. constant: [Huber1979]_
+        Polarizability: [Rychlewski1980]_
+        centrifugal distortion constant: [Bonham2009]_
+        
+        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+        
+        All polarizabilies are in SI units
+        """
+    param.name = "D2"
+    param.mass = 2 * Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([912.67617e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.invcm2J(num.array([0.01153]))
+    param.polarizability = num.array([10.9746e-41, 7.7421e-41])
+
 
 
 def methane(param):

@@ -89,7 +89,9 @@ def main(args):
                                                    "mephenesin",
                                                    "5-fluoroindole",
                                                    "hydrogen","H2",
-                                                   "methane","CH4"
+                                                   "methane","CH4",
+                                                   "hydrogen_deuteride","HD",
+                                                   "deuterium","D2"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -200,6 +202,10 @@ def main(args):
             pfunc = water2
         elif o in ("--hydrogen", "--H2"):
             pfunc = hydrogen
+        elif o in ("--hydrogen_deuteride", "--HD"):
+            pfunc = hydrogen_deuteride
+        elif o in ("--deuterium", "--D2"):
+            pfunc = deuterium
         elif o in ("--methane", "--CH4"):
             pfunc = methane
         else:
