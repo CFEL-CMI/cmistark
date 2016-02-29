@@ -807,8 +807,9 @@ def hydrogen(param):
     Polarizability: [Kim1976]_
     centrifugal distortion constant: [Hamaguchi1981]_
 
-    .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-    .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+    
     All polarizabilies are in SI units
     """
     param.name = "H2"
@@ -818,7 +819,7 @@ def hydrogen(param):
     param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([0.0460]))
-    param.polarizability = num.array([7.632e-41, 1.238e-40])
+    param.polarizability = num.array([1.238e-40, 7.632e-41])
 
 
 def methane(param):
@@ -830,8 +831,8 @@ def methane(param):
 
         centrifugal distortion constant: [Lohr:JCP84:4196]_ Has to be verified!
 
-        .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-        .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
         All polarizabilies are in SI units
         """
     param.name = "methane"
@@ -841,7 +842,7 @@ def methane(param):
     param.rotcon = convert.Hz2J(num.array([157.12722e9, 157.12722e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.Hz2J(num.array([3.324e6, 135e3, 0.0]))
-    param.polarizability = num.array([0.0, 2.724e-40])
+    param.polarizability = num.array([2.724e-40, 0.0])
 
 
 

@@ -272,8 +272,8 @@ class LinearRotor(Rotor):
         .. todo:: (Jens Kienitz) Document the code
 
         """
-        delta_alpha = self.polarizability[1] - self.polarizability[0]
-        alpha_perp = self.polarizability[0]
+        delta_alpha = self.polarizability[0] - self.polarizability[1]
+        alpha_perp = self.polarizability[1]
         # current M
         M = self.M
         K = 0
@@ -369,7 +369,7 @@ class SymmetricRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
-       return hmat
+        return hmat
 
     def rigid(self, hmat, Jmin, Jmax, K):
         """Add the rigid-rotor matrix element terms to hmat
@@ -430,6 +430,7 @@ class SymmetricRotor(Rotor):
                 elif 'o' == self.symmetry:
                     self.stateorder_dict.append(State(J, 0, K, M, iso))
         return self.stateorder_dict
+
 
 
 
