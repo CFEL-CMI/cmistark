@@ -820,15 +820,16 @@ def hydrogen(param):
     param.quartic  = convert.invcm2J(num.array([0.0460]))
     param.polarizability = num.array([7.632e-41, 1.238e-40])
 
+
 def methane(param):
     """I AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
         Molecular parameters for methane
         Rot. constant: [Herzberg:PolyElectronic:1966]_ and NIST
-        
+
         Polarizability: [Olney:ChemPhys223:59]_ and NIST
-        
+
         centrifugal distortion constant: [Lohr:JCP84:4196]_ Has to be verified!
-        
+
         .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
         .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
         All polarizabilies are in SI units
