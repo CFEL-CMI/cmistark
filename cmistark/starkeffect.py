@@ -230,7 +230,7 @@ class LinearRotor(Rotor):
 
     def hamiltonian(self, Jmin, Jmax, dcfield):
         """Return Hamiltonian matrix"""
-        matrixsize = Jmax - Jmin + 4 #1
+        matrixsize = Jmax - Jmin + 1
         # create hamiltonian matrix
         hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
         # start matrix with appropriate field-free rotor terms
@@ -248,7 +248,7 @@ class LinearRotor(Rotor):
         matrixsize_Jmin = Jmin *(Jmin-1) + Jmin
         B = float(self.rotcon)
         D = float(self.quartic)
-        for J in range(Jmin, Jmax+4):
+        for J in range(Jmin, Jmax+1):
             hmat[self.index(J), self.index(J)] += B * J*(J+1) - D * (J*(J+1))**2
 
 
@@ -266,44 +266,39 @@ class LinearRotor(Rotor):
     def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
         """
 
+        .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
+            in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
+
         .. todo:: (Jens Kienitz) Document the code
+
         """
+        delta_alpha = self.polarizability[1] - self.polarizability[0]
+        alpha_perp = self.polarizability[0]
+        print(delta_alpha, alpha_perp)
         # current M
         M = self.M
-        K = 0.0
-        for J in range(Jmin, Jmax+2):
-            alpha = float(self.polarizability[1]-self.polarizability[0])
+        K = 0
+        for J in range(Jmin, Jmax-1):
             Jp = J+2
-            Mp = M
-            Kp = K
-            w3jk = Wigner3j(J,K,Jp,-K,2,0)
-            w3jm = Wigner3j(J,M,Jp,-M,2,0)
-            dj = KroneckerDelta(J,Jp)
-            dm = KroneckerDelta(M,Mp)
-            dk = KroneckerDelta(K,Kp)
-            pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
-            # <cos theta>
-            cost = (pre*w3jk*w3jm+dj/3)*dm*dk
+            w3jk = Wigner3j(J, 0, Jp,  0, 2, 0)
+            w3jm = Wigner3j(J, M, Jp, -M, 2, 0)
+            dj = KroneckerDelta(J, Jp)
+            pre = 2/3 * np.sqrt((2*J+1) * (2*Jp+1)) * (-1)**M
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + dj/3).doit()
             # Energy of the polarizability
-            value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0])#self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
+            value = -0.5 * dcfield**2 * delta_alpha * cost
             # Off-Diagonal elements
             hmat[self.index(J+2), self.index(J)] += value
             hmat[self.index(J), self.index(J+2)] += value
         for J in range(Jmin, Jmax+1):
-            alpha = float(self.polarizability[1]-self.polarizability[0])
-            Jp = J
-            Mp = M
-            Kp = K
-            w3jk = Wigner3j(J,K,Jp,-K,2,0)
-            w3jm = Wigner3j(J,M,Jp,-M,2,0)
-            dj = KroneckerDelta(J,Jp)
-            dm = KroneckerDelta(M,Mp)
-            dk = KroneckerDelta(K,Kp)
-            pre = (2/3)*(2*J+1)**(1/2) * (2*Jp+1)**(1/2) * (-1)**(M-K)
-            # <cos theta>
-            cost = (pre*w3jk*w3jm+dj/3)*dm*dk
+            w3jk = Wigner3j(J, 0, J,  0, 2, 0)
+            w3jm = Wigner3j(J, M, J, -M, 2, 0)
+            pre = 2/3 * (2*J+1) * (-1)**M
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + 1/3).doit()
             # Energy of the polarizability
-            value = -0.5 * dcfield**2 *(alpha * cost.doit()  + self.polarizability[0]) #self.polarizability[0] is alpha_perp and I am not sure, if it is correct to be here.
+            value = -0.5 * dcfield**2 *(delta_alpha * cost + alpha_perp)
             # Diagonal elements
             hmat[self.index(J), self.index(J)] += value
 
