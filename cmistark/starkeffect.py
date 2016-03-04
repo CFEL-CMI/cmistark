@@ -269,7 +269,8 @@ class LinearRotor(Rotor):
         .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
             in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
 
-        .. todo:: (Jens Kienitz) Document the code
+        .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
+            hamiltonian matrix elements and their derivation here in the header.
 
         """
         delta_alpha = self.polarizability[0] - self.polarizability[1]
