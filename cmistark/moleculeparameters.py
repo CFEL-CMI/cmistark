@@ -808,13 +808,13 @@ def mephenesin(param):
 def hydrogen(param):
     """Molecular parameters for hydrogen (H:math:`_2`)
 
-    Rot. constant: [Orcutt1963]_
+    Rotational constants are from ??? measurements [Orcutt1963]_; ...
     Polarizability: [Rychlewski1980]_, which is close to [Kim1976]_
     centrifugal distortion constant: [Hamaguchi1981]_
 
     .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
     .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-    
+
     All polarizabilies are in SI units
     """
     param.name = "H2"
@@ -826,18 +826,22 @@ def hydrogen(param):
     param.quartic  = convert.invcm2J(num.array([0.0460]))
     param.polarizability = num.array([11.1576e-41, 7.8225e-41])
 
+
 def hydrogen_deuteride(param):
     """Molecular parameters for hydrogen (HD)
-        
+
         Rot. constant: [Huber1979]_
         Polarizability: [Rychlewski1980]_
         centrifugal distortion constant: [Mckellar1976]_
-        
+
         .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
         .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-        
+
         All polarizabilies are in SI units
-        """
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+
+    """
     param.name = "HD"
     param.mass = Masses['H'] + Masses['D']
     param.type = 'L'
@@ -850,16 +854,19 @@ def hydrogen_deuteride(param):
 
 def deuterium(param):
     """Molecular parameters for hydrogen (D:math:`_2`)
-        
-        Rot. constant: [Huber1979]_
-        Polarizability: [Rychlewski1980]_
-        centrifugal distortion constant: [Bonham2009]_
-        
-        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
-        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-        
-        All polarizabilies are in SI units
-        """
+
+    Rot. constant: [Huber1979]_
+    Polarizability: [Rychlewski1980]_
+    centrifugal distortion constant: [Bonham2009]_
+
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+
+    """
     param.name = "D2"
     param.mass = 2 * Masses['D']
     param.type = 'L'
@@ -872,18 +879,25 @@ def deuterium(param):
 
 
 def methane(param):
-    """I AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
-        Molecular parameters for methane
-        Rot. constant: [Herzberg:PolyElectronic:1966]_ and NIST
+    """Methane (CH:math:`_4`)
 
-        Polarizability: [Olney:ChemPhys223:59]_ and NIST
+    I (Jens Kienitz) AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
 
-        centrifugal distortion constant: [Lohr:JCP84:4196]_ Has to be verified!
+    Molecular parameters for methane: Rotational constant are from [Herzberg:PolyElectronic:1966]_
+    and NIST; the polarizability is from ??? measurements [Olney:ChemPhys223:59]_ and NIST, and the
+    centrifugal distortion constant: [Lohr:JCP84:4196]_
 
-        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
-        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-        All polarizabilies are in SI units
-        """
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz) (centrfugal dist. const.?) have to be verified!
+
+
+    .. todo:: (Jens Kienitz): add reference for "NIST" (general weblink might be enough).
+
+    """
     param.name = "methane"
     param.mass = 4 * Masses['H'] + 1 * Masses['C']
     param.type = 'S'

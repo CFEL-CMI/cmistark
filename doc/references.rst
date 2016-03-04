@@ -79,8 +79,8 @@ References
 .. [Korter1998] Korter, Pratt, Küpper, *J. Phys. Chem.* A **102**, 7211 (1998), DOI:
                 `10.1021/jp982456x <http://dx.doi.org/10.1021/jp982456x>`_
 .. [Kuepper2010] J. Küpper, 2010
-.. [Mckellar1976] Mckellar and Goetz and Ramsay,  *The Astrophysical Journal* **207**, (1976), DOI:
-`10.1086/154533 <http://dx.doi.org/10.1086/154533>`_
+.. [Mckellar1976] Mckellar and Goetz and Ramsay, *The Astrophysical Journal* **207**, (1976), DOI:
+                  `10.1086/154533 <http://dx.doi.org/10.1086/154533>`_
 .. [Miller2009] Diane M. Miller, Philip J. Morgan and David W. Pratt, *J. Phys. Chem.* A, **113**,
                 6964-6970 (2009), DOI: `10.1021/jp9017585 <http://dx.doi.org/10.1021/jp9017585>`_
 .. [MinaCamilde1996] Mina-Camilde et al. JCE 73 p.804 (1996)
@@ -110,8 +110,8 @@ References
                   `10.1016/0009-2614(74)85275-9 <http://dx.doi.org/10.1016/0009-2614(74)85275-9>`_
 .. [Puzzarini2011] Puzzarini, Cristina; Barone, Vincenzo, Phys. Chem. Chem. Phys. 13, 7158-7166
                    (2011), DOI: `10.1039/C0CP02636K <http://dx.doi.org/10.1039/C0CP02636K>`_
-.. [Rychlewski1980] J. Rychlewski1980, *Mol. Phys.* **41**, 4 (1980) DOI: `10.1063/1.1734300
-                    10.1080/00268978000103191<http://dx.doi.org/10.1080/00268978000103191>`_
+.. [Rychlewski1980] J. Rychlewski1980, *Mol. Phys.* **41**, 4 (1980) `DOI: 10.1080/00268978000103191
+                    <http://dx.doi.org/10.1080/00268978000103191>`_
 .. [Roesch2011] Daniel Rösch, Basel, 2011
 .. [Scharpen1970] L.H. Scharpen, J.S. Muenter, and V.W. Laurie, J. Chem. Phys. 53, 2513 (1970), DOI:
                   `<10.1063/1.1674355 http://dx.doi.org/10.1063/1.1674355>`_
