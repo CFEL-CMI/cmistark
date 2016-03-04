@@ -269,12 +269,12 @@ class LinearRotor(Rotor):
         .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
             in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
 
-        .. todo:: (Jens Kienitz) Document the code
+        .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
+            hamiltonian matrix elements and their derivation here in the header.
 
         """
-        delta_alpha = self.polarizability[1] - self.polarizability[0]
-        alpha_perp = self.polarizability[0]
-        print(delta_alpha, alpha_perp)
+        delta_alpha = self.polarizability[0] - self.polarizability[1]
+        alpha_perp = self.polarizability[1]
         # current M
         M = self.M
         K = 0
@@ -370,8 +370,6 @@ class SymmetricRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
-            # and add polarizability terms
-            self.polarizability_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
 
     def rigid(self, hmat, Jmin, Jmax, K):
@@ -433,45 +431,6 @@ class SymmetricRotor(Rotor):
                 elif 'o' == self.symmetry:
                     self.stateorder_dict.append(State(J, 0, K, M, iso))
         return self.stateorder_dict
-
-    def polarizability_DC(self, hmat, Jmin, Jmax, K, dcfield):
-        """I AM NOT SURE, IF THIS IS CORRECT IMPLEMENTED!
-
-            Add the polarizability matrix element terms to hmat
-
-        Following (10.118) of [Gordy:MMS:1984]_, the interaction with a dc field due to the
-        polarizability of the molecule is described as
-
-        .. math:: \hat{H} = - 0.5 * \alpha * E * \Phi^2_{Zz}
-
-        with
-
-        .. math:: \alpha = \alpha_\parallel - \alpha_\perp,
-
-        .. math:: E = dcfield
-
-        and
-
-        .. math:: \Phi^2_{Zz}
-
-        which represents the direction cosine of the principal axis with Z.
-
-        For symmetric-top and linear rotors we have :math:`K=0` and we can write a second order
-        contribution to the stark effect as:
-
-        .. math:: E_{J, M} (\alpha) = - 0.5  \alpha  E^2 \left[ \frac{(J+1)^2 - M^2}{(2J+1)(2J+3} + \frac{J^2-M^2}{(2J+1)(2J-1)} \right]
-
-        This routine expects to receive :math:`\alpha_\parallel` and :math:`\alpha_\perp` and
-        computes the difference itself.
-
-        """
-        # current M
-        M = self.M
-        # polarization anisotropy
-        alpha = float(self.polarizability[1]-self.polarizability[0])
-        for J in range(max(Jmin, abs(K)), Jmax):
-            # the following is (10.118) from [Gordy:MMS:1984]_
-            hmat[self.index(J, K), self.index(J, K)] += -0.5 * alpha * dcfield**2 * (((J+1)**2 - M**2) / ((2*J+1) * (2*J+3)) + ((J**2 - M**2) / ((2*J + 1) * (2*J - 1))))
 
 
 

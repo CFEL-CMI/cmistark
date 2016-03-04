@@ -39,7 +39,12 @@ The relevant parameters are:
 - param.dipole: dipole moments
 
   - for linear and symmetric tops: :math:`\mu`
-  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{a}`, :math:`\mu_{a}`)
+  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{b}`, :math:`\mu_{c}`)
+
+- param.polarizability: dipole moments
+
+  - for linear and symetric top: :math:`\alpha_{parallel}, \alpha_{perpendicular}`
+  - for an asymmetric top: (:math:`\alpha_{aa}`, :math:`\alpha_{bb}`, :math:`\alpha_{cc}`)
 
 - param.type: type of rotors
 
@@ -803,12 +808,13 @@ def mephenesin(param):
 def hydrogen(param):
     """Molecular parameters for hydrogen (H:math:`_2`)
 
-    Rot. constant: [Orcutt1963]_
-    Polarizability: [Kim1976]_
+    Rotational constants are from ??? measurements [Orcutt1963]_; ...
+    Polarizability: [Rychlewski1980]_, which is close to [Kim1976]_
     centrifugal distortion constant: [Hamaguchi1981]_
 
-    .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-    .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
     All polarizabilies are in SI units
     """
     param.name = "H2"
@@ -818,22 +824,80 @@ def hydrogen(param):
     param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([0.0460]))
-    param.polarizability = num.array([7.632e-41, 1.238e-40])
+    param.polarizability = num.array([11.1576e-41, 7.8225e-41])
+
+
+def hydrogen_deuteride(param):
+    """Molecular parameters for hydrogen (HD)
+
+        Rot. constant: [Huber1979]_
+        Polarizability: [Rychlewski1980]_
+        centrifugal distortion constant: [Mckellar1976]_
+
+        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+        All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+
+    """
+    param.name = "HD"
+    param.mass = Masses['H'] + Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([1368.70247e9]))
+    param.dipole = convert.D2Cm(num.array([5.85e-4]))
+    param.quartic  = convert.invcm2J(num.array([0.02586]))
+    param.polarizability = num.array([11.0767e-41, 7.787e-41])
+
+
+def deuterium(param):
+    """Molecular parameters for hydrogen (D:math:`_2`)
+
+    Rot. constant: [Huber1979]_
+    Polarizability: [Rychlewski1980]_
+    centrifugal distortion constant: [Bonham2009]_
+
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+
+    """
+    param.name = "D2"
+    param.mass = 2 * Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([912.67617e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.invcm2J(num.array([0.01153]))
+    param.polarizability = num.array([10.9746e-41, 7.7421e-41])
+
 
 
 def methane(param):
-    """I AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
-        Molecular parameters for methane
-        Rot. constant: [Herzberg:PolyElectronic:1966]_ and NIST
+    """Methane (CH:math:`_4`)
 
-        Polarizability: [Olney:ChemPhys223:59]_ and NIST
+    I (Jens Kienitz) AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
 
-        centrifugal distortion constant: [Lohr:JCP84:4196]_ Has to be verified!
+    Molecular parameters for methane: Rotational constant are from [Herzberg:PolyElectronic:1966]_
+    and NIST; the polarizability is from ??? measurements [Olney:ChemPhys223:59]_ and NIST, and the
+    centrifugal distortion constant: [Lohr:JCP84:4196]_
 
-        .. math:: param.polar[0] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
-        .. math:: param.polar[1] = \alpha_{zz} = \alpha_\parallel
-        All polarizabilies are in SI units
-        """
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz) (centrfugal dist. const.?) have to be verified!
+
+
+    .. todo:: (Jens Kienitz): add reference for "NIST" (general weblink might be enough).
+
+    """
     param.name = "methane"
     param.mass = 4 * Masses['H'] + 1 * Masses['C']
     param.type = 'S'
@@ -841,7 +905,7 @@ def methane(param):
     param.rotcon = convert.Hz2J(num.array([157.12722e9, 157.12722e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.Hz2J(num.array([3.324e6, 135e3, 0.0]))
-    param.polarizability = num.array([0.0, 2.724e-40])
+    param.polarizability = num.array([2.724e-40, 0.0])
 
 
 
