@@ -58,16 +58,20 @@ class Molecule(cmiext.molecule.Molecule):
 
         :return: effective dipole moment curve for the specified quantum ``state``.
 
-        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the mebers of the pair are
-                one-dimensional NumPy ndarrays.
+        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the members of the pair are
+            one-dimensional NumPy ndarrays.
+
+        .. note:: The last datapoint for :math:`\mu_{\\text{eff}}`, at maximum field strenghs, is a
+            forward difference of two Stark energy values, whereas all other datapoints for
+            :math:`\mu_{\\text{eff}}` are central differences.
 
         """
         fields, energies = self.starkeffect(state)
         assert len(fields) == len(energies)
         mueff = num.zeros((len(fields),), num.float64)
-        mueff[1:-1] = -1 * (energies[0:-2] - energies[2:]) / (fields[0:-2] - fields[2:])
-        mueff[0] = 0.
-        mueff[-1] = mueff[-2]
+        mueff[0]    = 0.
+        mueff[1:-1] = (energies[0:-2] - energies[2:]) / (fields[2:] - fields[0:-2])
+        mueff[-1]   = (energies[-2] - energies[-1]) / (fields[-1] - fields[-2])
         return fields, mueff
 
 
