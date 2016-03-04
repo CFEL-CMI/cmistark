@@ -38,7 +38,7 @@ class CalculationParameter(object):
     :param isomer:
 
     :param rotcon: rotational constant (Joule); this is a vector of length 1, 2, or 3 depending on
-    rotor type
+        rotor type
 
     :param quartic: quartic centrifucal distortion constants according to (Joule); this is a vector
         of length 1, 3, or 5 \ depending on rotor type
