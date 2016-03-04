@@ -213,7 +213,8 @@ def main(args):
     # finalize initialization
     if None != pfunc:
         pfunc(param)
-    param.M = list(range(0, param.Jmax_save+1))
+    if None == param.M:
+        param.M = list(range(0, param.Jmax_save+1))
     if param.Jmax_save > param.Jmax_calc:
         param.Jmax_save = param.Jmax_calc
 
