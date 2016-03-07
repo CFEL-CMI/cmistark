@@ -113,6 +113,8 @@ class Molecule(cmiext.molecule.Molecule):
             pass
         if 'L' == param.type:
             Rotor = cmistark.starkeffect.LinearRotor
+        elif 'O' == param.type:
+            Rotor = cmistark.starkeffect.SphericRotor
         elif 'S' == param.type:
             Rotor = cmistark.starkeffect.SymmetricRotor
         elif 'A' == param.type:

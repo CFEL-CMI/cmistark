@@ -265,13 +265,11 @@ class LinearRotor(Rotor):
 
     def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
         """
-
         .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
             in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
 
         .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
             hamiltonian matrix elements and their derivation here in the header.
-
         """
         delta_alpha = self.polarizability[0] - self.polarizability[1]
         alpha_perp = self.polarizability[1]
@@ -312,6 +310,157 @@ class LinearRotor(Rotor):
             list.append(State(J, 0, 0, M, iso))
         return list
 
+class SphericRotor(Rotor):
+    """Representation of a linear top for energy level calculation purposes.
+        
+    This object will calculate rotational energies at the specified DC field strength for the given
+    M-value and J-range using the following Hamiltonian:
+        
+    <formula>
+        
+    ... The LinearRotor description includes the polarizability interaction betwwen the dc field and
+    the polarizability of the molecule, see `polarizability` for details.
+    
+    .. todo:: (Jens Kienitz) It is not checked yet. Please be careful!
+        
+    """
+    
+    def __init__(self, param, M, dcfield=0.):
+        """Save the relevant parameters"""
+        # general initialization
+        Rotor.__init__(self, param, M, dcfield)
+        # consistency checks
+        assert 'O' == param.type.upper()
+        assert self.rotcon.shape == (1,)
+        assert self.dipole.shape == (1,)
+        assert self.quartic.shape == (1,)
+        assert self.polarizability.shape == (2,)
+    
+    
+    def index(self, J, K):
+        # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
+        # The index starts from zero.
+        return J - max(abs(K), self.Jmin)
+    
+    def recalculate(self):
+        """Perform calculation of rotational state energies with current parameters for individual K"""
+        self.levels = {}
+        for K in range(-self.Jmax, self.Jmax+1): # scan K
+            blocks = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield, K) # create a full hamt for a single K. (note not |K|.)
+            eval = np.linalg.eigvalsh(blocks) # calculate only energies
+            eval = np.sort(eval)
+            i = 0
+            for state in self.stateorder(K):
+                if state.J() <= self.Jmax_save:
+                    self.levels[state.id()] = eval[i]
+                i += 1
+        # done - data is now valid
+        self.valid = True
+    
+    def hamiltonian(self, Jmin, Jmax, dcfield, K):
+        # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
+        # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
+        matrixsize = Jmax - max(abs(K), Jmin) + 1
+        # create hamiltonian matrix
+        hmat = np.zeros((matrixsize, matrixsize), self.hmat_type)
+        # start matrix with appropriate field-free rotor terms
+        self.rigid(hmat, Jmin, Jmax, K)
+        # fill matrix with appropriate Stark terms for nonzero fields
+        if None != dcfield and self.tiny < abs(dcfield):
+            self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
+            # and add polarizability terms
+            self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
+        return hmat
+    
+    
+    def rigid(self, hmat, Jmin, Jmax, K):
+        """Add the rigid-rotor matrix element terms to hmat
+        
+        .. todo:: Maybe we have to add the higher order distortions, but they are ~3 magnitudes weaker.
+        """
+        B = float(self.rotcon)
+        D = float(self.quartic)
+        for J in range(max(Jmin, abs(K)), Jmax+1):
+            rigid = B * J*(J+1)
+            distortion = -D * (J*(J+1))**2
+            hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
+
+
+    def stark_DC(self, hmat, Jmin, Jmax, K, dcfield):
+        """Add the dc Stark-effect matrix element terms to hmat"""
+        sqrt = np.sqrt
+        M = self.M
+        mu = float(self.dipole)
+        for J in range(max(Jmin, abs(K)), Jmax):
+            # diagonal term
+            if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
+                hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
+            # off-diagonal term
+            value = -mu * dcfield * sqrt((J+1)**2-K**2) * sqrt((J+1)**2 - M**2) / ((J+1) * sqrt((2*J+1) * (2*J+3)))
+            hmat[self.index(J+1, K), self.index(J, K)] += value
+            hmat[self.index(J, K), self.index(J+1, K)] += value
+        # add last diagonal term
+        J = Jmax
+        if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
+            hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
+                
+    def states(self):
+        """Return list of states for which the Stark energies were calculated."""
+        list = []
+        for J in range(self.Jmin, self.Jmax_save+1):
+            for K in range(-J, J+1):
+                if 'p' == self.symmetry:
+                    list.append(State(J, K, 0, self.M, self.isomer))
+                elif 'o' == self.symmetry:
+                    list.append(State(J, 0, K, self.M, self.isomer))
+        return list
+
+    def stateorder(self, K):
+        """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax)."""
+        if False == self.stateorder_valid:
+            self.stateorder_dict = []
+            M = self.M
+            iso = self.isomer
+            for J in range(max(abs(K),self.Jmin), self.Jmax+1): # add states in an ascending order of energy
+                self.stateorder_dict.append(State(J, K, K, M, iso))
+        return self.stateorder_dict
+
+    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+        """
+        .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
+            in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
+
+        .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
+            hamiltonian matrix elements and their derivation here in the header.
+        """
+        delta_alpha = self.polarizability[0] - self.polarizability[1]
+        alpha_perp = self.polarizability[1]
+        # current M, K
+        M = self.M
+        K = self.K
+        for J in range(max(Jmin, abs(K)), Jmax-1):
+            Jp = J+2
+            w3jk = Wigner3j(J, K, Jp,  -K, 2, 0)
+            w3jm = Wigner3j(J, M, Jp, -M, 2, 0)
+            dj = KroneckerDelta(J, Jp)
+            pre = 2/3 * np.sqrt((2*J+1) * (2*Jp+1)) * (-1)**(M-K)
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + dj/3).doit()
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 * delta_alpha * cost
+            # Off-Diagonal elements
+            hmat[self.index(J+2, K), self.index(J, K)] += value
+            hmat[self.index(J, K), self.index(J+2, K)] += value
+        for J in range(max(Jmin, abs(K)), Jmax+1):
+            w3jk = Wigner3j(J, K, J,  -K, 2, 0)
+            w3jm = Wigner3j(J, M, J, -M, 2, 0)
+            pre = 2/3 * (2*J+1) * (-1)**(M-K)
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + 1/3).doit()
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 *(delta_alpha * cost + alpha_perp)
+            # Diagonal elements
+            hmat[self.index(J, K), self.index(J, K)] += value
 
 
 
@@ -370,6 +519,8 @@ class SymmetricRotor(Rotor):
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
+            # and add polarizability terms
+            self.polarizability_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
 
     def rigid(self, hmat, Jmin, Jmax, K):
@@ -432,7 +583,41 @@ class SymmetricRotor(Rotor):
                     self.stateorder_dict.append(State(J, 0, K, M, iso))
         return self.stateorder_dict
 
+    def polarizability_DC(self, hmat, Jmin, Jmax, K, dcfield):
+        """
+        .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
+            in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
 
+        .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
+            hamiltonian matrix elements and their derivation here in the header.
+        """
+        delta_alpha = self.polarizability[0] - self.polarizability[1]
+        alpha_perp = self.polarizability[1]
+        # current M
+        M = self.M
+        for J in range(max(Jmin, abs(K)), Jmax-1):
+            Jp = J+2
+            w3jk = Wigner3j(J, K, Jp,  -K, 2, 0)
+            w3jm = Wigner3j(J, M, Jp, -M, 2, 0)
+            dj = KroneckerDelta(J, Jp)
+            pre = 2/3 * np.sqrt((2*J+1) * (2*Jp+1)) * (-1)**(M-K)
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + dj/3).doit()
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 * delta_alpha * cost
+            # Off-Diagonal elements
+            hmat[self.index(J+2, K), self.index(J, K)] += value
+            hmat[self.index(J, K), self.index(J+2, K)] += value
+        for J in range(max(Jmin, abs(K)), Jmax+1):
+            w3jk = Wigner3j(J, K, J,  -K, 2, 0)
+            w3jm = Wigner3j(J, M, J, -M, 2, 0)
+            pre = 2/3 * (2*J+1) * (-1)**(M-K)
+            # <cos^2\theta>
+            cost = (pre * w3jk * w3jm + 1/3).doit()
+            # Energy of the polarizability
+            value = -0.5 * dcfield**2 *(delta_alpha * cost + alpha_perp)
+            # Diagonal elements
+            hmat[self.index(J, K), self.index(J, K)] += value
 
 
 class AsymmetricRotor(Rotor):

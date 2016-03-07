@@ -24,12 +24,14 @@ The relevant parameters are:
 - param.rotcon: rotational constants
 
   - linear top: :math:`B`
+  - spheric rotor: :math:`B`
   - symmetric top: :math:`(A,B)` for prolate, :math:`(B,C)` for oblate
   - asymmetric top: :math:`(A,B,C)`
 
 - param.quartic: centrifugal distortion constants
 
   - linear top: :math:`D`
+  - spheric rotor: :math:`D`
   - symmetric top: :math:`(D_{J},D_{JK},D_{K})`
   - asymmetric top
 
@@ -38,7 +40,7 @@ The relevant parameters are:
 
 - param.dipole: dipole moments
 
-  - for linear and symmetric tops: :math:`\mu`
+  - for linear, spheric and symmetric tops: :math:`\mu`
   - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{b}`, :math:`\mu_{c}`)
 
 - param.polarizability: polarizability
@@ -52,13 +54,14 @@ The relevant parameters are:
 - param.type: type of rotors
 
   - linear rotor: *L*
+  - spheric rotor: *O*
   - symmetric top: *S*
   - asymmetric top: *A*
 
 - param.symmetry: symmetry in the feild for linear/asymmetric tops. For symmetric top,
   prolate or oblate is specifie here
 
-  - linear rotor: *N* (as no symmetry is implemented for linear top)
+  - linear and spheric rotor: *N* (as no symmetry is implemented for linear top)
   - symmetric top:
 
     - prolate: *p*
@@ -879,7 +882,7 @@ def methane(param):
     param.mass = 4 * Masses['H'] + 1 * Masses['C']
     param.type = 'L'
     param.symmetry = 'N'
-    param.rotcon = convert.Hz2J(num.array([157.12722e9, 157.12722e9, 157.12722e9]))
+    param.rotcon = convert.Hz2J(num.array([157.12722e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([1.1087e-4]))
     param.polarizability = num.array([2.6995e-40, 2.6995e-40])
@@ -911,7 +914,7 @@ def benzene(param):
     param.mass = 6 * Masses['C'] + 6 * Masses['H']
     param.type = 'S'
     param.symmetry = 'o'
-    param.rotcon = convert.Hz2J(num.array([5.68407e9, 5.68407e9, 2.84203e9]))
+    param.rotcon = convert.Hz2J(num.array([5.68407e9, 2.84203e9]))
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([4.2e-8, -12e-8, 6.9e-8]))
     param.polarizability = num.array([7.418e-40, 1.3648e-39])
