@@ -62,6 +62,8 @@ References
 .. [Helminger1985] Paul A. Helminger and Frank C. De Lucia JOURNAL OF MOLECULAR SPECTROSCOPY 111,
                    66-72 (1985), DOI: `10.1016/0022-2852(85)90069-4
                    <http://dx.doi.org/10.1016/0022-2852(85)90069-4>`_
+.. [Herzberg:PolyElectronic:1966] G. Herzberg, Electronic Spectra and Electronic Structure of
+                    Polyatomic Molecules, Princeton (1966)
 .. [Hodgeson1963] J.A. Hodgeson, E.E. Sibert, and R.F. Curl, Jr., J. Phys. Chem. 67, 2833 (1963),
                   DOI: `10.1021/j100806a079 <http://dx.doi.org/10.1021/j100806a079>`_
 .. [Horke] Daniel Horke
@@ -81,6 +83,8 @@ References
 .. [Kuepper2010] J. Küpper, 2010
 .. [Mckellar1976] Mckellar and Goetz and Ramsay, *The Astrophysical Journal* **207**, (1976), DOI:
                   `10.1086/154533 <http://dx.doi.org/10.1086/154533>`_
+.. [Lohr:JCP84:4196] Lohr, L and Popa, J, *JCP* **84** (1984), DOI:
+                    `10.1063/1.450041 <http://dx.doi.org/10.1063/1.450041>`_
 .. [Miller2009] Diane M. Miller, Philip J. Morgan and David W. Pratt, *J. Phys. Chem.* A, **113**,
                 6964-6970 (2009), DOI: `10.1021/jp9017585 <http://dx.doi.org/10.1021/jp9017585>`_
 .. [MinaCamilde1996] Mina-Camilde et al. JCE 73 p.804 (1996)
@@ -100,6 +104,8 @@ References
 .. [Oelterman2012] Oeltermann, Olivia and Brand, Christian and Engels, Bernd and Tatchen, Jorg and
                    Schmitt, Michael, Phys. Chem. Chem. Phys. 14, 10266 (2012), DOI:
                    `10.1039/C2CP41094J <http://dx.doi.org/10.1039/C2CP41094J>`_
+.. [Olney:ChemPhys223:59] Olney, T and Cann, N and Cooper, G and Brion, C, *Chem. Phys.* **223**, (2011),
+                    DOI: `10.1016/S0301-0104(97)00145-6 <http://dx.doi.org/10.1016/S0301-0104(97)00145-6>`_
 .. [Orcutt1963] *J. Chem. Phys.* **39(3)**, 605 (1963),
                 DOI: `10.1063/1.1734300 <http://dx.doi.org/10.1063/1.1734300>`_
 .. [Patel1979] Patel, D. and Margolese, D. and Dyke, T. R., J. Chem. Phys. 70, 2740-2747 (1979),
