@@ -4,6 +4,8 @@ References
 .. [Andreev1976] B.A. Andreev, A.V. Burenin, E.N. Karyakin, A.F. Krupnov, and S.M. Shchapin, *J.
                  Mol. Spectrosc.* **62**, 125 (1976). `DOI: 10.1016/0022-2852(76)90344-1
                  <http://dx.doi.org/10.1016/0022-2852(76)90344-1>`_
+.. [Barrett1976] Barrett, *J. Opt. Soc. Am.* **66**, 8 (1976), `DOI:
+                10.1364/JOSA.66.000801 <http://dx.doi.org/10.1364/JOSA.66.000801>`_
 .. [Blanco2003] Blanco S et al, *J. Chem. Phys.* **119**, 880 (2003), `DOI: 10.1063/1.1578996
                 <http://dx.doi.org/10.1063/1.1578996>`_
 .. [Bonham2009] R. A. Bonham, G. Cooper and A. P. Hitchcock, *J. Chem. Phys.* **130**, 144303 (2009)
@@ -11,6 +13,8 @@ References
 .. [Borst2001] D. R. Borst, T. M. Korter and D. W. Pratt, *Chem. Phys. Lett.* **350**, 485 (2001).
                `DOI: 10.1016/S0009-2614(01)01344-6
                <http://dx.doi.org/10.1016/S0009-2614(01)01344-6>`_
+.. [Bridge1966] Bridge and Buckingham, *Proc. R. Soc. Lond. A* **295**, (1966),
+                DOI: 10.1098/rspa.1966.0244 <http://dx.doi.org/10.1098/rspa.1966.0244>`_
 .. [Brand2012] C. Brand, O. Oelterman, M. Wilke, J. Tatchen and M. Schmitt, *Chem. Phys. Chem.*
                **13**, 3134 (2012). `DOI: 10.1002/cphc.201200345
                <http://dx.doi.org/10.1016/0009-2614(89)87081-2>`
@@ -22,6 +26,9 @@ References
                <http://dx.doi.org/10.1016/0009-2614(89)87081-2>`_
 .. [Brunken2006] Brünken, S.; McCarthy, M. C.; Thaddeus, P.; et al., *Astron. Astrophys.* **459**,
                  317-320 (2006)
+.. [Buldakov2010]  Mikhail Buldakov, Cherepanov, Kalugina, Zvereva-Loëte, and Boudon,
+                J. Chem. Phys. 132, 164304 (2010), `DOI: 10.1063/1.3385317
+                <http://dx.doi.org/10.1063/1.3385317>`_
 .. [Cabana1976] A. Cabana, M.L.C. Pepin, and W.J. Lafferty, *J. Mol. Spectrosc.* **59**, 13 (1976).
                 `DOI: 10.1016/0022-2852(76)90037-0
                 <http://dx.doi.org/10.1016/0022-2852(76)90037-0>`_
@@ -73,6 +80,9 @@ References
                `10.1016/0022-2852(81)90279-4 <http://dx.doi.org/10.1016/0022-2852(81)90279-4>`_
 .. [Kang2005] Kang, Korter, Pratt, J. Chem. Phys. 122, 174301 (2005), DOI: `10.1063/1.1883635
               <http://dx.doi.org/10.1063/1.1883635>`_
+.. [Kauppinen1980] Jyrki Kauppinen, and Per Jensen, and Svend Brodersen,  *Journal of Molecular Spectroscopy*
+                    **83**, 1 (1980), DOI: `10.1016/0022-2852(80)90318-5
+                    <http://dx.doi.org/10.1016/0022-2852(80)90318-5>`_
 .. [Kim1976] Kim, Hameka, Svendsen, *Chem. Phys. Lett.* **41**, 2 (1976). DOI:
                 `10.1016/0009-2614(76)80794-4 <http://dx.doi.org/10.1016/0009-2614(76)80794-4>`_
 .. [Kong2005] QY Kong and J Kim and M Lorenc and TK Kim and H Ihee and M Wulff, J. Phys. Chem. A,
@@ -85,6 +95,8 @@ References
                   `10.1086/154533 <http://dx.doi.org/10.1086/154533>`_
 .. [Lohr:JCP84:4196] Lohr, L and Popa, J, *JCP* **84** (1984), DOI:
                     `10.1063/1.450041 <http://dx.doi.org/10.1063/1.450041>`_
+.. [Lolck1979] Lolck, and Robiette, *Chemical Physics Letters* **64**, 2 (1979), DOI:
+                `10.1016/0009-2614(79)80493-5 <http://dx.doi.org/10.1016/0009-2614(79)80493-5>`_
 .. [Miller2009] Diane M. Miller, Philip J. Morgan and David W. Pratt, *J. Phys. Chem.* A, **113**,
                 6964-6970 (2009), DOI: `10.1021/jp9017585 <http://dx.doi.org/10.1021/jp9017585>`_
 .. [MinaCamilde1996] Mina-Camilde et al. JCE 73 p.804 (1996)
@@ -95,6 +107,8 @@ References
                          transform microwave spectrometer" *J. Mol. Spec.* **269**, 21 (2011).
 .. [NISTCCCBD_CO] NIST Computational Chemistry Comparison and Benchmark DataBase
                   `<http://cccbdb.nist.gov>`_
+.. [NISTCCCBD_CH4] NIST Computational Chemistry Comparison and Benchmark DataBase- `CH4
+                    <http://cccbdb.nist.gov/exp2.asp?casno=74828>`_
 .. [NISTCCCBD_SO] NIST Computational Chemistry Comparison and Benchmark DataBase - `SO
                   <http://cccbdb.nist.gov/exp2.asp?casno=13827322>`_
 .. [NISTspecDB_H2O] NIST Spectral Database - `H2O
