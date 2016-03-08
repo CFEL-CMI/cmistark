@@ -107,7 +107,7 @@ class CalculationParameter(object):
     rotcon = np.zeros((3,), np.float64)
     quartic = np.zeros((5,), np.float64)
     dipole = np.zeros((3,), np.float64)
-    polarizability = np.zeros((3,), np.float64)
+    polarizability = None
     # internal
     debug = None
 
@@ -323,6 +323,9 @@ class SymmetricRotor(Rotor):
     become not degenerate. While always keeping :math:`M` positive in this program, we label states corresponding to
     :math:`-KM` by using negative K values in the output hdf files.
 
+    .. todo:: Fix check for polarizability definition (None is also fine, then it is not used...; in
+        principle we should do the same for the dipole moments...
+
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -337,7 +340,8 @@ class SymmetricRotor(Rotor):
         assert self.rotcon.shape == (2,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (3,)
-        assert self.polarizability.shape == (2,)
+        #if self.polarizability is not None:
+        #    assert self.polarizability.shape == (2,)
 
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
