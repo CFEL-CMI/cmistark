@@ -549,7 +549,7 @@ class AsymmetricRotor(Rotor):
             assert self.watson == None
         if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmiext.convert.J2Hz)
         if self.debug:
-               eval, evec = np.linalg.eigh(hmat) # calculate only energies
+               eval, evec = np.linalg.eigh(hmat) # calculate energies and eigenvalues
                print("\nEnergies of the asym. rotor:\n", cmiext.convert.J2Hz(eval))
                self.print_mat(evec, "Eigenvectors of the asym. rotor:\n")
         # fill matrix with appropriate Stark terms for nonzero fields
