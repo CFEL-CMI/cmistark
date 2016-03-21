@@ -331,6 +331,9 @@ class SphericRotor(Rotor):
         Rotor.__init__(self, param, M, dcfield)
         # consistency checks
         assert 'O' == param.type.upper()
+        self.valid = False
+        self.stateorder_valid = False
+        self.watson = param.watson
         assert self.rotcon.shape == (1,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
@@ -369,7 +372,7 @@ class SphericRotor(Rotor):
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
             # and add polarizability terms
-            self.polarizability_DC(hmat, Jmin, Jmax, dcfield)
+            self.polarizability_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
     
     
@@ -409,10 +412,7 @@ class SphericRotor(Rotor):
         list = []
         for J in range(self.Jmin, self.Jmax_save+1):
             for K in range(-J, J+1):
-                if 'p' == self.symmetry:
-                    list.append(State(J, K, 0, self.M, self.isomer))
-                elif 'o' == self.symmetry:
-                    list.append(State(J, 0, K, self.M, self.isomer))
+                list.append(State(J, K, 0, self.M, self.isomer))
         return list
 
     def stateorder(self, K):
@@ -422,43 +422,21 @@ class SphericRotor(Rotor):
             M = self.M
             iso = self.isomer
             for J in range(max(abs(K),self.Jmin), self.Jmax+1): # add states in an ascending order of energy
-                self.stateorder_dict.append(State(J, K, K, M, iso))
+                self.stateorder_dict.append(State(J, K, 0, M, iso))
         return self.stateorder_dict
 
-    def polarizability_DC(self, hmat, Jmin, Jmax, dcfield):
+    def polarizability_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """
-        .. note:: The Kronecker deltas over K and M do not need to be evaluated as they are constant
-            in these calculations: :math:`\delta_{K,K'}=\delta_{M,M'}=1`
-
-        .. todo:: (Jens Kienitz) Document the code and provide a clear description of the
-            hamiltonian matrix elements and their derivation here in the header.
+        For spheric rotors we will always have delta_alpha = 0.
+        This will set all off-diagonal elements to zero and the diagonal elements will be independet of J and K.
         """
-        delta_alpha = self.polarizability[0] - self.polarizability[1]
+        delta_alpha = self.polarizability[0] - self.polarizability[1] # = 0
         alpha_perp = self.polarizability[1]
-        # current M, K
+        # current M
         M = self.M
-        K = self.K
-        for J in range(max(Jmin, abs(K)), Jmax-1):
-            Jp = J+2
-            w3jk = Wigner3j(J, K, Jp,  -K, 2, 0)
-            w3jm = Wigner3j(J, M, Jp, -M, 2, 0)
-            dj = KroneckerDelta(J, Jp)
-            pre = 2/3 * np.sqrt((2*J+1) * (2*Jp+1)) * (-1)**(M-K)
-            # <cos^2\theta>
-            cost = (pre * w3jk * w3jm + dj/3).doit()
-            # Energy of the polarizability
-            value = -0.5 * dcfield**2 * delta_alpha * cost
-            # Off-Diagonal elements
-            hmat[self.index(J+2, K), self.index(J, K)] += value
-            hmat[self.index(J, K), self.index(J+2, K)] += value
         for J in range(max(Jmin, abs(K)), Jmax+1):
-            w3jk = Wigner3j(J, K, J,  -K, 2, 0)
-            w3jm = Wigner3j(J, M, J, -M, 2, 0)
-            pre = 2/3 * (2*J+1) * (-1)**(M-K)
-            # <cos^2\theta>
-            cost = (pre * w3jk * w3jm + 1/3).doit()
             # Energy of the polarizability
-            value = -0.5 * dcfield**2 *(delta_alpha * cost + alpha_perp)
+            value = -0.5 * dcfield**2 * alpha_perp
             # Diagonal elements
             hmat[self.index(J, K), self.index(J, K)] += value
 
