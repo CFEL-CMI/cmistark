@@ -106,8 +106,10 @@ References
                DOI: `10.1063/1.437860 <http://dx.doi.org/10.1063/1.437860>`_
 .. [Pietila1996] Pietilä, Koivusaari, Alanko, & Anttila, Mol. Phys. 87, 523 (1996), DOI:
                  `10.1080/00268979600100351 <http://dx.doi.org/10.1080/00268979600100351>`_
-.. [Reinartz1974] Reinartz, J. & Dymanus, A., Chemical Physics Letters, 24(3), 346-351 (1974) DOI:
-                  `10.1016/0009-2614(74)85275-9 <http://dx.doi.org/10.1016/0009-2614(74)85275-9>`_
+.. [Reinartz1974] Reinartz, J. & Dymanus, A., Chemical Physics Letters **24**, 346-351 (1974) `DOI:
+                  0.1016/0009-2614(74)85275-9 <http://dx.doi.org/10.1016/0009-2614(74)85275-9>`_
+.. [Poynter1975] R. L. Poynter, R. K. Kakar, The Astrophysical Journal Supplement Series **277**,
+                 87-96 (1975)
 .. [Puzzarini2011] Puzzarini, Cristina; Barone, Vincenzo, Phys. Chem. Chem. Phys. 13, 7158-7166
                    (2011), DOI: `10.1039/C0CP02636K <http://dx.doi.org/10.1039/C0CP02636K>`_
 .. [Rychlewski1980] J. Rychlewski1980, *Mol. Phys.* **41**, 4 (1980) `DOI: 10.1080/00268978000103191
