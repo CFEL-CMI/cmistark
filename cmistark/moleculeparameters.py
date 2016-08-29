@@ -839,7 +839,7 @@ def hydrogen_deuteride(param):
 
         All polarizabilies are in SI units
 
-    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen -- please merge
 
     """
     param.name = "HD"
@@ -864,7 +864,7 @@ def deuterium(param):
 
     All polarizabilies are in SI units
 
-    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen -- please merge
 
     """
     param.name = "D2"
