@@ -312,19 +312,19 @@ class LinearRotor(Rotor):
 
 class SphericRotor(Rotor):
     """Representation of a linear top for energy level calculation purposes.
-        
+
     This object will calculate rotational energies at the specified DC field strength for the given
     M-value and J-range using the following Hamiltonian:
-        
+
     <formula>
-        
+
     ... The LinearRotor description includes the polarizability interaction betwwen the dc field and
     the polarizability of the molecule, see `polarizability` for details.
-    
+
     .. todo:: (Jens Kienitz) It is not checked yet. Please be careful!
-        
+
     """
-    
+
     def __init__(self, param, M, dcfield=0.):
         """Save the relevant parameters"""
         # general initialization
@@ -338,13 +338,13 @@ class SphericRotor(Rotor):
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (1,)
         assert self.polarizability.shape == (2,)
-    
-    
+
+
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
         # The index starts from zero.
         return J - max(abs(K), self.Jmin)
-    
+
     def recalculate(self):
         """Perform calculation of rotational state energies with current parameters for individual K"""
         self.levels = {}
@@ -359,7 +359,7 @@ class SphericRotor(Rotor):
                 i += 1
         # done - data is now valid
         self.valid = True
-    
+
     def hamiltonian(self, Jmin, Jmax, dcfield, K):
         # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
@@ -374,11 +374,11 @@ class SphericRotor(Rotor):
             # and add polarizability terms
             self.polarizability_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
-    
-    
+
+
     def rigid(self, hmat, Jmin, Jmax, K):
         """Add the rigid-rotor matrix element terms to hmat
-        
+
         .. todo:: Maybe we have to add the higher order distortions, but they are ~3 magnitudes weaker.
         """
         B = float(self.rotcon)
@@ -406,7 +406,7 @@ class SphericRotor(Rotor):
         J = Jmax
         if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
             hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
-                
+
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
         list = []
