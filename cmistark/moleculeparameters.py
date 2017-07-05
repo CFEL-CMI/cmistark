@@ -233,6 +233,21 @@ def adenine(param):
         param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
         param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
 
+def apcn(param):
+    """Molecular parameters nicoles dipeptide APCN
+
+    """
+    param.name = "apcn"
+    param.mass = 14 * Masses['C'] + 3 * Masses['O'] + 3 * Masses['N'] + 1 * Masses['S'] + 19 * Masses['H']
+    param.type = 'A'
+    param.watson = 'S'
+    param.symmetry = 'N'
+    if param.isomer == 0:
+        param.rotcon = convert.Hz2J(num.array([3.40181593e+08,2.03443113e+08,1.59877010e+08]))
+        param.dipole = convert.D2Cm(num.array([-1.45,-0.04,2.85]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([3.45067516e+08,2.15965933e+08,1.75850323e+08]))
+        param.dipole = convert.D2Cm(num.array([-3.95,6.04,3.76]))
 
 def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
@@ -907,7 +922,25 @@ def methane(param):
     param.quartic  = convert.Hz2J(num.array([3.324e6, 135e3, 0.0]))
     param.polarizability = num.array([2.724e-40, 0.0])
 
+def ammonia(param):
+    param.name = "ammonia"
+    param.mass = 3 * Masses['H'] + 1 * Masses['N']
+    param.type = 'S'
+    param.symmetry = 'o'
+    #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
+    param.rotcon = convert.Hz2J(num.array([2.98965765e+11,1.88232489e+11]))
+    param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([1.42]))
 
+def ammonia_dimer(param):
+    param.name = "ammonia_dimer"
+    param.mass = 6 * Masses['H'] + 2 * Masses['N']
+    param.type = 'S'
+    param.symmetry = 'p'
+    #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
+    param.rotcon = convert.Hz2J(num.array([1.18143309e+11,5.22172740e+09]))
+    param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([2.61]))
 
 ### Local Variables:
 ### fill-column: 100

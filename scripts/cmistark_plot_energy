@@ -219,6 +219,7 @@ def main(args):
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         else:
                             print("Wrong dipole unit.")
+    plt.savefig('test.pdf',dpi=300)
     plt.show()
 
 if __name__ == "__main__":

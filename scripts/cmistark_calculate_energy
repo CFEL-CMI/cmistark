@@ -91,7 +91,10 @@ def main(args):
                                                    "hydrogen","H2",
                                                    "methane","CH4",
                                                    "hydrogen_deuteride","HD",
-                                                   "deuterium","D2"
+                                                   "deuterium","D2",
+                                                   "ammonia",
+                                                   "ammonia_dimer",
+                                                   "apcn"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -208,6 +211,12 @@ def main(args):
             pfunc = deuterium
         elif o in ("--methane", "--CH4"):
             pfunc = methane
+        elif o in ("--ammonia"):
+            pfunc = ammonia
+        elif o in ("--ammonia_dimer"):
+            pfunc = ammonia_dimer
+        elif o in ("--apcn"):
+                pfunc = apcn
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
