@@ -236,11 +236,14 @@ def adenine(param):
 def apcn(param):
     """Molecular parameters nicoles dipeptide APCN
 
+    .. todo:: Give this class and the name parameter the full name of the molecule
+
+    .. todo:: Document the source of the parameters
     """
     param.name = "apcn"
     param.mass = 14 * Masses['C'] + 3 * Masses['O'] + 3 * Masses['N'] + 1 * Masses['S'] + 19 * Masses['H']
     param.type = 'A'
-    param.watson = 'S'
+    param.watson = 'A'
     param.symmetry = 'N'
     if param.isomer == 0:
         param.rotcon = convert.Hz2J(num.array([3.40181593e+08,2.03443113e+08,1.59877010e+08]))
