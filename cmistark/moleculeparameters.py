@@ -945,6 +945,18 @@ def ammonia_dimer(param):
     param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
     param.dipole = convert.D2Cm(num.array([2.61]))
 
+
+def propylene_oxide(param):
+    """Molecular parameters for propylene oxide, CDMS database
+    """
+    param.name = "propylene_oxide"
+    param.mass = 3 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['O']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([18023.89e6, 6682.14e6, 5951.39e6]))
+    param.dipole = convert.D2Cm(num.array([0.95, 1.67, 0.56]))
+
+
 ### Local Variables:
 ### fill-column: 100
 ### truncate-lines: t
