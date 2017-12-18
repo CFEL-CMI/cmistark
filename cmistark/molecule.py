@@ -167,11 +167,11 @@ class Molecule(cmiext.molecule.Molecule):
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect."""
         list = []
-        for groupJ in self.__storage.listNodes(self.__storage.root, classname='Group'):
-            for groupKa in self.__storage.listNodes(groupJ, classname='Group'):
-                for groupKc in self.__storage.listNodes(groupKa, classname='Group'):
-                    for groupM in self.__storage.listNodes(groupKc, classname='Group'):
-                        for groupIso in self.__storage.listNodes(groupM, classname='Group'):
+        for groupJ in self.__storage.list_nodes(self.__storage.root, classname='Group'):
+            for groupKa in self.__storage.list_nodes(groupJ, classname='Group'):
+                for groupKc in self.__storage.list_nodes(groupKa, classname='Group'):
+                    for groupM in self.__storage.list_nodes(groupKc, classname='Group'):
+                        for groupIso in self.__storage.list_nodes(groupM, classname='Group'):
                             statename = (groupJ._v_name + '/' + groupKa._v_name + '/' + groupKc._v_name
                                          + '/' + groupM._v_name + '/' + groupIso._v_name)
                             if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:
