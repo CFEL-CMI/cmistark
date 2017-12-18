@@ -108,7 +108,7 @@ class CalculationParameter(object):
     rotcon = np.zeros((3,), np.float64)
     quartic = np.zeros((5,), np.float64)
     dipole = np.zeros((3,), np.float64)
-    polarizability = None
+    polarizability = np.zeros((2,), np.float64)
     # internal
     debug = None
 
@@ -341,8 +341,7 @@ class SymmetricRotor(Rotor):
         assert self.rotcon.shape == (2,)
         assert self.dipole.shape == (1,)
         assert self.quartic.shape == (3,)
-        #if self.polarizability is not None:
-        #    assert self.polarizability.shape == (2,)
+        assert self.polarizability.shape == (2,)
 
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
