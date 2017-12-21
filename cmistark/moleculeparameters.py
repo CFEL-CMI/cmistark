@@ -247,10 +247,10 @@ def apcn(param):
     param.symmetry = 'N'
     if param.isomer == 0:
         param.rotcon = convert.Hz2J(num.array([3.40181593e+08,2.03443113e+08,1.59877010e+08]))
-        param.dipole = convert.D2Cm(num.array([-1.45,-0.04,2.85]))
+        param.dipole = convert.D2Cm(num.array([0.768,2.406,1.975]))
     elif param.isomer == 1:
         param.rotcon = convert.Hz2J(num.array([3.45067516e+08,2.15965933e+08,1.75850323e+08]))
-        param.dipole = convert.D2Cm(num.array([-3.95,6.04,3.76]))
+        param.dipole = convert.D2Cm(num.array([6.789,-2.701,3.406]))
 
 def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
