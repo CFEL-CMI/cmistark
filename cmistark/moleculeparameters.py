@@ -226,10 +226,10 @@ def adenine(param):
     param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
     param.watson = 'A'
     param.symmetry = 'N'
-    if param.isomer == 0: #tautomer 9H
+    if param.isomer == 0: # tautomer 9H
         param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
         param.dipole = convert.D2Cm(num.array([1.86, -1.39, -0.03]))
-    elif param.isomer == 1: #tautomer 7H
+    elif param.isomer == 1: # tautomer 7H
         param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
         param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
 
@@ -246,18 +246,17 @@ def apcn(param):
     param.watson = 'A'
     param.symmetry = 'N'
     if param.isomer == 0:
-        param.rotcon = convert.Hz2J(num.array([3.40181593e+08,2.03443113e+08,1.59877010e+08]))
-        param.dipole = convert.D2Cm(num.array([0.768,2.406,1.975]))
+        param.rotcon = convert.Hz2J(num.array([340.181593e6, 203.443113e6, 159.877010e6]))
+        param.dipole = convert.D2Cm(num.array([0.768, 2.406, 1.975]))
     elif param.isomer == 1:
-        param.rotcon = convert.Hz2J(num.array([3.45067516e+08,2.15965933e+08,1.75850323e+08]))
-        param.dipole = convert.D2Cm(num.array([6.789,-2.701,3.406]))
+        param.rotcon = convert.Hz2J(num.array([345.067516e6, 215.965933e6, 175.850323e6]))
+        param.dipole = convert.D2Cm(num.array([6.789, -2.701, 3.406]))
 
 def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
 
     Experimental values from [Brand2012]_
     Dipole moments from MP2 calculations (Daniel Horke, Feb 2015, Gamess2013, 6-311G++(d,p), MP2)
-
     """
     param.name = "five_fluoroindole"
     param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
