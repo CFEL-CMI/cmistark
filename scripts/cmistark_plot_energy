@@ -222,7 +222,6 @@ def main(args):
                         else:
                             print("Wrong dipole unit.")
                     if legend: plt.legend()
-    plt.savefig('test.pdf',dpi=300)
     plt.show()
 
 if __name__ == "__main__":
