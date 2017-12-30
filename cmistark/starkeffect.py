@@ -192,6 +192,8 @@ class LinearRotor(Rotor):
     ... The LinearRotor description includes the polarizability interaction betwwen the dc field and
     the polarizability of the molecule, see `polarizability` for details.
 
+
+    .. todo:: Implement automatic symmetry-determination for M==0 for linear and symmetric tops.
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -327,6 +329,7 @@ class SymmetricRotor(Rotor):
     .. todo:: Fix check for polarizability definition (None is also fine, then it is not used...; in
         principle we should do the same for the dipole moments...
 
+    .. todo:: Implement automatic symmetry-determination for M==0 for linear and symmetric tops.
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -443,6 +446,8 @@ class AsymmetricRotor(Rotor):
     """Representation of an asymmetric top for energy level calculation purposes.
 
     This object will calculate rotational energies at the specified DC field strength for the given M-value and J-range.
+
+    .. todo:: Check automatic symmetry-determination for M==0.
     """
 
     def __init__(self, param, M, dcfield=0.):
@@ -477,19 +482,18 @@ class AsymmetricRotor(Rotor):
             elif not self.dipole_components[0] and not self.dipole_components[1]:
             # Wang submatrices coupling case for only u_c != 0
                 self.symmetry = 'Wc'
-            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
+            elif self.dipole_components[2] == 0 and self.dipole_components[0] != 0 and self.dipole_components[1] != 0:
             # Wang submatrices coupling case for only u_c = 0
                 self.symmetry = 'Wab'
-            elif self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            elif self.dipole_components[0] == 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
             # Wang submatrices coupling case for only u_a = 0
                 self.symmetry = 'Wbc'
-            elif self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
-            # Wang submatrices coupling case for ile u_b = 0
+            elif self.dipole_components[1] == 0 and self.dipole_components[0] != 0 and self.dipole_components[2] != 0:
+            # Wang submatrices coupling case for only u_b = 0
                 self.symmetry = 'Wac'
-            elif self.dipole_components[0] != 0 and self.dipole_components[1] != 0 and self.dipole_components[2] != 0:
+            else: # all dipole components non-zero
             # Wang submatrices coupling case for nonzero dipole moment components u_b and u_c (u_a can be zero or nonzero)
                 self.symmetry = 'N'
-            pass
 
 
     def states(self):
