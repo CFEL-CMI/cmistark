@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; fill-column: 120 -*-
 #
-# Copyright (C) 2008,2009,2012,2013,2014,2015 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2008,2009,2012,2013,2014,2015,2018 Jochen Küpper <jochen.kuepper@cfel.de>
 
 
 import os
@@ -27,9 +27,9 @@ setup(name="cmistark",
       author_email        = "jochen.kuepper@cfel.de",
       maintainer          = "Jochen Küpper and the CFEL-CMI group",
       maintainer_email    = "jochen.kuepper@cfel.de",
-      url                 = "http://desy.cfel.de/cid/cmi/cmistark",
-      description         = "CMI Python Stark effect extensions",
-      version             = "1.1.dev0",
+      url                 = "https://www.controlled-molecule-imaging.org/research/further_projects/software/cmistark/",
+      description         = "CMI Python Stark effect extension and calculations",
+      version             = "1.2",
       long_description    = long_description,
       license             = "GPL",
       packages            = ['cmistark'],
