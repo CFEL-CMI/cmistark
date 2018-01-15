@@ -17,7 +17,7 @@
 # <http://www.gnu.org/licenses/>.
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
-__doc__ = """This modulEs Implements the molecular parameters of all investigated molecules.
+__doc__ = """This module implements the molecular parameters for all molecules (known to the package).
 
 The relevant parameters are:
 
@@ -213,7 +213,6 @@ def prolate_symmetric_top(param):
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 
-
 def adenine(param):
     """Molecular parameters for adenine
 
@@ -233,12 +232,11 @@ def adenine(param):
         param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
         param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
 
-def apcn(param):
-    """Molecular parameters nicoles dipeptide APCN
 
-    .. todo:: Give this class and the name parameter the full name of the molecule
+def AcPheCysNH2(param):
+    """Molecular parameters for dipeptide Ac-Phe-Cys-NH2
 
-    .. todo:: Document the source of the parameters
+    .. todo:: Document (reference) the source of the parameters
     """
     param.name = "apcn"
     param.mass = 14 * Masses['C'] + 3 * Masses['O'] + 3 * Masses['N'] + 1 * Masses['S'] + 19 * Masses['H']
@@ -252,6 +250,7 @@ def apcn(param):
         param.rotcon = convert.Hz2J(num.array([345.067516e6, 215.965933e6, 175.850323e6]))
         param.dipole = convert.D2Cm(num.array([6.789, -2.701, 3.406]))
 
+
 def five_fluoroindole(param):
     """Molecular parameters for 5-fluoroindole
 
@@ -264,7 +263,6 @@ def five_fluoroindole(param):
     param.symmetry = 'N'
     param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
     param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
-
 
 
 def indole(param):
@@ -365,11 +363,16 @@ def water(param):
         param.quartic = convert.Hz2J(num.array([10.8375e6, 34.208e6, 377.078e6, 3.6471e6, 63.087e6]))
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
 
-def water2(param):
+
+def water_dimer(param):
     """Molecular parameters for water dimer`
-                dipole moment from DOI: 10.1134/S0036024414080172
-                rot constants from JMS 139, 259 (1990)
-                centrifugal constants D(J), D(JK), d1, d2 from coudert and Houghen, JMS 139, 259 (1990),
+
+    * Dipole moment from DOI: 10.1134/S0036024414080172
+    * rot constants from JMS 139, 259 (1990)
+    * centrifugal constants D(J), D(JK), d1, d2 from coudert and Houghen, JMS 139, 259 (1990),
+
+    .. todo:: (Helen Bieker) Provide more detailed documentation, esp. regarding references (and use
+    the cite commands), write in full words and formulas in LaTeX mode, ...
     """
     param.name = "water2"
     param.symmetry = 'C2a'
@@ -482,6 +485,8 @@ def diiodoethane(param):
         necessary, to begin with, to calculate the rotational constants ab initio when the
         structural paramters are available from documentation?
 
+    .. todo:: Fix references and use citation style...
+
     """
     param.name = "diiodoethane"
 #     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
@@ -556,7 +561,7 @@ def glycine(param):
         4.  Test
         5.  Test
 
-    .. todo:: (Thomas Kierspel) update/fix documentation
+    .. todo:: (Thomas Kierspel) update/fix documentation as well as code.
 
     """
     param.name = "glycine"
@@ -892,7 +897,6 @@ def deuterium(param):
     param.dipole = convert.D2Cm(num.array([0.0]))
     param.quartic  = convert.invcm2J(num.array([0.01153]))
     param.polarizability = num.array([10.9746e-41, 7.7421e-41])
-
 
 
 def methane(param):
