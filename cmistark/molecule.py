@@ -58,16 +58,20 @@ class Molecule(cmiext.molecule.Molecule):
 
         :return: effective dipole moment curve for the specified quantum ``state``.
 
-        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the mebers of the pair are
-                one-dimensional NumPy ndarrays.
+        :rtype: pair (fields, :math:`\mu_{\\text{eff}}`), where the members of the pair are
+            one-dimensional NumPy ndarrays.
+
+        .. note:: The last datapoint for :math:`\mu_{\\text{eff}}`, at maximum field strenghs, is a
+            forward difference of two Stark energy values, whereas all other datapoints for
+            :math:`\mu_{\\text{eff}}` are central differences.
 
         """
         fields, energies = self.starkeffect(state)
         assert len(fields) == len(energies)
         mueff = num.zeros((len(fields),), num.float64)
-        mueff[1:-1] = -1 * (energies[0:-2] - energies[2:]) / (fields[0:-2] - fields[2:])
-        mueff[0] = 0.
-        mueff[-1] = mueff[-2]
+        mueff[0]    = 0.
+        mueff[1:-1] = (energies[0:-2] - energies[2:]) / (fields[2:] - fields[0:-2])
+        mueff[-1]   = (energies[-2] - energies[-1]) / (fields[-1] - fields[-2])
         return fields, mueff
 
 
@@ -95,11 +99,12 @@ class Molecule(cmiext.molecule.Molecule):
 
 
     def starkeffect_calculation(self, param):
-        """Perform an Stark effect claculation, get all available energies from the given Starkeffect object, and store
-        them in our storage file.
+        """Perform an Stark effect calculation, get all available energies from the given Starkeffect
+        object, and store them in our storage file.
 
         ..todo:: Improve diagnostics regarding the "create_table" try-except and distinguish
-        "pre-eistance" from real errors (and act accordingly)
+            "pre-existance" from real errors (and act accordingly)
+
         """
         try:
             self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
@@ -162,11 +167,11 @@ class Molecule(cmiext.molecule.Molecule):
     def starkeffect_states(self):
         """Get a list of states for which we know the Stark effect."""
         list = []
-        for groupJ in self.__storage.listNodes(self.__storage.root, classname='Group'):
-            for groupKa in self.__storage.listNodes(groupJ, classname='Group'):
-                for groupKc in self.__storage.listNodes(groupKa, classname='Group'):
-                    for groupM in self.__storage.listNodes(groupKc, classname='Group'):
-                        for groupIso in self.__storage.listNodes(groupM, classname='Group'):
+        for groupJ in self.__storage.list_nodes(self.__storage.root, classname='Group'):
+            for groupKa in self.__storage.list_nodes(groupJ, classname='Group'):
+                for groupKc in self.__storage.list_nodes(groupKa, classname='Group'):
+                    for groupM in self.__storage.list_nodes(groupKc, classname='Group'):
+                        for groupIso in self.__storage.list_nodes(groupM, classname='Group'):
                             statename = (groupJ._v_name + '/' + groupKa._v_name + '/' + groupKc._v_name
                                          + '/' + groupM._v_name + '/' + groupIso._v_name)
                             if 'dcfield' == groupIso.dcfield.name and 'dcstarkenergy' == groupIso.dcstarkenergy.name:

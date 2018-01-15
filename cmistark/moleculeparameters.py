@@ -17,7 +17,7 @@
 # <http://www.gnu.org/licenses/>.
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
-__doc__ = """This modulEs Implements the molecular parameters of all investigated molecules.
+__doc__ = """This module implements the molecular parameters for all molecules (known to the package).
 
 The relevant parameters are:
 
@@ -39,7 +39,12 @@ The relevant parameters are:
 - param.dipole: dipole moments
 
   - for linear and symmetric tops: :math:`\mu`
-  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{a}`, :math:`\mu_{a}`)
+  - for an asymmetric top: (:math:`\mu_{a}`, :math:`\mu_{b}`, :math:`\mu_{c}`)
+
+- param.polarizability: dipole moments
+
+  - for linear and symetric top: :math:`\alpha_{parallel}, \alpha_{perpendicular}`
+  - for an asymmetric top: (:math:`\alpha_{aa}`, :math:`\alpha_{bb}`, :math:`\alpha_{cc}`)
 
 - param.type: type of rotors
 
@@ -208,7 +213,6 @@ def prolate_symmetric_top(param):
         param.dipole = convert.D2Cm(num.array([1., 0., 0.]))
 
 
-
 def adenine(param):
     """Molecular parameters for adenine
 
@@ -221,12 +225,30 @@ def adenine(param):
     param.mass = 5 * Masses['C'] + 5 * Masses['H'] + 5 * Masses['N']
     param.watson = 'A'
     param.symmetry = 'N'
-    if param.isomer == 0: #tautomer 9H
+    if param.isomer == 0: # tautomer 9H
         param.rotcon = convert.Hz2J(num.array([2371.873e6, 1573.3565e6, 946.2576e6]))
         param.dipole = convert.D2Cm(num.array([1.86, -1.39, -0.03]))
-    elif param.isomer == 1: #tautomer 7H
+    elif param.isomer == 1: # tautomer 7H
         param.rotcon = convert.Hz2J(num.array([2381.1e6, 1531.7e6, 933.0e6]))
         param.dipole = convert.D2Cm(num.array([-0.27, -6.79, 0.67]))
+
+
+def AcPheCysNH2(param):
+    """Molecular parameters for dipeptide Ac-Phe-Cys-NH2
+
+    .. todo:: Document (reference) the source of the parameters
+    """
+    param.name = "apcn"
+    param.mass = 14 * Masses['C'] + 3 * Masses['O'] + 3 * Masses['N'] + 1 * Masses['S'] + 19 * Masses['H']
+    param.type = 'A'
+    param.watson = 'A'
+    param.symmetry = 'N'
+    if param.isomer == 0:
+        param.rotcon = convert.Hz2J(num.array([340.181593e6, 203.443113e6, 159.877010e6]))
+        param.dipole = convert.D2Cm(num.array([0.768, 2.406, 1.975]))
+    elif param.isomer == 1:
+        param.rotcon = convert.Hz2J(num.array([345.067516e6, 215.965933e6, 175.850323e6]))
+        param.dipole = convert.D2Cm(num.array([6.789, -2.701, 3.406]))
 
 
 def five_fluoroindole(param):
@@ -234,7 +256,6 @@ def five_fluoroindole(param):
 
     Experimental values from [Brand2012]_
     Dipole moments from MP2 calculations (Daniel Horke, Feb 2015, Gamess2013, 6-311G++(d,p), MP2)
-
     """
     param.name = "five_fluoroindole"
     param.mass = 8 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['N'] + 1 * Masses['F']
@@ -242,7 +263,6 @@ def five_fluoroindole(param):
     param.symmetry = 'N'
     param.rotcon = convert.Hz2J(num.array([3519.57e6, 1019.79e6, 790.87e6]))
     param.dipole = convert.D2Cm(num.array([-3.40, -2.52, 0.0]))
-
 
 
 def indole(param):
@@ -344,6 +364,25 @@ def water(param):
         param.dipole = convert.D2Cm(num.array([-0.6591, -1.7304, 0.]))
 
 
+def water_dimer(param):
+    """Molecular parameters for water dimer`
+
+    * Dipole moment from DOI: 10.1134/S0036024414080172
+    * rot constants from JMS 139, 259 (1990)
+    * centrifugal constants D(J), D(JK), d1, d2 from coudert and Houghen, JMS 139, 259 (1990),
+
+    .. todo:: (Helen Bieker) Provide more detailed documentation, esp. regarding references (and use
+    the cite commands), write in full words and formulas in LaTeX mode, ...
+    """
+    param.name = "water2"
+    param.symmetry = 'C2a'
+    param.mass = 2 * Masses['O'] + 4* Masses['H']
+    param.watson = 'S'
+    param.rotcon = convert.Hz2J(num.array([190327.0e+6, 6162.762e+06, 6133.741e+06]))
+    param.dipole = convert.D2Cm(num.array([2.63, 0.0, 0.0]))
+    param.quartic = convert.Hz2J(num.array([0.049207, 3.18839, 0., 1.1578e-3, 0.8444e-3]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
+
+
 def OCS(param):
     """Molecular parameters for OCS
 
@@ -428,23 +467,28 @@ def difluoro_iodobenzene(param):
     param.dipole = convert.D2Cm(num.array([2.25, 0., 0.]))
 
 
-# def diiodoethane(param):
-#     """Molecular parameters for diiodo-ethane.
-#
-#     Implemented isomers are
-#     0.  anti-conformation (C2h symmetry)
-#     1.  gauge-conformation (C2 symmetry)
-#
-#     Structural parameters are from the supplementary material of Qingyu Kong et al., "Photodissociation Reaction of
-#     1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction Study" [Kong2005]_
-#
-#     Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
-#
-#     .. todo:: Who did this calculation? Which level of theory and program version? Why was it necessary, to begin with,
-#     to calculate the rotational constants ab initio when the structural paramters are available from documentation?
-#
-#     """
-#     param.name = "diiodoethane"
+def diiodoethane(param):
+    """Molecular parameters for diiodo-ethane.
+
+    Implemented isomers are
+
+    0. anti-conformation (C2h symmetry)
+    1. gauge-conformation (C2 symmetry)
+
+    Structural parameters are from the supplementary material of Qingyu Kong et al.,
+    "Photodissociation Reaction of 1,2-Diiodoethane in Solution: A Theoretical and X-ray Diffraction
+    Study" [Kong2005]_
+
+    Rotational constants were then calculated with gamess (calculation level: MP2/6-311G**).
+
+    .. todo:: Who did this calculation? Which level of theory and program version? Why was it
+        necessary, to begin with, to calculate the rotational constants ab initio when the
+        structural paramters are available from documentation?
+
+    .. todo:: Fix references and use citation style...
+
+    """
+    param.name = "diiodoethane"
 #     param.mass = 2 * Masses['C'] + 4 * Masses['H'] +  2 * Masses['I']
 #     param.watson = 'A'
 #     if param.isomer == 0: # anti
@@ -506,21 +550,21 @@ def benzonitrile(param):
     param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
 
 
-# def glycine(param):
-#     """Molecular parameters for TEST glycine
-#
-#         Implemented isomers are
-#         0.  Paper
-#         1.  Paper
-#         2.  Anthony Meijer
-#         3.  Anthony Meijer
-#         4.  Test
-#         5.  Test
-#
-#     .. todo:: Thomas Kierspel, update/fix documentation
-#
-#     """
-#     param.name = "glycine"
+def glycine(param):
+    """Molecular parameters for TEST glycine
+
+        Implemented isomers are
+        0.  Paper
+        1.  Paper
+        2.  Anthony Meijer
+        3.  Anthony Meijer
+        4.  Test
+        5.  Test
+
+    .. todo:: (Thomas Kierspel) update/fix documentation as well as code.
+
+    """
+    param.name = "glycine"
 #     param.mass = 2 * Masses['C'] + 5 * Masses['H'] + 1 * Masses['N'] + 2 * Masses['O']
 #     param.watson = 'A'
 #     param.symmetry = 'N'
@@ -544,12 +588,17 @@ def benzonitrile(param):
 #         param.dipole = convert.D2Cm(num.array([0., 0., 0.]))
 
 
-# def iodobenzene(param):
-#     """ See [Dorosh2007]
-#
-#     .. todo:: Seabstian Trippel: please document
-#
-#     """
+def iodobenzene(param):
+    """Parameters for iodobenzene
+
+    The inertial parameters (rotational constants and centrifugal distortion parameters) are from
+    [Neil:JMolSpec269:21]_
+
+    .. todo:: (Sebastian Trippel) please check all values and fully document; need to add all sextic
+        constants (simply set the undefined ones to 0.0).
+
+    """
+    pass
 #     param.name = "iodobenzene"
 #     param.watson = 'A'
 #     param.symmetry = 'C2a'
@@ -753,10 +802,14 @@ def uracil(param):
 
 
 def mephenesin(param):
-    """ Molecular parameters for mephenesin
+    """Molecular parameters for mephenesin
 
-    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357
-    dipole moment values calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+    rot constants and dipole moments from [Ecija2014]_ et al, JPC B 118, 5357 dipole moment values
+    calculated (Daniel Horke, Gamess2013, B3LYP, ACCT)
+
+    .. todo:: (Nicole Teschmit) Fix references (-> references.rst, cite here); provide full
+        sentences in description.
+
     """
 
     param.name = "mephenesin"
@@ -772,3 +825,142 @@ def mephenesin(param):
     elif param.isomer == 2: #conformer C
         param.rotcon = convert.Hz2J(num.array([1615.04911e6, 455.423567e6, 385.954447e6]))
         param.dipole = convert.D2Cm(num.array([1.47, -1.32, -1.62]))
+
+
+def hydrogen(param):
+    """Molecular parameters for hydrogen (H:math:`_2`)
+
+    Rotational constants are from ??? measurements [Orcutt1963]_; ...
+    Polarizability: [Rychlewski1980]_, which is close to [Kim1976]_
+    centrifugal distortion constant: [Hamaguchi1981]_
+
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+    """
+    param.name = "H2"
+    param.mass = 2 * Masses['H']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([1824.32704e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.invcm2J(num.array([0.0460]))
+    param.polarizability = num.array([11.1576e-41, 7.8225e-41])
+
+
+def hydrogen_deuteride(param):
+    """Molecular parameters for hydrogen (HD)
+
+        Rot. constant: [Huber1979]_
+        Polarizability: [Rychlewski1980]_
+        centrifugal distortion constant: [Mckellar1976]_
+
+        .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+        .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+        All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen -- please merge
+
+    """
+    param.name = "HD"
+    param.mass = Masses['H'] + Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([1368.70247e9]))
+    param.dipole = convert.D2Cm(num.array([5.85e-4]))
+    param.quartic  = convert.invcm2J(num.array([0.02586]))
+    param.polarizability = num.array([11.0767e-41, 7.787e-41])
+
+
+def deuterium(param):
+    """Molecular parameters for hydrogen (D:math:`_2`)
+
+    Rot. constant: [Huber1979]_
+    Polarizability: [Rychlewski1980]_
+    centrifugal distortion constant: [Bonham2009]_
+
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz): This should be an isomer of hydrogen -- please merge
+
+    """
+    param.name = "D2"
+    param.mass = 2 * Masses['D']
+    param.type = 'L'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([912.67617e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.invcm2J(num.array([0.01153]))
+    param.polarizability = num.array([10.9746e-41, 7.7421e-41])
+
+
+def methane(param):
+    """Methane (CH:math:`_4`)
+
+    I (Jens Kienitz) AM NOT SURE, IF THE POLARIZABILITY IS CORRECT IMPLEMENTED!
+
+    Molecular parameters for methane: Rotational constant are from [Herzberg:PolyElectronic:1966]_
+    and NIST; the polarizability is from ??? measurements [Olney:ChemPhys223:59]_ and NIST, and the
+    centrifugal distortion constant: [Lohr:JCP84:4196]_
+
+    .. math:: param.polar[0] = \alpha_{zz} = \alpha_\parallel
+    .. math:: param.polar[1] = \alpha_{xx} = \alpha_{yy} = \alpha_\perp
+
+    All polarizabilies are in SI units
+
+    .. todo:: (Jens Kienitz) (centrfugal dist. const.?) have to be verified!
+
+
+    .. todo:: (Jens Kienitz): add reference for "NIST" (general weblink might be enough).
+
+    """
+    param.name = "methane"
+    param.mass = 4 * Masses['H'] + 1 * Masses['C']
+    param.type = 'S'
+    param.symmetry = 'p'
+    param.rotcon = convert.Hz2J(num.array([157.12722e9, 157.12722e9]))
+    param.dipole = convert.D2Cm(num.array([0.0]))
+    param.quartic  = convert.Hz2J(num.array([3.324e6, 135e3, 0.0]))
+    param.polarizability = num.array([2.724e-40, 0.0])
+
+def ammonia(param):
+    param.name = "ammonia"
+    param.mass = 3 * Masses['H'] + 1 * Masses['N']
+    param.type = 'S'
+    param.symmetry = 'o'
+    #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
+    param.rotcon = convert.Hz2J(num.array([2.98965765e+11,1.88232489e+11]))
+    param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([1.42]))
+
+def ammonia_dimer(param):
+    param.name = "ammonia_dimer"
+    param.mass = 6 * Masses['H'] + 2 * Masses['N']
+    param.type = 'S'
+    param.symmetry = 'p'
+    #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
+    param.rotcon = convert.Hz2J(num.array([1.18143309e+11,5.22172740e+09]))
+    param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
+    param.dipole = convert.D2Cm(num.array([2.61]))
+
+
+def propylene_oxide(param):
+    """Molecular parameters for propylene oxide, CDMS database
+    """
+    param.name = "propylene_oxide"
+    param.mass = 3 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['O']
+    param.watson = 'A'
+    param.symmetry = 'N'
+    param.rotcon = convert.Hz2J(num.array([18023.89e6, 6682.14e6, 5951.39e6]))
+    param.dipole = convert.D2Cm(num.array([0.95, 1.67, 0.56]))
+
+
+### Local Variables:
+### fill-column: 100
+### truncate-lines: t
+### End:

@@ -76,6 +76,7 @@ def main(args):
                                                    "OCS",
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
+                                                   "water2",
                                                    "sulfur_dioxide", "SO2",
                                                    "nitrogen_dioxide", "NO2",
                                                    "nitrous_oxide",
@@ -86,7 +87,14 @@ def main(args):
                                                    "uracil",
                                                    "5-cyanoindole",
                                                    "mephenesin",
-                                                   "5-fluoroindole"
+                                                   "5-fluoroindole",
+                                                   "hydrogen","H2",
+                                                   "methane","CH4",
+                                                   "hydrogen_deuteride","HD",
+                                                   "deuterium","D2",
+                                                   "ammonia",
+                                                   "ammonia_dimer",
+                                                   "apcn"
                                                    ])
     except getopt.GetoptError as err:
         # print help information and exit:
@@ -193,12 +201,29 @@ def main(args):
             pfunc = carbon_monoxide
         elif o in ("--uracil"):
             pfunc = uracil
+        elif o in ("--water2"):
+            pfunc = water2
+        elif o in ("--hydrogen", "--H2"):
+            pfunc = hydrogen
+        elif o in ("--hydrogen_deuteride", "--HD"):
+            pfunc = hydrogen_deuteride
+        elif o in ("--deuterium", "--D2"):
+            pfunc = deuterium
+        elif o in ("--methane", "--CH4"):
+            pfunc = methane
+        elif o in ("--ammonia"):
+            pfunc = ammonia
+        elif o in ("--ammonia_dimer"):
+            pfunc = ammonia_dimer
+        elif o in ("--apcn"):
+                pfunc = apcn
         else:
             assert False, "unhandled commandline option"
     # finalize initialization
     if None != pfunc:
         pfunc(param)
-    param.M = list(range(0, param.Jmax_save+1))
+    if None == param.M:
+        param.M = list(range(0, param.Jmax_save+1))
     if param.Jmax_save > param.Jmax_calc:
         param.Jmax_save = param.Jmax_calc
 
