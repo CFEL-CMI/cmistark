@@ -19,10 +19,12 @@ Computer: Any Macintosh, PC, or Linux/UNIX workstations with a modern Python
 distribution.
 
 The following external Python packages are also required:
+ - cmiext
+ - matplotlib
  - numpy
  - scipy
- - PyTables
- - matplotlib
+ - sympy
+ - tables
 
 
 * Installation:
@@ -45,7 +47,7 @@ following:
 
 --help: help
 --<moleculename>: specify which molecule is used in the calculation.
---dc-fields=: specify the range of the DC electric field (in kV/cm) by the 
+--dc-fields=: specify the range of the DC electric field (in kV/cm) by the
               following way: start:end:step, example: --dc-fields=0:150:151.
 --Jmax_calc=: specify the maximum value of J included in the calculation.
 --Jmax_save=: specify the maximum value of J of Stark curves saved in the output
@@ -71,6 +73,7 @@ cmistark_plot_energy and cmistark_print_energy are provided to easily access
 these <moleculename>.molecule files. Their options and descriptions are provided
 below.
 
+
 2. how to add a new molecule
 
 Firstly, in the file called moleculeparameter.py (in lib folder), add all
@@ -81,7 +84,8 @@ Next, in the script file cmistark_calculate_energy (in script folder),
 add an option for calling the above added function for the mew molecule.
 See the examples provided in this file.
 
-3. cmistark_plot_energy 
+
+3. cmistark_plot_energy
 
 The script file called cmistark_plot_energy can access existing Stark files
 (<moleculename>.molecule) and plot the stored curves.
@@ -130,7 +134,7 @@ For asymmetric tops and linear rotors, only states with positive M are
 stored, as all curves of nonzero M states are double degenerate. The values
 of both Ka and Kc are not less than zero for asymmetric tops, or set
 to zero for linear rotors. The state lable for linear rotors is thus
-(J,0,0,M,isomer). 
+(J,0,0,M,isomer).
 
 For symmetric tops, states having products of K and M equal to +|KM| and -|KM|
 split in the DC electric field. In the output file states corresponding with
