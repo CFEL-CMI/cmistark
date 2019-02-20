@@ -1,4 +1,5 @@
 Some simple rules for coding on CMIstark:
 Please
+- use git-flow (the tools and the concept)
 - keep the code consistent across the whole package!
 - consistently use two empty lines between functions and three empty lines above a class
