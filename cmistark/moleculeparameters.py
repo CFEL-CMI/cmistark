@@ -367,9 +367,12 @@ def water(param):
 def water_dimer(param):
     """Molecular parameters for water dimer`
 
-    * Experimental dipole moment \mueff taken from [Malomuzh:RussJPhysChemA88:1431] DOI: 10.1134/S0036024414080172
-    * rotational constants A,B,C taken from [Coudert:JMolSpec139:259], https://doi.org/10.1016/0022-2852(90)90064-W
-    * centrifugal constants taken \Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K} from [Dyke:JCP66:1977], https://aip.scitation.org/doi/pdf/10.1063/1.433969?class=pdf
+    * Dipole moment from DOI: 10.1134/S0036024414080172
+    * rot constants from JMS 139, 259 (1990)
+    * centrifugal constants D(J), D(JK), d1, d2 from coudert and Houghen, JMS 139, 259 (1990),
+
+    .. todo:: (Helen Bieker) Provide more detailed documentation, esp. regarding references (and use
+    the cite commands), write in full words and formulas in LaTeX mode, ...
     """
     param.name = "water2"
     param.symmetry = 'C2a'
@@ -377,141 +380,8 @@ def water_dimer(param):
     param.watson = 'S'
     param.rotcon = convert.Hz2J(num.array([190327.0e+6, 6162.762e+06, 6133.741e+06]))
     param.dipole = convert.D2Cm(num.array([2.63, 0.0, 0.0]))
-    param.quartic = convert.Hz2J(num.array([44e+3, 4.01e+6, 0., 0., 0.]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
+    param.quartic = convert.Hz2J(num.array([0.049207, 3.18839, 0., 1.1578e-3, 0.8444e-3]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
 
-
-def water_trimer(param):
-    """Molecular parameters for water trimer (cyclic)`
-
-    * Experimental dipole moment \mueff taken from [Gregory:Science275:814], http://doi.org/10.1126/science.275.5301.814
-    * Rotational constants A,B,C taken from [Keutsch:ChemRev103:2533], http://doi.org/10.1002/chin.200339231
-    * C2 Symmetry from [Walsh:JChemSocFaradayTrans92:2505], https://pubs.rsc.org/en/content/articlepdf/1996/ft/ft9969202505
-    * C1 Symmetry from [Keutsch:ChemRev103:2533], http://doi.org/10.1002/chin.200339231
-    """
-    param.name = "water_trimer"
-    param.symmetry = 'C2a'
-    param.mass = 3 * Masses['O'] + 6* Masses['H']
-    param.rotcon = convert.Hz2J(num.array([6646.91e+6, 6646.91e+06, 0e+06]))
-    param.dipole = convert.D2Cm(num.array([0.0, 0.0, 0.0]))
-
-def water_tetramer(param):
-    """Molecular parameters for water tetramer (cyclic)`
-
-    * Theoretical dipole moment \mueff taken from [Gregory:Science275:814], http://doi.org/10.1126/science.275.5301.814
-    * Rotational constants A,B,C taken from [Cruzan:Science271:59] DOI: 10.1126/science.271.5245.59
-    * Symmetry S4 from from [Gregory:Science275:814], http://doi.org/10.1126/science.275.5301.814
-
-   """
-    param.name = "water_tetramer"
-    param.symmetry = 'N'
-    param.mass = 4 * Masses['O'] + 8* Masses['H']
-    param.rotcon = convert.Hz2J(num.array([3149e+6, 3149e+06, 1622e+06]))
-    param.dipole = convert.D2Cm(num.array([0.0, 0.0, 0.0]))
-
-def water_pentamer(param):
-    """Molecular parameters for water pentamer (cyclic)`
-
-    * Theoretical dipole moment \mueff taken from [Gregory:Science275:814], http://doi.org/10.1126/science.275.5301.814
-    * Theoretical rotational constants A,B,C taken from [Liu:Science271:62] http://doi.org/10.1126/science.271.5245.62
-    * Symmetry C1 [Wales:JCP105:6957] https://aip.scitation.org/doi/pdf/10.1063/1.471987?class=pdf
-    """
-    param.name = "water_pentamer"
-    param.symmetry = 'C2a'
-    param.mass = 5 * Masses['O'] + 10* Masses['H']
-    param.rotcon = convert.Hz2J(num.array([1859e+6, 1818e+06, 940e+06]))
-    param.dipole = convert.D2Cm(num.array([0.927, 0.0, 0.0]))
-
-def water_hexamer(param):
-    """Molecular parameters for water hexamer1 cage structure`
-
-    * Dipole moment for cage structure \mueff taken from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    * Experimental rotational constants A,B,C taken from [Liu:Nature381:501]  https://www.nature.com/articles/381501a0
-    * symmetry  [Liu:Nature381:501]  https://www.nature.com/articles/381501a0
-    
-    Molecular parameters for water hexamer2 prism structure`
-    * thereotical dipole moment for cage  uu structure from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    * Experimental rotational constants from from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    
-    Molecular parameters for water hexamer3 book structure`
-    * theoretical dipole moment for cage  uu structure from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    * Experimental rotational constants from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897 
-    """
-    param.name = "water_hexamer"
-    param.symmetry = 's'
-    param.watson = 'S'
-    param.mass = 6 * Masses['O'] + 12* Masses['H']
-    if param.isomer == 0:
-        param.rotcon = convert.Hz2J(num.array([2163.61e+6, 1131.2e+06, 1068.8e+06]))
-        param.dipole = convert.D2Cm(num.array([1.63, 0.32, 1.13]))
-    elif param.isomer == 1:    
-        param.rotcon = convert.Hz2J(num.array([1658.224e+6, 1362.000e+06, 1313.124e+06]))
-        param.dipole = convert.D2Cm(num.array([2.41, 0.88, 0.42]))
-    elif param.isomer ==2:
-        param.rotcon = convert.Hz2J(num.array([1879.4748e+6, 1063.9814e+06, 775.0619e+06]))
-        param.dipole = convert.D2Cm(num.array([0.17, 2.46, 0.16]))
-
-def water_heptamer(param):
-    """Molecular parameters for water heptamer1 `
-
-    * Estimated experimental dipole moment \mueff taken from : [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Experimental rotational constants A,B,C taken from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Quartic centrifugal distortion constants in Watson’s A-reduced asymmetric rotor Hamiltonian from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Symmetry C1 from [Kim:JCP110:9128] https://pdfs.semanticscholar.org/2dbf/30f606a224ca7f05885ac28d1ab4d930bc36.pdf
-    
-    Molecular parameters for water heptamer2
-    * Estimated experimental dipole moment \mueff taken from : [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Experimental rotational constants A,B,C taken from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Quartic centrifugal distortion constants in Watson’s A-reduced asymmetric rotor Hamiltonian from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
-    * Symmetry C1 from [Kim:JCP110:9128] https://pdfs.semanticscholar.org/2dbf/30f606a224ca7f05885ac28d1ab4d930bc36.pdf
-    """
-    param.name = "water_heptamer"
-    param.mass = 7 * Masses['O'] + 14* Masses['H']
-    param.symmetry = 'N'
-    if param.isomer == 0:
-        param.watson = 'A'
-        param.rotcon = convert.Hz2J(num.array([1304.43555e+6, 937.88441e+06, 919.52364e+06]))
-        param.dipole = convert.D2Cm(num.array([1.0, 1.0, 0.0]))
-        param.quartic = convert.Hz2J(num.array([0.4567e+3, -0.342e+3, 0.842e+3, 0.0377e+3, 0.63e+3]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
-    elif param.isomer == 1:
-        param.watson = 'S'
-        param.rotcon = convert.Hz2J(num.array([1345.15942e+6, 976.8789e+06, 854.47389e+06]))
-        param.dipole = convert.D2Cm(num.array([1.0, 0.0, 1.0]))
-#        param.quartic = convert.Hz2J(num.array([0.0439e+3, 0.0, 0.0, 0.0497, 0.0]))#\Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K}
-
-def water_octamer(param):
-    """Molecular parameters for octamer`
-
-    * dipole moment \mueff taken from : http://science.sciencemag.org/content/276/5319/1678
-    * rotational constants A,B,C taken from  http://science.sciencemag.org/content/276/5319/1678
-    """
-    param.name = "water_octamer"
-    param.mass = 8 * Masses['O'] + 16* Masses['H']
-    param.symmetry = 'N'
-    param.watson = 'S'
-    param.rotcon = convert.Hz2J(num.array([0.92437e+6, 0.89338e+06, 0.89338e+06]))
-    param.dipole = convert.D2Cm(num.array([0.0, 0.0, 0.0]))
-
-def water_nonamer(param):
-    """Molecular parameters for nonamer`
-
-    * Estimated experimental dipole moment \mueff taken from : http://science.sciencemag.org/content/sci/336/6083/897.full.pdf
-    * rotational constants A,B,C taken from http://science.sciencemag.org/content/sci/336/6083/897.full.pdf
-    """
-    param.name = "water_nonamer"
-    param.mass = 9 * Masses['O'] + 18* Masses['H']
-    param.rotcon = convert.Hz2J(num.array([774.7442e+06, 633.5403e+06, 570.6460e+06]))
-    param.dipole = convert.D2Cm(num.array([0.0, 0.0, 0.0]))
-
-def water_decamer(param):
-    """Molecular parameters for decamer`
-
-    * dipole moment \mueff taken from :https://aip.scitation.org/doi/pdf/10.1063/1.481613?class=pdf
-    * rotational constants A,B,C taken from https://aip.scitation.org/doi/pdf/10.1063/1.481613?class=pdf
-    """
-    param.name = "water_decamer"
-    param.mass = 10 * Masses['O'] + 20* Masses['H']
-    param.rotcon = convert.Hz2J(num.array([591e+06, 569e+06, 509e+06]))
-    param.dipole = convert.D2Cm(num.array([2.7, 0.0, 0.0]))
 
 def OCS(param):
     """Molecular parameters for OCS
