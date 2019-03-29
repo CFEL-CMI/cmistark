@@ -427,14 +427,14 @@ def water_hexamer(param):
     * Dipole moment for cage structure \mueff taken from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
     * Experimental rotational constants A,B,C taken from [Liu:Nature381:501]  https://www.nature.com/articles/381501a0
     * symmetry  [Liu:Nature381:501]  https://www.nature.com/articles/381501a0
-    
+
     Molecular parameters for water hexamer2 prism structure`
     * thereotical dipole moment for cage  uu structure from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
     * Experimental rotational constants from from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    
+
     Molecular parameters for water hexamer3 book structure`
     * theoretical dipole moment for cage  uu structure from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
-    * Experimental rotational constants from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897 
+    * Experimental rotational constants from [Perez:Science336:897], http://science.sciencemag.org/content/336/6083/897
     """
     param.name = "water_hexamer"
     param.symmetry = 's'
@@ -443,7 +443,7 @@ def water_hexamer(param):
     if param.isomer == 0:
         param.rotcon = convert.Hz2J(num.array([2163.61e+6, 1131.2e+06, 1068.8e+06]))
         param.dipole = convert.D2Cm(num.array([1.63, 0.32, 1.13]))
-    elif param.isomer == 1:    
+    elif param.isomer == 1:
         param.rotcon = convert.Hz2J(num.array([1658.224e+6, 1362.000e+06, 1313.124e+06]))
         param.dipole = convert.D2Cm(num.array([2.41, 0.88, 0.42]))
     elif param.isomer ==2:
@@ -457,7 +457,7 @@ def water_heptamer(param):
     * Experimental rotational constants A,B,C taken from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
     * Quartic centrifugal distortion constants in Watson’s A-reduced asymmetric rotor Hamiltonian from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
     * Symmetry C1 from [Kim:JCP110:9128] https://pdfs.semanticscholar.org/2dbf/30f606a224ca7f05885ac28d1ab4d930bc36.pdf
-    
+
     Molecular parameters for water heptamer2
     * Estimated experimental dipole moment \mueff taken from : [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
     * Experimental rotational constants A,B,C taken from [Perez:ChemPhysLett571:1] https://doi.org/10.1016/j.cplett.2013.04.014
@@ -728,14 +728,13 @@ def iodobenzene(param):
         constants (simply set the undefined ones to 0.0).
 
     """
-    pass
-#     param.name = "iodobenzene"
-#     param.watson = 'A'
-#     param.symmetry = 'C2a'
-#     param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
-#     param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
-#     # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
-#     param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
+    param.name = "iodobenzene"
+    param.watson = 'A'
+    param.symmetry = 'C2a'
+    param.rotcon = convert.Hz2J(num.array([5669.126e6, 750.414323e6, 662.636162e6]))
+    param.quartic = convert.Hz2J(num.array([19.5479, 164.648, 891, 2.53098, 15554]))
+    # param.sextic =  convert.Hz2J(num.array([0.0609, -0.377])) # ignored sextic constants!
+    param.dipole = convert.D2Cm(num.array([1.6250, 0., 0.]))
 
 
 def phenylpyrrole(param):
