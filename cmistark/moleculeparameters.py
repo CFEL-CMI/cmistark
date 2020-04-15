@@ -1057,15 +1057,17 @@ def methane(param):
     param.quartic  = convert.Hz2J(num.array([3.324e6, 135e3, 0.0]))
     param.polarizability = num.array([2.724e-40, 0.0])
 
+
 def ammonia(param):
     param.name = "ammonia"
     param.mass = 3 * Masses['H'] + 1 * Masses['N']
     param.type = 'S'
     param.symmetry = 'o'
     #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
-    param.rotcon = convert.Hz2J(num.array([2.98965765e+11,1.88232489e+11]))
+    param.rotcon = convert.Hz2J(num.array([2.98965765e+11, 1.88232489e+11]))
     param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
     param.dipole = convert.D2Cm(num.array([1.42]))
+
 
 def ammonia_dimer(param):
     param.name = "ammonia_dimer"
@@ -1087,9 +1089,3 @@ def propylene_oxide(param):
     param.symmetry = 'N'
     param.rotcon = convert.Hz2J(num.array([18023.89e6, 6682.14e6, 5951.39e6]))
     param.dipole = convert.D2Cm(num.array([0.95, 1.67, 0.56]))
-
-
-### Local Variables:
-### fill-column: 100
-### truncate-lines: t
-### End:
