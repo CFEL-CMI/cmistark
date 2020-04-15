@@ -42,7 +42,7 @@ from cmistark.moleculeparameters import *
 def usage():
     # ToDo implement a useful usage description -- use argparse instead of getopt to auto-create it
     print("""
-           --help:      help
+           --help:      print this help
            --dc-fields: specify the range of the DC elecric field (in kV/cm):
                         start:end:step (example: --dc-fields=0:150:151)
            --Jmax_calc: specify the maximum value of J included in the calculation
