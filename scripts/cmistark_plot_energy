@@ -23,8 +23,9 @@ Copyright (C) 2009,2011,2012,2013,2018 Jochen Küpper"""
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
-import numpy as num
+import cycler
 import getopt, sys
+import numpy as num
 import matplotlib.pyplot as plt
 
 import cmistark.molecule as molecule
@@ -137,7 +138,8 @@ def main(args):
     if None == Kamax:
         Kamax = Jmax
 
-    colors = ['blue', 'red', 'green', 'black', 'purple', 'cyan', 'magenta', 'brown']
+    # use neither white nor black -- these are the default background colors for light and dark mode...
+    colors = ['blue', 'red', 'green', 'purple', 'cyan', 'magenta', 'brown']
     colorindex = 0
 
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
