@@ -21,9 +21,6 @@ import math
 import numpy as np
 import numpy.linalg
 
-from sympy.physics.quantum.cg import Wigner3j
-from sympy.functions.special.tensor_functions import KroneckerDelta
-
 import cmiext as cmiext
 import cmiext.convert
 from cmiext.state import State
@@ -277,6 +274,9 @@ class LinearRotor(Rotor):
             hamiltonian matrix elements and their derivation here in the header.
 
         """
+        from sympy.physics.quantum.cg import Wigner3j
+        from sympy.functions.special.tensor_functions import KroneckerDelta
+
         delta_alpha = self.polarizability[0] - self.polarizability[1]
         alpha_perp = self.polarizability[1]
         # current M
