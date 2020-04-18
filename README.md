@@ -1,7 +1,7 @@
 # CMIstark
 
 This program can calculate, view, and analyze the energy levels of adiabatic
-Stark energy curves of linear, symmetric top and asymmetric top molecules.
+Stark energy curves of linear, symmetric top, and asymmetric top molecules.
 
 The program package is developed and maintained by the Controlled Molecule
 Imaging group (CMI) at the Center for Free-Electron Laser Science (CFEL),
@@ -23,7 +23,7 @@ Computer: Any Macintosh, PC, or Linux/UNIX workstations with a modern Python
 distribution.
 
 The following external Python packages are also required:
- - cmiext
+ - [cmiext](https://github.com/CFEL-CMI/cmiext)
  - matplotlib
  - numpy
  - scipy
