@@ -2,9 +2,9 @@ CMI Python Stark effect calculation extensions are provided as is. They are
 licensed under the GPL v3, see [COPYING](./COPYING) for details, with the following additional requirements:
 
 1. Its use for scientific work must be acknowledged by the appropriate reference
-   in any resulting work (i.e., scientific publication). The correct reference
-   is: 
-   <br/> 
+   in any resulting work, e.g., scientific publication. The appropriate
+   reference is:
+
    Yuan-Pin Chang, Frank Filsinger, Boris Sartakov, and Jochen Küpper: CMIstark:
    Python package for the Stark-effect calculation and symmetry classification
    of linear, symmetric, and asymmetric top wavefunctions in dc electric fields,
