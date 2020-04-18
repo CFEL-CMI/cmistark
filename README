@@ -96,7 +96,7 @@ options:
 --Jmin=, --Jmax=: specify min. or max. value of J
 --Mmin=, --Mmax=: specify min. or max. value of M
 --Kamax=: specify max. value of Ka
---states=: specify states to plot, format: "000,1010" [TM: This example is unclear, as the first number has 3 values, and the 2nd 4.  Should the first number have been 0000?]
+--states=: specify states to plot, format: "0000,1010"
 --dipole: plot the effective dipole moments
 --isomer=: specify which isomer to plot
 
@@ -104,7 +104,7 @@ example of using cmistark_plot_energy with options:
     cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
-4. cmistark_print energy [TM: It seems this script does the same thing as "cmistark_plot_energy ".  The example below even uses "cmistark_plot_energy" instead of "cmistark_print_energy".  Needs to be cleaned up.]
+4. cmistark_print energy 
 
 The script file called cmistark_print_energy can access existing Stark files
 (<moleculename>.molecule) and print the stored curves on the screen.
@@ -117,7 +117,7 @@ options:
 --isomer=: specify which isomer to print
 
 example of using cmistark_print_energy with options:
-    cmistark_plot_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
+    cmistark_print_energy --Jmin=0 --Jmax=2 --Mmin=1 --Mmax=1 <moleculename>.molecule
 
 
 
@@ -145,6 +145,8 @@ all curves of nonzero M states in the output file are also double degenerate.
 Finally, the state label for prolate tops is (J,K,0,M,isomer), or
 (J,0,K,M,isomer) for oblate tops.
 
+
+
 * Structure of <moleculename>.molecule
 
 For each state (J,Ka,Kc,M,isomer), the Stark energy as function of DC field
@@ -166,6 +168,7 @@ A script cmistark_print_energies, that provides ASCII output for specified
 conditions and states, is provided in the package for convenience.
 
 
+
 * Descriptions of source code files:
 
 Three files in the lib folder provide all functions used to calculate and then
@@ -180,17 +183,6 @@ as follows:
 
 - starkeffect.py: contain all functions, equations and algorithms required for
                   calculating Stark effect.
-
-(Only for stand-alone version) The descriptions of the rest of the files in the lib
-folder are as follows:
-
-- codata.py: store most scientific constants
-- const.py: call required math. and phys. constants from codata.py
-- convert.py: perform unit conversions
-- hdf5.py: read/write output files in the format of hdf5 via PyTables
-- moleculeproperty.py: create a molecule (as a object) from a list of atoms
-- state.py: create state labels and corresponding id numbers
-- util.py: provide array operations
 
 
 
