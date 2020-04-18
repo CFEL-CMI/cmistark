@@ -93,6 +93,13 @@ import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
 
 
+def print_incorrect_warning(name, reason):
+    """Print warning for physically incorrect implementations of molecules"""
+    print('*** This implementation of the ' + name + ' molecule is not correct, as it does not take the ' + reason + ' into account.\n'
+          + '*** It is solely provided as approximate solution and for instructional purposes.')
+
+
+
 def asymmetric_top(param):
     """Molecular parameters for an artificial asymmetric top
 
@@ -371,6 +378,7 @@ def water_dimer(param):
     * rotational constants A,B,C taken from [Coudert:JMolSpec139:259], https://doi.org/10.1016/0022-2852(90)90064-W
     * centrifugal constants taken \Delta_{J}, \Delta_{JK}, \Delta_{K}, d_{J}, d_{K} from [Dyke:JCP66:1977], https://aip.scitation.org/doi/pdf/10.1063/1.433969?class=pdf
     """
+    print_incorrect_warning('water-dimer', 'floppiness')
     param.name = "water2"
     param.symmetry = 'C2a'
     param.mass = 2 * Masses['O'] + 4* Masses['H']
@@ -1044,7 +1052,6 @@ def methane(param):
 
     .. todo:: (Jens Kienitz) (centrfugal dist. const.?) have to be verified!
 
-
     .. todo:: (Jens Kienitz): add reference for "NIST" (general weblink might be enough).
 
     """
@@ -1059,6 +1066,7 @@ def methane(param):
 
 
 def ammonia(param):
+    print_incorrect_warning('ammonia', 'inversion splitting')
     param.name = "ammonia"
     param.mass = 3 * Masses['H'] + 1 * Masses['N']
     param.type = 'S'
