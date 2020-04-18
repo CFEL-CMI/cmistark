@@ -1,4 +1,5 @@
 Some simple rules for coding on CMIstark:
+
 Please
 - keep the code consistent across the whole package!
 - consistently use two empty lines between functions/methods and three empty
