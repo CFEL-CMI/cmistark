@@ -42,7 +42,7 @@ from cmistark.moleculeparameters import *
 def usage():
     # ToDo implement a useful usage description -- use argparse instead of getopt to auto-create it
     print("""
-           --help:      help
+           --help:      print this help
            --dc-fields: specify the range of the DC elecric field (in kV/cm):
                         start:end:step (example: --dc-fields=0:150:151)
            --Jmax_calc: specify the maximum value of J included in the calculation
@@ -77,6 +77,11 @@ def main(args):
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
                                                    "water2",
+                                                   "water3","water-trimer",
+                                                   "water4","water-tetramer",
+                                                   "water5","water-pentamer",
+                                                   "water6cage", "water6prism", "water6book", "water6", "water-hexamer", "water-hexamer1", "water-hexamer2"
+                                                   "water-heptamer","water7", "water-heptamer1",
                                                    "sulfur_dioxide", "SO2",
                                                    "nitrogen_dioxide", "NO2",
                                                    "nitrous_oxide",
@@ -202,7 +207,7 @@ def main(args):
         elif o in ("--uracil"):
             pfunc = uracil
         elif o in ("--water2"):
-            pfunc = water2
+            pfunc = water_dimer
         elif o in ("--hydrogen", "--H2"):
             pfunc = hydrogen
         elif o in ("--hydrogen_deuteride", "--HD"):

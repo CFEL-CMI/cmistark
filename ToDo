@@ -1,10 +1,10 @@
-JK Python Stark effect calculations
-===================================
+CMI Python Stark effect calculations
+====================================
 - provide option to use sparse matrices (i.e., using scipy.sparse and scipy.sparse.linalg)
 - simplify cmistark-calculate-energy by creating the whole spagetthi code to
   define and test for molecule-name from ons single map (parametername ->
   function with definition)
-- change scripts to use argparse and to include more help texts (is this done)
+- change scripts to use argparse and to include more help texts (is this done?)
 - provide (standalone) tool for merging (HDF5) Stark files
   (does starkeffect_merge work for our purposes?)
 - parallelize better by calculating individual Ms/fields separately and merging

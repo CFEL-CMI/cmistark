@@ -23,8 +23,9 @@ Copyright (C) 2009,2011,2012,2013,2018 Jochen Küpper"""
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
-import numpy as num
+import cycler
 import getopt, sys
+import numpy as num
 import matplotlib.pyplot as plt
 
 import cmistark.molecule as molecule
@@ -137,7 +138,8 @@ def main(args):
     if None == Kamax:
         Kamax = Jmax
 
-    colors = ['blue', 'red', 'green', 'black', 'purple', 'cyan', 'magenta', 'brown']
+    # use neither white nor black -- these are the default background colors for light and dark mode...
+    colors = ['blue', 'red', 'green', 'purple', 'cyan', 'magenta', 'brown']
     colorindex = 0
 
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
@@ -201,23 +203,23 @@ def main(args):
                         plt.figure(2)
                         if dipoleunit == "invcm":
                             plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / (29979 * 1e6) / V_m2kV_cm(1), color, label=state.name())
-                            plt.ylabel("$\mu_{eff}$ (cm$^{-1}$/kV/cm)")
+                            plt.ylabel("$\mu_\mathrm{eff}$ (cm$^{-1}$/kV/cm)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         elif dipoleunit == "MHz":
                             plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e6 / V_m2kV_cm(1), color, label=state.name())
-                            plt.ylabel("$\mu_{eff}$ (MHz/kV/cm)")
+                            plt.ylabel("$\mu_\mathrm{eff}$ (MHz/kV/cm)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         elif dipoleunit == "GHz":
                             plt.plot(V_m2kV_cm(fields), J2Hz(mueff) / 1e9 / V_m2kV_cm(1), color, label=state.name())
-                            plt.ylabel("$\mu_{eff}$ (GHz/kV/cm)")
+                            plt.ylabel("$\mu_mathrm{eff}$ (GHz/kV/cm)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         elif dipoleunit == "J":
                             plt.plot(V_m2kV_cm(fields), mueff / V_m2kV_cm(1), color, label=state.name())
-                            plt.ylabel("$\mu_{eff}$ (J/kV/cm)")
+                            plt.ylabel("$\mu_\mathrm{eff}$ (J/kV/cm)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         elif dipoleunit in ['D', 'Debye']:
                             plt.plot(V_m2kV_cm(fields), 2.998e24 * mueff / V_m2kV_cm(1), color, label=state.name())
-                            plt.ylabel("$\mu_{eff}$ (D)")
+                            plt.ylabel("$\mu_\mathrm{eff}$ (D)")
                             plt.xlabel('$\epsilon$ (kV/cm)')
                         else:
                             print("Wrong dipole unit.")

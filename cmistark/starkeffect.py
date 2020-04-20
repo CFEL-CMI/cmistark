@@ -13,15 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
+
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
 # really use scipy as numpy, so we are sure we use Fortran codes of eigvalsh and dgemm
 import math
 import numpy as np
 import numpy.linalg
-
-from sympy.physics.quantum.cg import Wigner3j
-from sympy.functions.special.tensor_functions import KroneckerDelta
 
 import cmiext as cmiext
 import cmiext.convert
@@ -276,6 +274,9 @@ class LinearRotor(Rotor):
             hamiltonian matrix elements and their derivation here in the header.
 
         """
+        from sympy.physics.quantum.cg import Wigner3j
+        from sympy.functions.special.tensor_functions import KroneckerDelta
+
         delta_alpha = self.polarizability[0] - self.polarizability[1]
         alpha_perp = self.polarizability[1]
         # current M
@@ -346,10 +347,12 @@ class SymmetricRotor(Rotor):
         assert self.quartic.shape == (3,)
         assert self.polarizability.shape == (2,)
 
+
     def index(self, J, K):
         # The matrix size, Jmax - max({abs(K),Jmin}) + 1, is defined in hamiltonian.
         # The index starts from zero.
         return J - max(abs(K), self.Jmin)
+
 
     def recalculate(self):
         """Perform calculation of rotational state energies with current parameters for individual K"""
@@ -366,6 +369,7 @@ class SymmetricRotor(Rotor):
         # done - data is now valid
         self.valid = True
 
+
     def hamiltonian(self, Jmin, Jmax, dcfield, K):
         # The matrix size for a single K. the state labels for each dimension of the matrix: (|Jmin or K,K>,...,|Jmax-1,K>,|Jmax,K>)
         # The lower limit of the matrix is defined by Jmin or K (J cannot smaller than K).
@@ -378,6 +382,7 @@ class SymmetricRotor(Rotor):
         if None != dcfield and self.tiny < abs(dcfield):
             self.stark_DC(hmat, Jmin, Jmax, K, dcfield)
         return hmat
+
 
     def rigid(self, hmat, Jmin, Jmax, K):
         """Add the rigid-rotor matrix element terms to hmat
@@ -397,6 +402,7 @@ class SymmetricRotor(Rotor):
             distortion = -DJ * (J*(J+1))**2 - DJK * J*(J+1)*K**2 - DK * K**4
             hmat[self.index(J,K), self.index(J,K)] += rigid + distortion
 
+
     def stark_DC(self, hmat, Jmin, Jmax, K, dcfield):
         """Add the dc Stark-effect matrix element terms to hmat"""
         sqrt = np.sqrt
@@ -415,6 +421,7 @@ class SymmetricRotor(Rotor):
         if not (0 == M or 0 == K): # term would be zero; this also yields J !=0, so no division by zero possible
             hmat[self.index(J, K), self.index(J, K)] += -mu * dcfield * M * K / (J*(J+1))
 
+
     def states(self):
         """Return list of states for which the Stark energies were calculated."""
         list = []
@@ -425,6 +432,7 @@ class SymmetricRotor(Rotor):
                 elif 'o' == self.symmetry:
                     list.append(State(J, 0, K, self.M, self.isomer))
         return list
+
 
     def stateorder(self, K):
         """Return a list with all states for the given K and the current calculation parameters (Jmin, Jmax)."""
