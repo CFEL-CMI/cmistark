@@ -1,25 +1,26 @@
 Installing CMIstark
-======================
+===================
 
 Prerequisites and obtaining CMIstark
----------------------------------------
+------------------------------------
 
 Since CMIstark is written in Python, you need to install Python; CMIstark requires Python version
-3.4 or higher.
+3.6 or higher.
 
 In addition, you need various Python extension packages, these include
 
+* cmiext_
 * NumPy
 * SciPy
 * Tables
 * Matplotlib
 
-The CMIstark source code is currently only avaiable at https://stash.desy.de, please contact Jochen
-Küpper <jochen.kuepper@cfel.de> for furhter details.
+CMIstark is avaiable on GitHub_, please contact Jochen Küpper <jochen.kuepper@cfel.de> for further
+details.
 
 
 Installing CMIstark
-----------------------
+-------------------
 
 A normal installation is performed by simply running the command::
 
@@ -42,9 +43,10 @@ re-installs while you are developing code.
 Once you are satisfied with your changes you might consider reinstalling using one of the above two
 options.
 
-Fur further details of ``develop`` install, see https://pythonhosted.org/setuptools/setuptools.html#development-mode
+Fur further details of ``develop`` install, see http://naoko.github.io/your-project-install-pip-setup
 
-Installing CMIstark: in user-specified path 
+
+Installing CMIstark: in user-specified path
 -------------------------------------------
 
 Use PYTHONUSERBASE to specify the installation path::
@@ -60,7 +62,7 @@ and the scripts will be installed in the following path::
 
   $HOME/.local/bin
 
-To import modules and call scripts of such user-specific installation, the following environment 
+To import modules and call scripts of such user-specific installation, the following environment
 declarifications are required::
 
   setenv PATH /opt/local/bin:$HOME/.local/bin:$PATH
@@ -77,7 +79,12 @@ Also type "which ``name of script file``" to find the real path of the script ca
 be in "$HOME/.local/bin".
 
 For further details, see https://docs.python.org/3/install/index.html#inst-alt-install-user and
-https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE  
+https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE
+
+
+.. _cmiext: https://github.com/CFEL-CMI/cmiext
+
+.. _GitHub: https://github.com/CFEL-CMI/cmistark
 
 .. comment
    Local Variables:
