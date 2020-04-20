@@ -3,15 +3,18 @@
 This program can calculate, view, and analyze the energy levels of adiabatic
 Stark energy curves of linear, symmetric top, and asymmetric top molecules.
 
-The program package is developed and maintained by the Controlled Molecule
-Imaging group (CMI) at the Center for Free-Electron Laser Science (CFEL),
-Hamburg, Germany.
+The program package is developed and maintained by the [Controlled Molecule
+Imaging group (CMI)](https://www.controlled-molecule-imaging.org) at the [Center
+for Free-Electron Laser Science (CFEL)](https://www.cfel.de),
+[DESY](https://www.desy.de) and [Universität
+Hamburg](https://www.uni-hamburg.de), Hamburg, Germany.
 
-The program (version 1.0) is documented in _"CMIstark: Python package for the
-Stark-effect calculation and symmetry classification of linear, symmetric and
-asymmetric top wavefunctions in dc electric fields"_ by Yuan-Pin Chang, Frank
-Filsinger, Boris Sartakov, and Jochen Küpper, published as [_Computer Physics
-Communications_ **185**, 339-349 (2014), DOI:
+[Program documentation is available online](https://cmistark.readthedocs.io) and
+(for version 1.0) in _"CMIstark: Python package for the Stark-effect calculation
+and symmetry classification of linear, symmetric and asymmetric top
+wavefunctions in dc electric fields"_ by Yuan-Pin Chang, Frank Filsinger, Boris
+Sartakov, and Jochen Küpper, published as [_Computer Physics Communications_
+**185**, 339-349 (2014), DOI:
 10.1016/j.cpc.2013.09.001](https://dx.doi.org/10.1016/j.cpc.2013.09.001);
 preprint available at [arXiv:1308.4076
 [physics]](http://arxiv.org/abs/1308.4076)

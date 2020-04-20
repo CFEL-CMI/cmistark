@@ -4,7 +4,7 @@
 CMIstark documentation
 ======================
 
-``CMIstark`` is a software package and tool for DC Stark effect calculations of molecules in electric fields.
+CMIstark_ is a software package and tool for DC Stark effect calculations of molecules in electric fields.
 
 See [Chang2014]_ for a scientific description of version 1.0 and as a formal, citeable reference.
 
@@ -44,7 +44,7 @@ Indices and tables
 * :ref:`search`
 
 
-
+.. _CMIstark: https://github.com/CFEL-CMI/cmistark
 
 
 .. comment
