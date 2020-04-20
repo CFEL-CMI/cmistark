@@ -23,13 +23,14 @@ See the distribution files AUTHORS and THANKS for further contributions.
 
 
 setup(name="cmistark",
+      python_requires     = '>=3.5',
       author              = "Jochen Küpper, CFEL-CMI group, et al (see AUTHORS)",
       author_email        = "jochen.kuepper@cfel.de",
       maintainer          = "Jochen Küpper and the CFEL-CMI group",
       maintainer_email    = "jochen.kuepper@cfel.de",
       url                 = "https://www.controlled-molecule-imaging.org/research/further_projects/software/cmistark",
       description         = "CMI Python Stark effect extension and calculations",
-      version             = "1.3.dev0",
+      version             = "1.3.0",
       long_description    = long_description,
       license             = "GPL",
       packages            = ['cmistark'],

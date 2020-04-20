@@ -1,4 +1,4 @@
-# CMIstark
+# CMIstark v1.3
 
 This program can calculate, view, and analyze the energy levels of adiabatic
 Stark energy curves of linear, symmetric top, and asymmetric top molecules.
