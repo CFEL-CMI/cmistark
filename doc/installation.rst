@@ -5,7 +5,7 @@ Prerequisites and obtaining CMIstark
 ------------------------------------
 
 Since CMIstark is written in Python, you need to install Python; CMIstark requires Python version
-3.6 or higher.
+3.5 or higher.
 
 In addition, you need various Python extension packages, these include
 

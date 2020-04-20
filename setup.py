@@ -23,6 +23,7 @@ See the distribution files AUTHORS and THANKS for further contributions.
 
 
 setup(name="cmistark",
+      python_requires     = '>=3.5',
       author              = "Jochen Küpper, CFEL-CMI group, et al (see AUTHORS)",
       author_email        = "jochen.kuepper@cfel.de",
       maintainer          = "Jochen Küpper and the CFEL-CMI group",
