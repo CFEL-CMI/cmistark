@@ -27,8 +27,7 @@ import numpy as num
 import getopt, sys
 
 import cmistark.molecule as molecule
-from cmiext.convert import *
-from cmiext.state import State
+from cmistark.convert import *
 
 
 def usage():

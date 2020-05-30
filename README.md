@@ -26,7 +26,6 @@ Computer: Any Macintosh, PC, or Linux/UNIX workstations with a modern Python
 distribution.
 
 The following external Python packages are also required:
- - [cmiext](https://github.com/CFEL-CMI/cmiext)
  - matplotlib
  - numpy
  - scipy
@@ -114,7 +113,7 @@ example of using `cmistark_plot_energy` with options:
 ```
 
 
-### cmistark_print energy 
+### cmistark_print energy
 
 The script file called `cmistark_print_energy` can access existing Stark files
 (`<moleculename>.molecule`) and print the stored curves on the screen.

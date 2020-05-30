@@ -2,13 +2,13 @@
 # -*- coding: utf-8; fill-column: 120; truncate-lines: t -*-
 #
 # This file is part of CMIstark
-# Copyright (C) 2008 Jochen Küpper <jochen.kuepper@cfel.de>
+# Copyright (C) 2008,2014,2020 Jochen Küpper <jochen.kuepper@cfel.de>
 #
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
 # version.
 #
-# If you use this programm for scientific work, you must correctly reference it; see LICENSE file for details.
+# If you use this programm for scientific work, you must correctly reference it; see LICENSE.md file for details.
 #
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
 # warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -17,20 +17,18 @@
 # <http://www.gnu.org/licenses/>.
 """Unit-tests of Stark effect calculations
 
-Copyright (C) 2008,2014 Jochen Küpper <jochen.kuepper@cfel.de>"""
+Copyright (C) 2008,2014,2020 Jochen Küpper <jochen.kuepper@cfel.de>"""
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
-import numpy as num
+import numpy as np
 import os
 import unittest
 
-import cmiext
-import cmiext.convert as convert
-from cmiext.state import State
-
+import cmistark.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
+from cmistark.molecule import State
 
 
 class StarkCalculationBenzonitrile(unittest.TestCase):
@@ -44,23 +42,24 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         self.param.isomer = 0
         self.param.watson = 'A'
         self.param.symmetry = 'C2a'
-        self.param.rotcon = convert.Hz2J(num.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
-        self.param.quartic = convert.Hz2J(num.array([45.6, 938.1, 500, 10.95, 628]))
-        self.param.dipole = convert.D2Cm(num.array([4.5152, 0., 0.]))
+        self.param.rotcon = convert.Hz2J(np.array([5655.2654e6, 1546.875864e6, 1214.40399e6]))
+        self.param.quartic = convert.Hz2J(np.array([45.6, 938.1, 500, 10.95, 628]))
+        self.param.dipole = convert.D2Cm(np.array([4.5152, 0., 0.]))
         # calculation details
         self.param.M = [0, 1]
         self.param.Jmin = 0
         self.param.Jmax_calc = 15
         self.param.Jmax_save =  3
-        self.param.dcfields = convert.kV_cm2V_m(num.linspace(0., 100., 5))
+        self.param.dcfields = convert.kV_cm2V_m(np.linspace(0., 100., 5))
         # create Molecule object and specify storage file
-        self.param.name = "__cmiext_test_starkeffect"
+        self.param.name = "__cmistark_test_starkeffect"
         self.storagename = self.param.name + ".molecule"
         if os.path.exists(self.storagename):
             raise EnvironmentError("Test storage file already exists, not overwriting")
         self.bn = molecule.Molecule(storage=self.storagename, name=self.param.name)
         # calculate Stark energies
         self.bn.starkeffect_calculation(self.param)
+
 
     @classmethod
     def tearDownClass(self):
@@ -73,9 +72,11 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         """Run before every single test method"""
         pass
 
+
     def tearDown(self):
         """Run after every single test method"""
         pass
+
 
     def test_fieldfree(self):
         """Test field-free energies (at 0 kV/cm)"""
@@ -83,12 +84,13 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         # and a typical energy is 1e-23 J therefore  convert to Hz before test
         self.assertAlmostEqual(0., convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
-                               % (convert.J2MHz(0), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
+                               % (convert.J2Hz(0), convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])/1e6))
         # 101 state has an energy of B+C + centrifugal distortion
         self.assertAlmostEqual(2761.2796716e6,
                                convert.J2Hz(self.bn.starkeffect(State(1, 0, 1, 0, 0))[1][0]), 7,
                                "Field-free ground state energy is wrong: expected %g MHz, got %g MHz" \
-                               % (2761.2796716e6, convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])))
+                               % (2761.2796716e6, convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][0])/1e6))
+
 
     def test_hundred(self):
         """Test some state energies at 100 kV/cm
@@ -101,7 +103,8 @@ class StarkCalculationBenzonitrile(unittest.TestCase):
         # test energies for different states at 100 kV/cm
         self.assertAlmostEqual(1., -1.34489847e-22 / self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4], 7,
                                "Ground state energy is wrong: expected %g MHz, got %g MHz" \
-                               % (convert.J2MHz(-1.34489847e-22), convert.J2MHz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])))
+                               % (convert.J2Hz(-1.34489847e-22)/1e6,
+                                  convert.J2Hz(self.bn.starkeffect(State(0, 0, 0, 0, 0))[1][4])/1e6))
 
 
 if __name__ == '__main__':

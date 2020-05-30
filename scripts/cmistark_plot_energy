@@ -28,9 +28,8 @@ import getopt, sys
 import numpy as num
 import matplotlib.pyplot as plt
 
-import cmistark.molecule as molecule
-from cmiext.convert import *
-from cmiext.state import State
+from cmistark.convert import *
+from cmistark.molecule import *
 
 
 def usage():
@@ -74,7 +73,7 @@ def main(args):
     userstates = None
     energyunit = "MHz" # energy unit
     dipoleunit = "MHz"
-    energyconversion = J2MHz
+    energyconversion = lambda x: J2Hz(x)/1e6
     energyunitlabel = "MHz"
     nss_forbidden = None
     legend = False
@@ -113,10 +112,10 @@ def main(args):
                 energyconversion = lambda x: x
                 energyunitlabel = "J"
             elif (energyunit=="MHz"):
-                energyconversion = J2MHz
+                energyconversion = lambda x: J2Hz(x)/1e6
                 energyunitlabel = "MHz"
             elif (energyunit=="GHz"):
-                energyconversion = lambda x: J2MHz(x)/1000.
+                energyconversion = lambda x: J2Hz(x)/1e6
                 energyunitlabel = "GHz"
             elif (energyunit=="invcm"):
                 energyconversion = J2invcm
@@ -145,7 +144,7 @@ def main(args):
     # loop over all remaining arguments -- asumming its filenames of HDF5 Stark-files
     for name in args:
         # create Molecule object and specify storage file
-        mol = molecule.Molecule(storage=name)
+        mol = Molecule(storage=name)
         # handle colors
         if colorindex > len(colors):
             colorindex = 0

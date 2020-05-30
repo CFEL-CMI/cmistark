@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; fill-column: 100; truncate-lines: t -*-
 #
 # This file is part of JK Python extensions
 # Copyright (C) 2008,2009,2012,2014 Jochen Küpper <jochen.kuepper@cfel.de>
@@ -18,15 +18,22 @@
 
 __author__ = "Jochen Küpper <jochen.kuepper@cfel.de>"
 
-import numpy as num
+import numpy as np
 import numpy.linalg
 import tables
 
-import cmiext
-import cmiext.hdf5, cmiext.molecule, cmiext.util
-from cmiext.state import State
-
 import cmistark.starkeffect
+import cmistark.storage
+
+
+Masses = {'H': 1.0078250321, 'D': 2.01410178, '2H': 2.01410178,
+          'C': 12, 'N': 14.0030740052, 'O': 15.9949146221,
+          'S': 31.97207070,
+          'F': 18.9984032,
+          'Cl': 35., 'CL35': 35., 'CL37': 37.,
+          'BR': 78.9183371, 'BR79': 78.9183371, 'BR81': 80.9162906,
+          'I': 126.90447}
+Ordernumbers = {'H': 1, 'D': 1, 'C': 6, 'N': 7, 'O': 8, 'F': 9, 'S': 16, 'BR': 35, 'I': 53}
 
 
 class _isomer_mass(tables.IsDescription):
@@ -36,12 +43,132 @@ class _isomer_mass(tables.IsDescription):
     mass  = tables.Float64Col()
 
 
-class Molecule(cmiext.molecule.Molecule):
+
+class State:
+    """State label of molecule
+
+    Currently only asymmetric top notation, but linear tops naturally fit and symmetric tops are placed in as described
+    below.
+
+    Public data:
+    - max  Upper bound of any individual quantum number - actually any |qn| must be strictly smaller than max
+
+    For symmetric tops only one K quantum number exists, which is placed in (the natural choice of) Ka or Kc depending
+    on the case.
+    """
+
+    def __init__(self, J=0, Ka=0, Kc=0, M=0, isomer=0):
+        self.max = 1000
+        self.__initialize(J, Ka, Kc, M, isomer)
+        self.__symtop_sign = 1
+
+    def __initialize(self, J=0, Ka=0, Kc=0, M=0, isomer=0):
+        """Store all info and creat a unique ID for the state.
+
+        For symmetric tops, :math:`K` is stored in the natural choice of :math:`K_a` or :math:`K_c`. The state depends
+        on the sign of the product of :math:`K\cdot{}M`, which is stored in the decimal place 15 (0-14 being used to
+        encode J, Ka, Kc, M, isomer).
+
+        """
+        assert ((0 <= J < self.max) and (abs(Ka) < self.max) and (abs(Kc) < self.max) and (0 <= M < self.max)
+                and (0 <= isomer < self.max))
+        self.__labels = np.array([J, Ka, Kc, M, isomer], dtype=np.int64)
+        self.__id = np.uint64(0)
+        for i in range(self.__labels.size):
+            self.__id += np.uint64(abs(self.__labels[i]) * self.max**i)
+        # handle negative sign of symmetric-top K*M
+        if Ka < 0 or Kc < 0:
+            self.__symtop_sign = -1
+            self.__id += np.uint64(1e15)
+
+    def J(self):
+        return self.__labels[0]
+
+    def Ka(self):
+        return self.__labels[1]
+
+    def Kc(self):
+        return self.__labels[2]
+
+    def M(self):
+        return self.__labels[3]
+
+    def isomer(self):
+        return self.__labels[4]
+
+    def nssw(self, forbidden):
+        """Give back nuclear spin weight 0 for nuclear-spin-statistically forbidden rve-states, 1 otherwise"""
+        if "Ka" == forbidden and self.Ka() % 2 == 1: return 0
+        if "Kb" == forbidden and (self.Ka() + self.Kc()) % 2 == 1: return 0
+        if "Kc" == forbidden and self.Kc() % 2 == 1: return 0
+        return 1
+
+    def symtop_sign():
+        return self.__symtop_sign
+
+    def fromid(self, id):
+        """Set quantum-numbers form id"""
+        id = np.int64(id)
+        self.__id = id
+        self.__labels = np.zeros((5,), dtype=np.int64)
+        for i in range(5):
+            self.__labels[i] = id % self.max
+            id //= self.max
+        # handle negative sign of symmetric-top K*M
+        self.__symtop_sign = id % 10
+        id //= 10
+        if self.__symtop_sign > 0:
+            for i in [1,2]:
+                self.__labels[i] = -self.__labels[i]
+        return self
+
+    def fromhdfname(self, hdfname):
+        """Set quantum-numbers form hdf name.
+
+        See hdfname() below for a description of the format.
+
+        .. todo:: Implement symtop-sign usage
+        """
+        name = hdfname.replace("n","-")
+        qn = np.array(name.split("/"))
+        J, Ka, Kc, M, iso = qn.tolist()
+        self.__initialize(np.int64(J[1:]), np.int64(Ka[1:]), np.int64(Kc[1:]), np.int64(M[1:]), np.int64(iso[1:]))
+        return self
+
+    def id(self):
+        return self.__id
+
+    def name(self):
+        return "%d %d %d %d %d" % self.totuple()
+
+    def hdfname(self):
+        """Create HDF5 storage file name of state.
+
+        Prepend '_' to all numbers to make them valid Python identifiers. We split the individual quantum numbers by '/'
+        in order to provide subgrouping for faster transversal of the HDF5 directory.
+
+        """
+        name = "_%d/_%d/_%d/_%d/_%d" % self.totuple()
+        name.replace("-","n")
+        return name.replace("-","n")
+
+    def toarray(self):
+        return self.__labels
+
+    def tolist(self):
+        return self.__labels.tolist()
+
+    def totuple(self):
+        return tuple(self.__labels.tolist())
+
+
+
+
+class Molecule(object):
     """Representation of a Molecule"""
 
-    def __init__(self, atoms=None, storage=None, name="Generic molecule", readonly=False):
-        """Create Molecule from a list of atoms."""
-        cmiext.molecule.Molecule.__init__(self, atoms, name)
+    def __init__(self, storage=None, name="Generic molecule", readonly=False):
+        """Create Molecule """
         try:
             if readonly:
                 self.__storage = tables.open_file(storage, mode='r')
@@ -68,7 +195,7 @@ class Molecule(cmiext.molecule.Molecule):
         """
         fields, energies = self.starkeffect(state)
         assert len(fields) == len(energies)
-        mueff = num.zeros((len(fields),), num.float64)
+        mueff = np.zeros((len(fields),), np.float64)
         mueff[0]    = 0.
         mueff[1:-1] = (energies[0:-2] - energies[2:]) / (fields[2:] - fields[0:-2])
         mueff[-1]   = (energies[-2] - energies[-1]) / (fields[-1] - fields[-2])
@@ -88,14 +215,14 @@ class Molecule(cmiext.molecule.Molecule):
 
         """
         if energies is None and fields is None:
-            return cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
-                cmiext.hdf5.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
+            return cmistark.storage.readVLArray(self.__storage, "/" + state.hdfname() + "/dcfield"), \
+                cmistark.storage.readVLArray(self.__storage, "/" + state.hdfname() + "/dcstarkenergy"),
         elif energies is None or fields is None:
             raise SyntaxError
         else:
             assert len(fields) == len(energies)
-            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
-            cmiext.hdf5.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
+            cmistark.storage.writeVLArray(self.__storage, "/" + state.hdfname(), "dcfield", fields)
+            cmistark.storage.writeVLArray(self.__storage, "/" + state.hdfname(), "dcstarkenergy", energies)
 
 
     def starkeffect_calculation(self, param):
@@ -109,7 +236,8 @@ class Molecule(cmiext.molecule.Molecule):
         try:
             self.__storage.create_table("/", 'masses', _isomer_mass, "Isomer masses")
         except:
-            # Cannot create HDF5 table, continuing -- this is morst likely due to the fact that the entry/file exists already
+            # Cannot create HDF5 table, continuing -- this is morst likely due to the fact that the
+            # entry/file exists already
             pass
         if 'L' == param.type:
             Rotor = cmistark.starkeffect.LinearRotor
@@ -157,7 +285,7 @@ class Molecule(cmiext.molecule.Molecule):
         assert len(newfields) == len(newenergies)
         try:
             oldfields, oldenergies = self.starkeffect(state)
-            fields, energies = cmiext.util.column_merge([oldfields, oldenergies], [newfields, newenergies])
+            fields, energies = cmistark.storage.column_merge([oldfields, oldenergies], [newfields, newenergies])
         except tables.exceptions.NodeError:
             fields = newfields
             energies = newenergies
@@ -183,6 +311,8 @@ class Molecule(cmiext.molecule.Molecule):
         """Create a list of states to be printed/plotted according to the provided arguments
 
         Correctly creates list of states for the various rotor types
+
+        .. todo:: Implement or remove
         """
 
         states = []
@@ -193,38 +323,32 @@ class Molecule(cmiext.molecule.Molecule):
 # some simple tests
 if __name__ == "__main__":
     # test Stark calculation and storage/retrieval
-    from cmiext.convert import *
+    from cmistark.convert import *
     param = cmistark.starkeffect.CalculationParameter
     param.name = 'cis'
     param.isomer = 0
     param.watson = 'A'
     param.symmetry = 'C2a'
-    param.rotcon = Hz2J(num.array([5000e5, 1500e5, 1200e5]))
-    param.quartic = Hz2J(num.array([50., 1000., 500, 10., 600]))
-    param.dipole = D2Cm(num.array([5, 0., 0.]))
+    param.rotcon = Hz2J(np.array([5000e5, 1500e5, 1200e5]))
+    param.quartic = Hz2J(np.array([50., 1000., 500, 10., 600]))
+    param.dipole = D2Cm(np.array([5, 0., 0.]))
     # calculation details
     param.M = [0]
     param.Jmin = 0
     param.Jmax_calc = 10
     param.Jmax_save =  5
-    param.dcfields = kV_cm2V_m(num.linspace(0., 100., 101))
+    param.dcfields = kV_cm2V_m(np.linspace(0., 100., 101))
     # save and print
     mol = Molecule(storage="molecule.hdf")
     mol.starkeffect_calculation(param)
     for J in range (0, 3):
         Ka = 0
         for Kc in range(J, -1, -1):
-            state = State(J, Ka, Kc, 0, 0)
+            state = cmistark.molecule.State(J, Ka, Kc, 0, 0)
             fields, energies = mol.starkeffect(state)
             print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
             if Kc > 0:
                 Ka += 1
-                state = State(J, Ka, Kc, 0, 0)
+                state = cmistark.molecule.State(J, Ka, Kc, 0, 0)
                 fields, energies = mol.starkeffect(state)
                 print(state.name(), V_m2kV_cm(fields), J2Hz(energies) / 1e6)
-
-
-### Local Variables:
-### fill-column: 100
-### truncate-lines: t
-### End:

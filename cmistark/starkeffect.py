@@ -21,9 +21,8 @@ import math
 import numpy as np
 import numpy.linalg
 
-import cmiext as cmiext
-import cmiext.convert
-from cmiext.state import State
+import cmistark.convert
+import cmistark.molecule
 
 
 
@@ -98,7 +97,7 @@ class CalculationParameter(object):
     Jmax_calc = 10
     Jmax_save = 6
     # fields
-    dcfields = cmiext.convert.kV_cm2V_m(np.array((0, 100.), np.float64))
+    dcfields = cmistark.convert.kV_cm2V_m(np.array((0, 100.), np.float64))
     # molecular parameters -- see above for definitions and units
     # whenever a subset of the vector is used, that is the first elements; details are documented in
     # the specific routines that set up the Hamiltonian.
@@ -214,7 +213,7 @@ class LinearRotor(Rotor):
     def recalculate(self):
         """Perform calculation of rotational state energies for current parameters"""
         hmat = self.hamiltonian(self.Jmin, self.Jmax, self.dcfield)
-        if self.debug: self.print_mat(hmat, converter=cmiext.convert.J2Hz)
+        if self.debug: self.print_mat(hmat, converter=cmistark.convert.J2Hz)
         eval = np.linalg.eigvalsh(hmat) # calculate only energies
         eval = np.sort(eval)
         if self.debug:
@@ -223,7 +222,7 @@ class LinearRotor(Rotor):
             self.print_mat(evec)
         for J in range(self.Jmin, self.Jmax_save+1):
             i = J - self.Jmin
-            state = State(J, 0, 0, self.M, self.isomer)
+            state = cmistark.molecule.State(J, 0, 0, self.M, self.isomer)
             self.levels[state.id()] = eval[i]
         # done - data is now valid
         self.valid = True
@@ -313,7 +312,7 @@ class LinearRotor(Rotor):
         M = self.M
         iso = self.isomer
         for J in range(self.Jmin, self.Jmax_save+1):
-            list.append(State(J, 0, 0, M, iso))
+            list.append(cmistark.molecule.State(J, 0, 0, M, iso))
         return list
 
 
@@ -428,9 +427,9 @@ class SymmetricRotor(Rotor):
         for J in range(self.Jmin, self.Jmax_save+1):
             for K in range(-J, J+1):
                 if 'p' == self.symmetry:
-                    list.append(State(J, K, 0, self.M, self.isomer))
+                    list.append(cmistark.molecule.State(J, K, 0, self.M, self.isomer))
                 elif 'o' == self.symmetry:
-                    list.append(State(J, 0, K, self.M, self.isomer))
+                    list.append(cmistark.molecule.State(J, 0, K, self.M, self.isomer))
         return list
 
 
@@ -442,9 +441,9 @@ class SymmetricRotor(Rotor):
             iso = self.isomer
             for J in range(max(abs(K),self.Jmin), self.Jmax+1): # add states in an ascending order of energy
                 if 'p' == self.symmetry:
-                    self.stateorder_dict.append(State(J, K, 0, M, iso))
+                    self.stateorder_dict.append(cmistark.molecule.State(J, K, 0, M, iso))
                 elif 'o' == self.symmetry:
-                    self.stateorder_dict.append(State(J, 0, K, M, iso))
+                    self.stateorder_dict.append(cmistark.molecule.State(J, 0, K, M, iso))
         return self.stateorder_dict
 
 
@@ -512,10 +511,10 @@ class AsymmetricRotor(Rotor):
         for J in range(self.Jmin, self.Jmax_save+1):
             Ka = 0
             for Kc in range(J, -1, -1):
-                list.append(State(J, Ka, Kc, M, iso))
+                list.append(cmistark.molecule.State(J, Ka, Kc, M, iso))
                 if Kc > 0:
                     Ka += 1
-                    list.append(State(J, Ka, Kc, M, iso))
+                    list.append(cmistark.molecule.State(J, Ka, Kc, M, iso))
         return list
 
 
@@ -559,10 +558,10 @@ class AsymmetricRotor(Rotor):
             self.watson_S(hmat, Jmin, Jmax)
         else:
             assert self.watson == None
-        if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmiext.convert.J2Hz)
+        if self.debug: self.print_mat(hmat, "\nField-free Hamiltonian:", converter=cmistark.convert.J2Hz)
         if self.debug:
                eval, evec = np.linalg.eigh(hmat) # calculate energies and eigenvalues
-               print("\nEnergies of the asym. rotor:\n", cmiext.convert.J2Hz(eval))
+               print("\nEnergies of the asym. rotor:\n", cmistark.convert.J2Hz(eval))
                self.print_mat(evec, "Eigenvectors of the asym. rotor:\n")
         # fill matrix with appropriate Stark terms for nonzero fields
         if None != dcfield and self.tiny < abs(dcfield):
@@ -695,15 +694,15 @@ class AsymmetricRotor(Rotor):
                 Ka = 0
                 for Kc in range(J,-1,-1):
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
-                        label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                        label[Wang_submatrix(J, Ka, Kc)].append(cmistark.molecule.State(J, Ka, Kc, M, iso))
                     else:
-                        label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                        label[Four_symmetry(J, Ka, Kc)].append(cmistark.molecule.State(J, Ka, Kc, M, iso))
                     if Kc > 0:
                         Ka = Ka+1
                         if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
-                            label[Wang_submatrix(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                            label[Wang_submatrix(J, Ka, Kc)].append(cmistark.molecule.State(J, Ka, Kc, M, iso))
                         else:
-                            label[Four_symmetry(J, Ka, Kc)].append(State(J, Ka, Kc, M, iso))
+                            label[Four_symmetry(J, Ka, Kc)].append(cmistark.molecule.State(J, Ka, Kc, M, iso))
                 # get block diagonal hamiltonian (make sure you calculate this in 'V'!)
                 if 0 == J:
                     if 'Wa' == self.symmetry or 'Wb' == self.symmetry or 'Wc' == self.symmetry or 'Wab' == self.symmetry or 'Wbc' == self.symmetry or 'Wac' == self.symmetry:
@@ -836,9 +835,9 @@ class AsymmetricRotor(Rotor):
                 Wmat[self.index(J, -K), self.index(J, -K)] = value
             Wmat[self.index(J, 0), self.index(J, 0)] = 1.
         # transform Hamiltonian matrix
-        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian", converter=cmiext.convert.J2Hz)
+        if None != self.debug: self.print_mat(hmat, "Original Hamiltonian", converter=cmistark.convert.J2Hz)
         hmat = np.dot(np.dot(Wmat, hmat), Wmat)
-        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian", converter=cmiext.convert.J2Hz)
+        if None != self.debug: self.print_mat(hmat, "Wang transformed Hamiltonian", converter=cmistark.convert.J2Hz)
         # delete Wang matrix (it's not used anymore)
         del Wmat
         # sort out matrix blocks

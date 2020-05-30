@@ -9,7 +9,6 @@ Since CMIstark is written in Python, you need to install Python; CMIstark requir
 
 In addition, you need various Python extension packages, these include
 
-* cmiext_
 * NumPy
 * SciPy
 * Tables
@@ -81,8 +80,6 @@ be in "$HOME/.local/bin".
 For further details, see https://docs.python.org/3/install/index.html#inst-alt-install-user and
 https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE
 
-
-.. _cmiext: https://github.com/CFEL-CMI/cmiext
 
 .. _GitHub: https://github.com/CFEL-CMI/cmistark
 

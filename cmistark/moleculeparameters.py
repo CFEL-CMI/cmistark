@@ -84,14 +84,11 @@ sub-files that are imported into the local file-/namespace
 import numpy as num
 import getopt, sys
 
-import cmiext as cmiext
-import cmiext.convert as convert
-from cmiext.state import State
-from cmiext.molecule import Masses
-
+import cmistark.convert as convert
 import cmistark.molecule as molecule
 import cmistark.starkeffect as starkeffect
 
+from cmistark.molecule import Masses
 
 def print_incorrect_warning(name, reason):
     """Print warning for physically incorrect implementations of molecules"""
@@ -1082,14 +1079,16 @@ def ammonia_dimer(param):
     param.mass = 6 * Masses['H'] + 2 * Masses['N']
     param.type = 'S'
     param.symmetry = 'p'
-    #values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
+    # values from MP2/6-31++g(d,p) level calculations for now. dipole moment from wiki...
     param.rotcon = convert.Hz2J(num.array([1.18143309e+11,5.22172740e+09]))
     param.quartic  = convert.Hz2J(num.array([0.0, 0.0, 0.0]))
     param.dipole = convert.D2Cm(num.array([2.61]))
 
 
 def propylene_oxide(param):
-    """Molecular parameters for propylene oxide, CDMS database
+    """Molecular parameters for propylene oxide
+
+    molecular constants are frome the CDMS database (date, link, ...?)
     """
     param.name = "propylene_oxide"
     param.mass = 3 * Masses['C'] + 6 * Masses['H'] + 1 * Masses['O']
