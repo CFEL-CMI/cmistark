@@ -1,4 +1,4 @@
-.. CMIdiffract documentation master file
+.. CMIstark documentation master file
    This file should at least contain the root `toctree` directive.
 
 CMIstark documentation
@@ -32,12 +32,17 @@ instance, available classes and methods, and their respective parameters and ret
 
    cmistark
    developer-guide
-   todolist
-   references
 
 
 Indices and tables
 ==================
+
+.. toctree::
+   :maxdepth: 1
+
+   todolist
+   references
+   release-notes
 
 * :ref:`genindex`
 * :ref:`modindex`
