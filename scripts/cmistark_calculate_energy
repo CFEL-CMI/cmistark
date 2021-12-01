@@ -75,6 +75,8 @@ def main(args):
                                                    "phenylpyrrole",
                                                    "water", "H2O", "D2O", "HDO",
                                                    "water2",
+                                                   "pyrrole",
+                                                   "pyrrole-water",
                                                    "water3","water-trimer",
                                                    "water4","water-tetramer",
                                                    "water5","water-pentamer",
@@ -136,6 +138,10 @@ def main(args):
             param.isomer = int(a)
         elif o == "--asymmetric_top":
             pfunc = asymmetric_top
+        elif o == "--pyrole_water":
+            pfunc = pyrrole_water
+        elif o == "--pyrrole":
+            pfunc = pyrrole
         elif o == "--2,6-difluoro-iodobenzene":
             pfunc = difluoro_iodobenzene
         elif o in ("--3-aminophenol"):
@@ -221,7 +227,7 @@ def main(args):
         elif o in ("--apcn"):
                 pfunc = apcn
         else:
-            assert False, "unhandled commandline option"
+            assert False, "unhandled commandline option: " + o
     # finalize initialization
     if None != pfunc:
         pfunc(param)

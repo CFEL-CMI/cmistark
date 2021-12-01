@@ -330,6 +330,38 @@ def indole_water2(param):
     param.dipole = convert.D2Cm(num.array([1.46, -1.76, 1.31]))
 
 
+def pyrrole(param):
+    """Molecular parameters for pyrrole:
+
+    Implemented isomers are
+
+    0.  values from arXiv:1901.05267v1
+    """
+    param.name = "pyrrole"
+    param.mass = 4 * Masses['C'] + 5 * Masses['H'] + Masses['N']
+    param.watson = 'A'
+    param.symmetry = 'C2b'
+    param.isomer = 0
+    param.rotcon = convert.Hz2J(num.array([9130e6, 9001e6, 4532e6]))
+    param.dipole = convert.D2Cm(num.array([0, 1.74, 0.]))
+
+
+def pyrrole_water(param):
+    """Molecular parameters for pyrrole-(water):
+
+    Implemented isomers are
+
+    0.  values from arXiv:1901.05267v1
+    """
+    param.name = "pyrrole-water"
+    param.mass = 4 * Masses['C'] + 7 * Masses['H'] + Masses['N'] + Masses['O']
+    param.watson = 'A'
+    param.symmetry = 'C2b'
+    param.isomer = 0
+    param.rotcon = convert.Hz2J(num.array([9069e6, 1638e6, 1391e6]))
+    param.dipole = convert.D2Cm(num.array([0, 4.35, 0.]))
+
+
 def water(param):
     """Molecular parameters for water isotopologues (:math:`\\text{H}_2\\text{O}`, :math:`\\text{D}_2\\text{O}`, :math:`\\text{HDO}`)
 
