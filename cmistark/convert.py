@@ -56,6 +56,10 @@ def J2invcm(val):
     """Joule -> cm^{-1}"""
     return val / scipy.constants.Planck / scipy.constants.speed_of_light / 100
 
+def invcm2J(val):
+    """cm{-1} -> Joule"""
+    return val * scipy.constants.Planck * scipy.constants.speed_of_light * 100
+
 
 def kV_cm2V_m(val):
     """kV/cm -> V/m"""
@@ -65,3 +69,5 @@ def kV_cm2V_m(val):
 def V_m2kV_cm(val):
     """V/m -> kV/cm"""
     return np.array(val) * 1e-5
+
+
